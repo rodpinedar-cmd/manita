@@ -26,9 +26,9 @@ mountHeader({ search: false }); mountBottomNav('favoritos');
 (async function(){
   var list = document.getElementById('favList');
   var user = await usuarioActual();
-  if (!user) { list.innerHTML = '<div class="state-empty">Inicia sesión para guardar favoritos. <a href="login.html?next=favoritos.html">Entrar</a></div>'; return; }
+  if (!user) { list.innerHTML = emptyState({ icon:'🔒', title:'Inicia sesión', text:'Entra para guardar tus profesionales favoritos.', ctaText:'Entrar', ctaHref:'login.html?next=favoritos.html' }); return; }
   // Favoritos aún no implementados como tabla: estado vacío honesto
-  list.innerHTML = '<div class="state-empty">Aún no tienes favoritos.<br>Guarda profesionales que te gusten con el corazón 🤍 desde su perfil.<br><br><a class="btn btn-primary" href="categorias.html">Explorar servicios</a></div>';
+  list.innerHTML = emptyState({ icon:'🤍', title:'Aún no tienes favoritos', text:'Guarda profesionales que te gusten con el corazón desde su perfil.', ctaText:'Explorar servicios', ctaHref:'categorias.html' });
 })();
 </script>
 </body>

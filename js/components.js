@@ -76,6 +76,19 @@ async function mountHeader(opts) {
   }
 }
 
+// Genera el HTML de un estado vacío con marca (reutilizable en cualquier pantalla)
+// opts: { icon, title, text, ctaText, ctaHref }
+function emptyState(opts) {
+  opts = opts || {};
+  var cta = (opts.ctaText && opts.ctaHref)
+    ? '<a class="btn btn-primary" href="' + opts.ctaHref + '">' + opts.ctaText + '</a>' : '';
+  return '<div class="empty-state">' +
+    '<div class="es-icon" aria-hidden="true">' + (opts.icon || '📭') + '</div>' +
+    '<h3>' + (opts.title || 'Nada por aquí') + '</h3>' +
+    (opts.text ? '<p>' + opts.text + '</p>' : '') +
+    cta + '</div>';
+}
+
 function mountFooter() {
   var el = document.getElementById('appFooter');
   if (!el) return;

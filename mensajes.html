@@ -16,15 +16,14 @@
 <header class="header" id="appHeader"></header>
 <div style="max-width:720px;margin:24px auto;padding:0 20px;">
   <h1 style="font-size:24px;margin-bottom:16px;">Mensajes</h1>
-  <div class="state-empty">
-    💬 El chat con profesionales llegará muy pronto.<br>
-    Por ahora coordina tu servicio al reservar.<br><br>
-    <a class="btn btn-primary" href="mis-reservas.html">Ver mis reservas</a>
-  </div>
+  <div id="msgBox"></div>
 </div>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="js/supabase-client.js"></script>
 <script src="js/components.js"></script>
-<script>mountHeader({ search: false }); mountBottomNav('mensajes');</script>
+<script>
+mountHeader({ search: false }); mountBottomNav('mensajes');
+document.getElementById('msgBox').innerHTML = emptyState({ icon:'💬', title:'Chat próximamente', text:'El chat con profesionales llegará muy pronto. Por ahora coordina tu servicio al reservar.', ctaText:'Ver mis reservas', ctaHref:'mis-reservas.html' });
+</script>
 </body>
 </html>

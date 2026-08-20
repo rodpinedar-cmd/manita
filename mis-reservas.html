@@ -107,10 +107,11 @@ function renderReservas() {
   var data = ALL_RESERVAS.filter(function(b){ return tabDe(b.status) === currentTab; });
 
   if (!data.length) {
-    var msg = currentTab === 'upcoming' ? 'No tienes servicios próximos.'
-      : currentTab === 'past' ? 'Aún no tienes servicios completados.'
-      : 'No tienes servicios cancelados.';
-    list.innerHTML = '<div class="empty-res">📭 ' + msg + '<br><a href="categorias.html" style="color:var(--primary-text)">Buscar un servicio</a></div>';
+    var cfg = currentTab === 'upcoming' ? { icon:'📅', title:'Sin servicios próximos', text:'Reserva un servicio y aparecerá aquí.' }
+      : currentTab === 'past' ? { icon:'✅', title:'Aún no tienes servicios completados', text:'Cuando termines un servicio, lo verás aquí.' }
+      : { icon:'🚫', title:'No tienes servicios cancelados', text:'' };
+    cfg.ctaText = 'Buscar un servicio'; cfg.ctaHref = 'categorias.html';
+    list.innerHTML = emptyState(cfg);
     return;
   }
   list.innerHTML = data.map(function(b) {

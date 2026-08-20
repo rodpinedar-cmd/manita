@@ -304,6 +304,16 @@ a { text-decoration: none; color: inherit; }
 /* ===== ESTADOS: loading / empty / error (MVP transaccional) ===== */
 .state-loading { display: grid; grid-template-columns: 1fr 360px; gap: 32px; }
 @media (max-width: 900px) { .state-loading { grid-template-columns: 1fr; } }
+/* Empty state con marca (ícono en círculo + título + CTA) */
+.empty-state { text-align: center; padding: var(--sp-10) var(--sp-5); }
+.empty-state .es-icon {
+  width: 88px; height: 88px; margin: 0 auto var(--sp-4); border-radius: 50%;
+  background: var(--mint); display: flex; align-items: center; justify-content: center; font-size: 40px;
+}
+.empty-state h3 { font-size: var(--fs-md); color: var(--navy); font-weight: 800; margin-bottom: var(--sp-2); }
+.empty-state p { font-size: var(--fs-sm); color: var(--gray); max-width: 300px; margin: 0 auto var(--sp-4); line-height: 1.5; }
+.empty-state .btn { display: inline-flex; }
+
 .state-empty, .state-error {
   text-align: center; padding: 40px; border-radius: var(--radius);
   color: var(--gray); background: var(--bg-alt); border: 1px solid var(--border);
