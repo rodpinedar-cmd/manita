@@ -1,10 +1,12 @@
 {
+  "id": "/",
   "name": "Manita — Servicios a domicilio",
   "short_name": "Manita",
   "description": "Encuentra profesionales de confianza para limpieza, belleza, clases y más en CDMX.",
   "start_url": "./index.html",
   "scope": "./",
   "display": "standalone",
+  "dir": "ltr",
   "background_color": "#FFF7F4",
   "theme_color": "#FF6B4A",
   "orientation": "portrait",

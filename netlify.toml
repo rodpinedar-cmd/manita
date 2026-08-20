@@ -1,0 +1,23 @@
+# Configuración de hosting para Manita (PWA + APK/TWA)
+
+[build]
+  publish = "."
+
+# El service worker no debe cachearse de forma agresiva (para que las actualizaciones lleguen)
+[[headers]]
+  for = "/sw.js"
+  [headers.values]
+    Cache-Control = "no-cache"
+
+# Digital Asset Links debe servirse como JSON (requisito de Android TWA)
+[[headers]]
+  for = "/.well-known/assetlinks.json"
+  [headers.values]
+    Content-Type = "application/json"
+    Cache-Control = "no-cache"
+
+# El manifest como JSON
+[[headers]]
+  for = "/manifest.json"
+  [headers.values]
+    Content-Type = "application/manifest+json"
