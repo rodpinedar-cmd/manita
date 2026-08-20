@@ -129,6 +129,87 @@ function isStandalone() {
   }, hold);
 })();
 
+// ===== ONBOARDING DE BIENVENIDA (solo la primera vez en modo app) =====
+// 3 slides que explican qué es Manita, cómo funciona y la garantía de confianza.
+// Se muestra una única vez (localStorage). Se puede forzar con ?onboarding=1 para pruebas.
+// Accesible: role=dialog, foco atrapado básico, botón saltar, respeta prefers-reduced-motion.
+(function initOnboarding() {
+  var force = new URLSearchParams(location.search).get('onboarding') === '1';
+  if (!isStandalone() && !force) return;
+  try { if (localStorage.getItem('manita_onboarding') && !force) return; } catch (e) {}
+
+  var SLIDES = [
+    { icon: '🤝', title: 'Bienvenido a Manita', text: 'Encuentra profesionales de confianza para tu hogar en CDMX: limpieza, plomería, electricidad y mucho más.' },
+    { icon: '📅', title: 'Reserva en segundos', text: 'Elige el servicio, la fecha y confirma. Ves el precio claro desde el inicio, sin sorpresas ni letras chiquitas.' },
+    { icon: '🛡️', title: 'Con toda tranquilidad', text: 'Profesionales verificados, reseñas reales y pago protegido. Tú marcas cuándo el trabajo quedó bien hecho.' }
+  ];
+
+  function markDone() { try { localStorage.setItem('manita_onboarding', '1'); } catch (e) {} }
+
+  var ov = document.createElement('div');
+  ov.className = 'onboarding';
+  ov.setAttribute('role', 'dialog');
+  ov.setAttribute('aria-modal', 'true');
+  ov.setAttribute('aria-label', 'Bienvenida a Manita');
+
+  var slidesHtml = SLIDES.map(function (sl, i) {
+    return '<div class="ob-slide' + (i === 0 ? ' active' : '') + '" data-idx="' + i + '">' +
+      '<div class="ob-icon" aria-hidden="true">' + sl.icon + '</div>' +
+      '<h2 class="ob-title">' + sl.title + '</h2>' +
+      '<p class="ob-text">' + sl.text + '</p>' +
+    '</div>';
+  }).join('');
+
+  var dotsHtml = SLIDES.map(function (_, i) {
+    return '<span class="ob-dot' + (i === 0 ? ' active' : '') + '" data-dot="' + i + '"></span>';
+  }).join('');
+
+  ov.innerHTML =
+    '<button type="button" class="ob-skip" id="obSkip">Saltar</button>' +
+    '<div class="ob-viewport">' + slidesHtml + '</div>' +
+    '<div class="ob-dots" aria-hidden="true">' + dotsHtml + '</div>' +
+    '<div class="ob-actions">' +
+      '<button type="button" class="btn btn-primary btn-lg ob-next" id="obNext">Siguiente</button>' +
+    '</div>';
+
+  document.body.appendChild(ov);
+  document.body.classList.add('ob-open');
+
+  var idx = 0;
+  var slides = ov.querySelectorAll('.ob-slide');
+  var dots = ov.querySelectorAll('.ob-dot');
+  var nextBtn = ov.querySelector('#obNext');
+  var skipBtn = ov.querySelector('#obSkip');
+
+  function render() {
+    for (var i = 0; i < slides.length; i++) {
+      slides[i].classList.toggle('active', i === idx);
+      dots[i].classList.toggle('active', i === idx);
+    }
+    nextBtn.textContent = (idx === SLIDES.length - 1) ? 'Empezar' : 'Siguiente';
+  }
+
+  function close() {
+    markDone();
+    document.body.classList.remove('ob-open');
+    ov.classList.add('hide');
+    var reduceM = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    setTimeout(function () { ov.remove(); }, reduceM ? 0 : 300);
+  }
+
+  nextBtn.addEventListener('click', function () {
+    if (idx < SLIDES.length - 1) { idx++; render(); nextBtn.focus(); }
+    else { close(); }
+  });
+  skipBtn.addEventListener('click', close);
+  document.addEventListener('keydown', function (e) {
+    if (e.key === 'Escape' && document.body.classList.contains('ob-open')) close();
+  });
+
+  render();
+  setTimeout(function () { nextBtn.focus(); }, 100);
+})();
+
 async function mountBottomNav(active) {
   // Solo en modo app instalada, o si se fuerza con ?app=1 (para previsualizar)
   var force = new URLSearchParams(location.search).get('app') === '1';
