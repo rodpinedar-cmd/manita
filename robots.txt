@@ -7,5 +7,6 @@ Disallow: /pro-panel.html
 Disallow: /reserva-confirmada.html
 Disallow: /favoritos.html
 Disallow: /mensajes.html
+Disallow: /setup-check.html
 
 Sitemap: https://manita-cdmx.netlify.app/sitemap.xml

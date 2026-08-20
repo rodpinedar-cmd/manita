@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="es-MX">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Diagnóstico del backend — Manita</title>
+<meta name="robots" content="noindex">
+<link rel="stylesheet" href="css/styles.css">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+.sc-wrap { max-width: 640px; margin: 24px auto; padding: 0 20px; }
+.sc-row { display: flex; align-items: flex-start; gap: var(--sp-3); padding: var(--sp-4); border: 1px solid var(--border); border-radius: var(--radius); margin-bottom: var(--sp-3); background: #fff; }
+.sc-ic { font-size: 22px; flex-shrink: 0; }
+.sc-body strong { display: block; font-size: var(--fs-base); color: var(--navy); }
+.sc-body span { font-size: var(--fs-sm); color: var(--gray); }
+.sc-ok { border-color: #B7E4CE; background: #F0FBF6; }
+.sc-fail { border-color: #F5C6C6; background: #FDECEC; }
+.sc-summary { text-align: center; padding: var(--sp-5); border-radius: var(--radius); margin-bottom: var(--sp-5); font-weight: 700; }
+.sc-summary.ok { background: #E6F7F1; color: var(--success-text); }
+.sc-summary.fail { background: #FDECEC; color: var(--danger); }
+</style>
+</head>
+<body>
+<header class="header" id="appHeader"></header>
+
+<div class="sc-wrap">
+  <h1 style="font-size:var(--fs-xl);margin:var(--sp-5) 0 var(--sp-2);">Diagnóstico del backend</h1>
+  <p style="color:var(--gray);margin-bottom:var(--sp-4);font-size:var(--fs-sm);">Verifica que Supabase esté configurado correctamente tras aplicar SETUP_COMPLETO.sql y SEED_DEMO.sql.</p>
+  <div id="scSummary"></div>
+  <div id="scList"><div class="skeleton skeleton-card"></div></div>
+  <button class="btn btn-ghost" style="margin-top:var(--sp-3);" onclick="location.reload()">Volver a verificar</button>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="js/supabase-client.js"></script>
+<script src="js/components.js"></script>
+<script>
+mountHeader({ search: false });
+
+var checks = [];
+function add(ok, title, detail) { checks.push({ ok: ok, title: title, detail: detail }); }
+
+async function run() {
+  // 1. Conexión + tabla categories
+  try {
+    var c = await supa.from('categories').select('id').limit(1);
+    add(!c.error, 'Conexión a Supabase + tabla categories', c.error ? c.error.message : 'OK');
+  } catch (e) { add(false, 'Conexión a Supabase', e.message); }
+
+  // 2. Tabla professionals con columnas nuevas (status, duration_min)
+  try {
+    var p = await supa.from('professionals').select('id,status,duration_min').eq('status','active').limit(50);
+    add(!p.error, 'Tabla professionals (migración 0002)', p.error ? p.error.message : (p.data.length + ' profesionales activos'));
+    window._prosCount = p.error ? 0 : p.data.length;
+  } catch (e) { add(false, 'Tabla professionals', e.message); }
+
+  // 3. RPC crear_reserva existe (llamada sin auth debe responder AUTH/UNAUTHORIZED, no "función no existe")
+  try {
+    var r = await supa.rpc('crear_reserva', { p_professional_id: '00000000-0000-0000-0000-000000000000', p_start_at: new Date(Date.now()+864e5).toISOString(), p_address: 'test test' });
+    var msg = r.error ? r.error.message : '';
+    var existe = !/could not find|does not exist|function .* does not/i.test(msg);
+    add(existe, 'RPC crear_reserva (migración 0006)', existe ? 'Existe (responde control de acceso)' : 'NO existe: ' + msg);
+  } catch (e) { add(true, 'RPC crear_reserva', 'Existe (excepción de negocio esperada)'); }
+
+  // 4. Tabla client_addresses (migración 0010)
+  try {
+    var a = await supa.from('client_addresses').select('id').limit(1);
+    add(!a.error, 'Tabla client_addresses (migración 0010)', a.error ? a.error.message : 'OK');
+  } catch (e) { add(false, 'Tabla client_addresses', e.message); }
+
+  // 5. Disponibilidad cargada (SEED_DEMO)
+  try {
+    var av = await supa.from('professional_availability').select('id').limit(1);
+    var hay = !av.error && av.data.length > 0;
+    add(hay, 'Disponibilidad de profesionales (SEED_DEMO)', hay ? 'Hay horarios cargados' : 'Sin disponibilidad: ejecuta SEED_DEMO.sql');
+  } catch (e) { add(false, 'Disponibilidad', e.message); }
+
+  render();
+}
+
+function render() {
+  var okCount = checks.filter(function(c){ return c.ok; }).length;
+  var all = okCount === checks.length;
+  var sum = document.getElementById('scSummary');
+  sum.className = 'sc-summary ' + (all ? 'ok' : 'fail');
+  sum.textContent = all
+    ? '✅ Backend listo (' + okCount + '/' + checks.length + '). Ya puedes reservar.'
+    : '⚠️ ' + okCount + '/' + checks.length + ' correctos. Revisa los pasos marcados en rojo.';
+
+  document.getElementById('scList').innerHTML = checks.map(function(c){
+    return '<div class="sc-row ' + (c.ok ? 'sc-ok' : 'sc-fail') + '">' +
+      '<span class="sc-ic">' + (c.ok ? '✅' : '❌') + '</span>' +
+      '<div class="sc-body"><strong>' + c.title + '</strong><span>' + c.detail + '</span></div></div>';
+  }).join('');
+}
+
+run();
+</script>
+</body>
+</html>
