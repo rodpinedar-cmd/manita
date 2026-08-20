@@ -12,7 +12,7 @@
 .profile-layout { display: grid; grid-template-columns: 1fr 360px; gap: var(--sp-8); padding: var(--sp-6) 0; }
 .profile-header { background: #fff; border: 1px solid var(--border); border-radius: var(--radius); padding: var(--sp-6); box-shadow: var(--shadow-xs); margin-bottom: var(--sp-5); }
 .profile-top { display: flex; flex-direction: column; align-items: center; text-align: center; gap: var(--sp-3); }
-.profile-avatar { font-size: 44px; font-weight: 800; color: var(--primary); background: var(--mint); border-radius: 50%; width: 104px; height: 104px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; overflow: hidden; box-shadow: var(--shadow); }
+.profile-avatar { font-size: 44px; font-weight: 800; color: var(--primary-text); background: var(--mint); border-radius: 50%; width: 104px; height: 104px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; overflow: hidden; box-shadow: var(--shadow); }
 .profile-avatar img { width: 100%; height: 100%; object-fit: cover; }
 .profile-name { font-size: var(--fs-xl); font-weight: 800; display: flex; align-items: center; gap: var(--sp-2); justify-content: center; letter-spacing: -0.3px; }
 .profile-service { color: var(--gray); font-size: var(--fs-base); }
@@ -46,16 +46,16 @@
 
 /* Tarjeta de reserva (escritorio: sticky lateral) */
 .booking-card { background: #fff; border: 1px solid var(--border); border-radius: var(--radius); padding: var(--sp-6); box-shadow: var(--shadow-lg); position: sticky; top: 90px; }
-.booking-price { font-size: var(--fs-2xl); font-weight: 800; color: var(--primary); margin-bottom: var(--sp-1); }
+.booking-price { font-size: var(--fs-2xl); font-weight: 800; color: var(--primary-text); margin-bottom: var(--sp-1); }
 .booking-price small { font-size: var(--fs-base); color: var(--gray); font-weight: 400; }
 .booking-field { margin-bottom: var(--sp-4); }
 .booking-field label { display: block; font-size: var(--fs-sm); font-weight: 600; margin-bottom: var(--sp-2); }
 .booking-field input, .booking-field select { width: 100%; padding: var(--sp-3); border: 1px solid var(--border); border-radius: var(--radius-sm); font-family: inherit; font-size: var(--fs-base); min-height: 44px; }
-.booking-field input:focus, .booking-field select:focus { outline: 2px solid var(--primary-light); border-color: var(--primary); }
+.booking-field input:focus, .booking-field select:focus { outline: 2px solid var(--primary-text); border-color: var(--primary-text); }
 .booking-total { display: flex; justify-content: space-between; padding: var(--sp-4) 0; border-top: 1px solid var(--border); margin-top: var(--sp-2); font-weight: 700; }
 .guarantee { background: rgba(22,169,127,0.08); border-radius: var(--radius-sm); padding: var(--sp-3); font-size: var(--fs-xs); color: var(--success); margin-top: var(--sp-4); display: flex; gap: var(--sp-2); }
 .breadcrumb { padding: var(--sp-4) 0; font-size: var(--fs-sm); color: var(--gray); }
-.breadcrumb a { color: var(--primary); }
+.breadcrumb a { color: var(--primary-text); }
 
 /* Barra de acción fija abajo (móvil): CTA de reserva siempre visible — mejora conversión */
 .book-actionbar {
@@ -64,7 +64,7 @@
   padding: var(--sp-3) var(--sp-4); padding-bottom: calc(var(--sp-3) + env(safe-area-inset-bottom, 0));
   align-items: center; justify-content: space-between; gap: var(--sp-4);
 }
-.book-actionbar .ba-price b { font-size: var(--fs-lg); color: var(--primary); }
+.book-actionbar .ba-price b { font-size: var(--fs-lg); color: var(--primary-text); }
 .book-actionbar .ba-price span { display: block; font-size: var(--fs-xs); color: var(--gray); }
 .book-actionbar .btn { flex: 1; max-width: 200px; }
 

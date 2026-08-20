@@ -108,7 +108,7 @@ function renderReservas() {
     var msg = currentTab === 'upcoming' ? 'No tienes servicios próximos.'
       : currentTab === 'past' ? 'Aún no tienes servicios completados.'
       : 'No tienes servicios cancelados.';
-    list.innerHTML = '<div class="empty-res">📭 ' + msg + '<br><a href="categorias.html" style="color:var(--primary)">Buscar un servicio</a></div>';
+    list.innerHTML = '<div class="empty-res">📭 ' + msg + '<br><a href="categorias.html" style="color:var(--primary-text)">Buscar un servicio</a></div>';
     return;
   }
   list.innerHTML = data.map(function(b) {
