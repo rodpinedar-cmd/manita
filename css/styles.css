@@ -366,3 +366,17 @@ a { text-decoration: none; color: inherit; }
 .app-qr-side span { font-size: 13px; color: var(--gray); font-weight: 600; }
 .app-badges { display: flex; gap: 12px; flex-wrap: wrap; align-items: center; }
 @media (max-width: 900px) { .app-qr-side { margin-top: 20px; } }
+
+/* ===== Modal de descarga: tabs Android / iPhone ===== */
+.dl-tabs { display: flex; gap: 8px; margin: 16px 0; }
+.dl-tab {
+  flex: 1; padding: 10px; border: 1px solid var(--border); background: var(--bg-alt);
+  border-radius: 10px; font-family: inherit; font-size: 14px; font-weight: 600;
+  color: var(--gray); cursor: pointer; transition: all 0.2s;
+}
+.dl-tab.active { background: var(--primary); color: #fff; border-color: var(--primary); }
+.ios-steps {
+  text-align: left; margin: 16px auto; max-width: 300px; padding-left: 20px;
+  color: var(--navy); font-size: 14px; line-height: 1.7;
+}
+.ios-steps li { margin-bottom: 6px; }

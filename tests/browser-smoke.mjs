@@ -106,6 +106,15 @@ for (const page of PAGES) {
   const qrGenerated = await pg.evaluate(() => { const i = document.getElementById('qrImg'); return !!(i && i.src && i.src.indexOf('qrserver') !== -1); });
   const hasInstallBtn = await pg.$('#modalInstallBtn') !== null;
   rec('Descarga: modal abre + QR generado + botón instalar', modalOpen && qrGenerated && hasInstallBtn, `open=${modalOpen} qr=${qrGenerated} btn=${hasInstallBtn}`);
+  // Tabs Android / iPhone
+  await pg.evaluate(() => dlTab('ios'));
+  await pg.waitForTimeout(200);
+  const iosVisible = await pg.evaluate(() => document.getElementById('paneIos').style.display !== 'none' && document.getElementById('paneAndroid').style.display === 'none');
+  const iosSteps = await pg.$$eval('.ios-steps li', els => els.length);
+  rec('Descarga: pestaña iPhone muestra pasos de Safari', iosVisible && iosSteps >= 4, `iosVisible=${iosVisible} steps=${iosSteps}`);
+  await pg.evaluate(() => dlTab('android'));
+  const androidBack = await pg.evaluate(() => document.getElementById('paneAndroid').style.display !== 'none');
+  rec('Descarga: pestaña Android vuelve a mostrarse', androidBack);
   await ctx.close();
 }
 

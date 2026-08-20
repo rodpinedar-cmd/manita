@@ -99,7 +99,25 @@ if (heroSearch) {
 function openQR(e) {
   if (e) e.preventDefault();
   var m = document.getElementById('qrModal');
-  if (m) m.classList.add('open'); // el QR ya tiene src fijo en el HTML (patrón simple y robusto)
+  if (m) {
+    // Detecta iPhone/iPad y muestra la pestaña correcta automáticamente
+    var isIOS = /iphone|ipad|ipod/i.test(navigator.userAgent) ||
+      (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+    dlTab(isIOS ? 'ios' : 'android');
+    m.classList.add('open');
+  }
+}
+
+// Cambia entre pestañas Android / iPhone en el modal de descarga
+function dlTab(which) {
+  var isIos = which === 'ios';
+  var pA = document.getElementById('paneAndroid'), pI = document.getElementById('paneIos');
+  var tA = document.getElementById('tabAndroid'), tI = document.getElementById('tabIos');
+  if (!pA || !pI) return;
+  pA.style.display = isIos ? 'none' : 'block';
+  pI.style.display = isIos ? 'block' : 'none';
+  if (tA) { tA.classList.toggle('active', !isIos); tA.setAttribute('aria-selected', String(!isIos)); }
+  if (tI) { tI.classList.toggle('active', isIos); tI.setAttribute('aria-selected', String(isIos)); }
 }
 function closeQR(e) {
   if (e) e.preventDefault();
