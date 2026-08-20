@@ -89,6 +89,9 @@ body.app-mode .book-actionbar { bottom: 64px; }
 <!-- Barra de acción fija (móvil): CTA de reserva siempre visible -->
 <div class="book-actionbar" id="bookActionbar"></div>
 
+<!-- Modal de confirmación de reserva -->
+<div class="modal-overlay" id="confirmModal" onclick="cerrarConfirmacion()"></div>
+
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="js/supabase-client.js"></script>
 <script src="js/components.js"></script>

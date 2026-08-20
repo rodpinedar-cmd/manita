@@ -84,9 +84,14 @@ function renderProfile(cat) {
       '<div class="booking-field"><label for="bookTime">Hora</label><select id="bookTime"><option value="">Elige fecha primero</option></select></div>' +
       '<div class="booking-field" id="savedAddrWrap" style="display:none;"><label for="savedAddr">Dirección</label><select id="savedAddr"></select></div>' +
       '<div class="booking-field"><label for="bookAddr" id="bookAddrLabel">Dirección</label><input type="text" id="bookAddr" placeholder="Tu dirección en CDMX"></div>' +
-      '<div class="booking-total"><span>Total</span><span>$' + pro.price + ' MXN</span></div>' +
+      // Desglose de precio transparente (informativo; el monto real lo calcula el servidor)
+      '<div class="price-breakdown">' +
+        '<div class="pb-row"><span>' + escapeHtml(pro.service_name) + '</span><span>$' + pro.price + '</span></div>' +
+        '<div class="pb-row"><span>Protección Garantía Manita</span><span class="pb-free">Incluida</span></div>' +
+        '<div class="pb-row pb-total"><span>Total</span><span>$' + pro.price + ' MXN</span></div>' +
+      '</div>' +
       '<button class="btn btn-primary btn-lg" style="width:100%;margin-top:8px;" id="bookBtn">Reservar ahora</button>' +
-      '<div class="guarantee">🛡️ Garantía Manita: tu dinero queda protegido hasta que confirmes que el servicio salió bien.</div>' +
+      '<div class="guarantee">🛡️ Con la Garantía Manita, tu dinero queda protegido hasta que confirmes que el servicio salió bien.</div>' +
     '</div></div>';
 
   var today = new Date().toISOString().split('T')[0];
@@ -220,11 +225,41 @@ async function bookNow() {
     return;
   }
 
+  // En vez de reservar directo: mostrar resumen para confirmar (prevención de errores)
+  abrirConfirmacion(date, time, addr);
+}
+
+// Modal de confirmación: el usuario revisa antes de comprometerse
+function abrirConfirmacion(date, time, addr) {
+  var fechaLegible = new Date(date + 'T00:00:00').toLocaleDateString('es-MX', { weekday:'long', day:'numeric', month:'long' });
+  var m = document.getElementById('confirmModal');
+  m.innerHTML =
+    '<div class="modal-box" onclick="event.stopPropagation()" role="dialog" aria-modal="true" aria-label="Confirmar reserva">' +
+      '<button class="modal-close" onclick="cerrarConfirmacion()" aria-label="Cerrar">✕</button>' +
+      '<h3>Confirma tu reserva</h3>' +
+      '<div class="confirm-summary">' +
+        '<div class="cs-row"><span>Servicio</span><strong>' + escapeHtml(pro.service_name) + '</strong></div>' +
+        '<div class="cs-row"><span>Fecha</span><strong>' + fechaLegible + '</strong></div>' +
+        '<div class="cs-row"><span>Hora</span><strong>' + time + '</strong></div>' +
+        '<div class="cs-row"><span>Dirección</span><strong>' + escapeHtml(addr) + '</strong></div>' +
+        '<div class="cs-row cs-total"><span>Total</span><strong>$' + pro.price + ' MXN</strong></div>' +
+      '</div>' +
+      '<div class="guarantee">🛡️ Tu dinero queda protegido con la Garantía Manita hasta que confirmes que todo salió bien.</div>' +
+      '<button class="btn btn-primary btn-lg" style="width:100%;margin-top:12px;" id="confirmBookBtn">Confirmar reserva</button>' +
+      '<button class="btn btn-ghost" style="width:100%;margin-top:8px;" onclick="cerrarConfirmacion()">Volver</button>' +
+    '</div>';
+  m.classList.add('open');
+  document.getElementById('confirmBookBtn').onclick = function() { confirmarReserva(date, time, addr, this); };
+}
+function cerrarConfirmacion() {
+  var m = document.getElementById('confirmModal');
+  if (m) m.classList.remove('open');
+}
+
+async function confirmarReserva(date, time, addr, btn) {
   btn.textContent = 'Reservando...'; btn.disabled = true;
 
-  // Construye timestamp start_at desde fecha+hora seleccionadas (hora local CDMX del navegador)
   var startAt = new Date(date + 'T' + time + ':00').toISOString();
-  // idempotency_key estable para este intento (evita duplicados por doble click / reintentos)
   if (!window._bookingKey) window._bookingKey = 'bk-' + pro.id + '-' + startAt + '-' + Date.now();
 
   // El precio NO se envía: lo calcula el servidor (crear_reserva RPC)
@@ -235,11 +270,11 @@ async function bookNow() {
     idempotency_key: window._bookingKey
   });
 
-  btn.textContent = 'Reservar ahora'; btn.disabled = false;
-
-  if (res.error) { toast(res.error.message, 'error'); return; }
-
-  // Reserva creada (pending). Redirige a confirmación real (M028)
+  if (res.error) {
+    btn.textContent = 'Confirmar reserva'; btn.disabled = false;
+    toast(res.error.message, 'error');
+    return;
+  }
   var b = Array.isArray(res.data) ? res.data[0] : res.data;
   window.location.href = 'reserva-confirmada.html?id=' + (b ? b.id : '');
 }
