@@ -83,10 +83,14 @@ async function loadReservas() {
     if (b.status === 'completed') {
       actions += '<button class="btn btn-primary" data-review="' + b.id + '">Dejar reseña</button>';
     }
+    // Reservar de nuevo (recompra 1-tap) para servicios finalizados — M066
+    if ((b.status === 'completed' || b.status === 'reviewed') && b.professional_id) {
+      actions += '<a class="btn btn-ghost" href="perfil.html?id=' + esc(b.professional_id) + '">🔁 Reservar de nuevo</a>';
+    }
     return '<div class="res-card"><div class="res-info">' +
       '<h3>' + esc(svc) + '</h3>' +
       '<p>📅 ' + esc(b.service_date) + ' a las ' + esc(b.service_time) + ' · 📍 ' + esc(b.address) + ' · $' + esc(b.price) + ' MXN</p>' +
-      '</div><div style="display:flex;align-items:center;gap:10px;">' + actions +
+      '</div><div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">' + actions +
       '<span class="res-status ' + st[0] + '">' + st[1] + '</span></div></div>';
   }).join('');
 
