@@ -30,7 +30,7 @@
 <script src="js/components.js"></script>
 <script src="js/data.js"></script>
 <script>
-mountHeader();
+mountHeader(); mountBottomNav('buscar');
 document.getElementById('categoriesGrid').innerHTML = CATEGORIES.map(function(c) {
   return '<a href="servicios.html?cat=' + c.id + '" class="category-card">' +
     '<div class="category-icon">' + c.icon + '</div><h3>' + c.name + '</h3><p>' + c.desc + '</p></a>';

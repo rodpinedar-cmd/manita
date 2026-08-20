@@ -84,6 +84,44 @@ function mountFooter() {
     '<a href="legal.html" style="color:var(--light-gray)">Aviso de privacidad</a></div></div>';
 }
 
+// ===== MODO APP: barra de navegación inferior (tab bar tipo app nativa) =====
+// Se activa cuando corre como PWA/APK instalada (standalone). En navegador de escritorio no aparece.
+function isStandalone() {
+  return window.matchMedia('(display-mode: standalone)').matches ||
+         window.navigator.standalone === true ||
+         document.referrer.startsWith('android-app://');
+}
+
+async function mountBottomNav(active) {
+  // Solo en modo app instalada, o si se fuerza con ?app=1 (para previsualizar)
+  var force = new URLSearchParams(location.search).get('app') === '1';
+  if (!isStandalone() && !force) return;
+
+  document.body.classList.add('app-mode');
+
+  var user = null;
+  try { user = await usuarioActual(); } catch (e) {}
+  var cuentaHref = user ? 'cuenta.html' : 'login.html';
+
+  var tabs = [
+    { id: 'inicio',   label: 'Inicio',   icon: '🏠', href: 'index.html' },
+    { id: 'buscar',   label: 'Buscar',   icon: '🔍', href: 'categorias.html' },
+    { id: 'reservas', label: 'Reservas', icon: '📅', href: 'mis-reservas.html' },
+    { id: 'cuenta',   label: 'Cuenta',   icon: '👤', href: cuentaHref }
+  ];
+
+  var nav = document.createElement('nav');
+  nav.className = 'bottom-nav';
+  nav.setAttribute('aria-label', 'Navegación principal');
+  nav.innerHTML = tabs.map(function (t) {
+    var on = (t.id === active) ? ' active' : '';
+    return '<a class="bn-item' + on + '" href="' + t.href + '"' + (on ? ' aria-current="page"' : '') + '>' +
+      '<span class="bn-icon" aria-hidden="true">' + t.icon + '</span>' +
+      '<span class="bn-label">' + t.label + '</span></a>';
+  }).join('');
+  document.body.appendChild(nav);
+}
+
 // ===== PWA: registro de service worker + botón de instalación (M045) =====
 (function initPWA() {
   // Registrar el service worker (solo en http/https, no en file://)

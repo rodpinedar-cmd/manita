@@ -53,7 +53,7 @@
 <script src="js/supabase-client.js"></script>
 <script src="js/components.js"></script>
 <script>
-mountHeader({ search: false });
+mountHeader({ search: false }); mountBottomNav('cuenta');
 function esc(s){return String(s==null?'':s).replace(/[&<>"']/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];});}
 function toast(msg,kind){var t=document.createElement('div');t.className='toast toast-'+(kind||'info');t.setAttribute('role','status');t.textContent=msg;document.body.appendChild(t);requestAnimationFrame(function(){t.classList.add('show');});setTimeout(function(){t.classList.remove('show');setTimeout(function(){t.remove();},300);},3200);}
 

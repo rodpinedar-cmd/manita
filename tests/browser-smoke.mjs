@@ -54,6 +54,22 @@ for (const page of PAGES) {
   }
   await ctx.close();
 }
+// ===== Verificación MODO APP (barra inferior tipo app nativa) =====
+{
+  const ctx = await browser.newContext({ viewport: { width: 390, height: 800 } });
+  const pg = await ctx.newPage();
+  // ?app=1 fuerza el modo app para previsualizar sin instalar
+  await pg.goto(`http://localhost:${PORT}/index.html?app=1`, { waitUntil: 'networkidle', timeout: 15000 });
+  await pg.waitForTimeout(500);
+  const navVisible = await pg.isVisible('.bottom-nav');
+  const tabs = await pg.$$eval('.bn-item', els => els.length);
+  const activeTab = await pg.$$eval('.bn-item.active .bn-label', els => els[0] ? els[0].textContent : '');
+  const bodyAppMode = await pg.evaluate(() => document.body.classList.contains('app-mode'));
+  rec('Modo app: barra inferior visible con 4 pestañas', navVisible && tabs === 4, `nav=${navVisible} tabs=${tabs}`);
+  rec('Modo app: pestaña Inicio activa + body.app-mode', activeTab === 'Inicio' && bodyAppMode, `active=${activeTab} appMode=${bodyAppMode}`);
+  await ctx.close();
+}
+
 // ===== Verificación PWA =====
 {
   const ctx = await browser.newContext();
