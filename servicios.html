@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="es-MX">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Servicios — Manita</title>
+<link rel="stylesheet" href="css/styles.css">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+.results-layout { display: grid; grid-template-columns: 260px 1fr; gap: 32px; padding: 32px 0; }
+.filters { background: #fff; border: 1px solid var(--border); border-radius: var(--radius); padding: 20px; height: fit-content; position: sticky; top: 90px; }
+.filters h3 { font-size: 15px; margin-bottom: 14px; }
+.filter-group { margin-bottom: 20px; }
+.filter-group label { display: flex; align-items: center; gap: 8px; padding: 6px 0; font-size: 14px; color: var(--gray); cursor: pointer; }
+.filter-group input { accent-color: var(--primary); }
+.results-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 12px; }
+.results-header h1 { font-size: 26px; }
+.results-count { color: var(--gray); font-size: 14px; }
+.pros-list { display: flex; flex-direction: column; gap: 16px; }
+.pro-card { background: #fff; border: 1px solid var(--border); border-radius: var(--radius); padding: 20px; box-shadow: var(--shadow); transition: all 0.2s; cursor: pointer; display: flex; gap: 16px; }
+.pro-card:hover { transform: translateY(-2px); box-shadow: var(--shadow-lg); }
+.pro-avatar { font-size: 40px; background: var(--bg-alt); border-radius: 50%; width: 64px; height: 64px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.pro-main { flex: 1; }
+.pro-name { font-size: 16px; font-weight: 700; display: flex; align-items: center; gap: 6px; color: var(--navy); }
+.verified { color: var(--primary); font-size: 13px; }
+.pro-rating { color: var(--warning); font-size: 13px; font-weight: 600; margin: 2px 0; }
+.pro-rating span { color: var(--gray); font-weight: 400; }
+.pro-badges { display: flex; gap: 8px; margin: 6px 0; flex-wrap: wrap; }
+.pro-badge { font-size: 11px; padding: 3px 8px; border-radius: 8px; font-weight: 600; display: flex; align-items: center; gap: 4px; }
+.badge-repeat { background: var(--mint); color: var(--primary-dark); }
+.badge-agenda { background: rgba(18,199,180,0.1); color: var(--primary); }
+.pro-bio { font-size: 13px; color: var(--gray); margin-top: 6px; }
+.pro-right { text-align: right; flex-shrink: 0; }
+.pro-price { font-size: 20px; font-weight: 800; color: var(--navy); }
+.pro-price small { font-size: 11px; color: var(--gray); font-weight: 400; display: block; }
+.empty { text-align: center; padding: 60px; color: var(--gray); }
+@media (max-width: 900px) { .results-layout { grid-template-columns: 1fr; } .filters { position: static; } }
+</style>
+</head>
+<body>
+
+<header class="header">
+  <div class="container header-inner">
+    <a href="index.html" class="logo"><span class="logo-icon">🤝</span><span class="logo-text">Manita</span></a>
+    <div class="header-search">
+      <div class="hs-field"><input type="text" id="hSearchCat" placeholder="¿Qué servicio?"></div>
+      <div class="hs-field hs-loc"><input type="text" id="hSearchLoc" placeholder="Dirección o colonia, CDMX"></div>
+      <a href="#" class="btn btn-primary hs-btn">Buscar</a>
+    </div>
+    <div class="header-actions">
+      <a href="ser-profesional.html" class="nav-link">Ofrecer servicios</a>
+      <a href="#" class="btn btn-account" onclick="openQR(event)">👤 Acceder</a>
+    </div>
+  </div>
+  <div class="cat-bar"><div class="container cat-bar-inner" id="catBar"></div></div>
+</header>
+
+<div class="modal-overlay" id="qrModal" onclick="closeQR(event)">
+  <div class="modal-box" onclick="event.stopPropagation()">
+    <button class="modal-close" onclick="closeQR(event)">✕</button>
+    <h3>Descarga la app de Manita</h3>
+    <p class="modal-sub">Escanea el código QR para descargar la app.</p>
+    <div class="qr-code"><img src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=https://manita.mx" alt="QR"></div>
+    <p class="modal-sub">O accede directamente a:</p>
+    <div class="modal-badges"><span class="app-badge">📱 App Store</span><span class="app-badge">▶️ Google Play</span></div>
+  </div>
+</div>
+
+<div class="container">
+  <div class="results-layout">
+    <aside class="filters">
+      <h3>Categoría</h3>
+      <div class="filter-group" id="catFilters"></div>
+      <h3>Disponibilidad</h3>
+      <div class="filter-group">
+        <label><input type="checkbox" id="availToday"> Disponible hoy</label>
+        <label><input type="checkbox" id="verifiedOnly"> Solo verificados</label>
+      </div>
+    </aside>
+    <main>
+      <div class="results-header">
+        <div>
+          <h1 id="resultsTitle">Profesionales</h1>
+          <div class="results-count" id="resultsCount"></div>
+        </div>
+      </div>
+      <div class="pros-list" id="prosList"></div>
+    </main>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="js/supabase-client.js"></script>
+<script src="js/data.js"></script>
+<script src="js/servicios.js"></script>
+<script>
+function openQR(e){if(e)e.preventDefault();document.getElementById('qrModal').classList.add('open');}
+function closeQR(e){if(e)e.preventDefault();document.getElementById('qrModal').classList.remove('open');}
+</script>
+</body>
+</html>

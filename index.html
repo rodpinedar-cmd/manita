@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="es-MX">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Manita — Servicios a domicilio en CDMX</title>
+<meta name="description" content="Encuentra profesionales de confianza para limpieza, belleza, clases y más. Servicios a domicilio en Ciudad de México.">
+<link rel="stylesheet" href="css/styles.css">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+</head>
+<body>
+
+<!-- HEADER -->
+<header class="header">
+  <div class="container header-inner">
+    <a href="index.html" class="logo"><span class="logo-icon">🤝</span><span class="logo-text">Manita</span></a>
+    <div class="header-search">
+      <div class="hs-field"><input type="text" id="hSearchCat" placeholder="¿Qué servicio?"></div>
+      <div class="hs-field hs-loc"><input type="text" id="hSearchLoc" placeholder="Dirección o colonia, CDMX"></div>
+      <a href="categorias.html" class="btn btn-primary hs-btn">Buscar</a>
+    </div>
+    <div class="header-actions">
+      <a href="ser-profesional.html" class="nav-link">Ofrecer servicios</a>
+      <a href="login.html" class="btn btn-account" id="accBtn">👤 Acceder</a>
+    </div>
+  </div>
+  <!-- Category pills bar -->
+  <div class="cat-bar">
+    <div class="container cat-bar-inner" id="catBar"></div>
+  </div>
+</header>
+
+<!-- QR MODAL -->
+<div class="modal-overlay" id="qrModal" onclick="closeQR(event)">
+  <div class="modal-box" onclick="event.stopPropagation()">
+    <button class="modal-close" onclick="closeQR(event)">✕</button>
+    <h3>Descarga la app de Manita</h3>
+    <p class="modal-sub">Escanea el código QR para descargar la app.</p>
+    <div class="qr-code">
+      <img src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=https://manita.mx" alt="QR Manita">
+    </div>
+    <p class="modal-sub">O accede directamente a:</p>
+    <div class="modal-badges">
+      <span class="app-badge">📱 App Store</span>
+      <span class="app-badge">▶️ Google Play</span>
+    </div>
+  </div>
+</div>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-overlay">
+    <h1>Haz tu vida más fácil</h1>
+    <p>Disfruta cualquier servicio, en la comodidad de tu hogar</p>
+  </div>
+  <div class="hero-scene">
+    <div class="scene-house">🏡</div>
+    <div class="scene-items">
+      <span>🧹</span><span>💅</span><span>🔧</span><span>📚</span><span>🐕</span>
+    </div>
+  </div>
+</section>
+
+<!-- HOW IT WORKS -->
+<section class="section">
+  <div class="container">
+    <h2 class="section-title">¿Cómo funciona?</h2>
+    <div class="steps">
+      <div class="step">
+        <div class="step-visual" style="background:linear-gradient(135deg,#FF6B4A,#FF9472);">🔍</div>
+        <h3>Busca lo que necesitas</h3>
+        <p>Tenemos casi de todo: limpieza, clases particulares, estética...</p>
+      </div>
+      <div class="step">
+        <div class="step-visual" style="background:linear-gradient(135deg,#4A5CB5,#8B9AE8);">⭐</div>
+        <h3>Escoge a tu profesional ideal</h3>
+        <p>Compara entre cientos de profesionales disponibles y elige al que más te guste.</p>
+      </div>
+      <div class="step">
+        <div class="step-visual" style="background:linear-gradient(135deg,#16A97F,#4FD1A5);">✅</div>
+        <h3>Contrátalo en 1 click</h3>
+        <p>Reserva tu servicio y quédate tranquilo con la Garantía Manita: tu dinero protegido hasta el final.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SERVICES BANNER -->
+<section class="section">
+  <div class="container banner">
+    <div class="banner-img"><img src="https://images.unsplash.com/photo-1522337660859-02fbefca4702?w=600&q=80" alt="Servicio a domicilio" loading="lazy"></div>
+    <div class="banner-text">
+      <h2>Pedimos de todo a casa: comida, paquetes, la compra... <span class="highlight">¿y los servicios?</span></h2>
+      <p>Con Manita puedes disfrutar casi cualquier servicio (clases, belleza, fisioterapia…) sin salir de casa.</p>
+      <a href="categorias.html" class="btn btn-primary btn-lg">Encuentra tu servicio</a>
+    </div>
+  </div>
+</section>
+
+<!-- POPULAR -->
+<section class="section section-alt">
+  <div class="container">
+    <h2 class="section-title">Lo más popular en tu zona</h2>
+    <p class="section-sub">Descubre los servicios más solicitados por tus vecinos</p>
+    <div class="popular-grid" id="popularGrid"></div>
+  </div>
+</section>
+
+<!-- WHY -->
+<section class="section">
+  <div class="container">
+    <h2 class="section-title">¿Por qué Manita?</h2>
+    <div class="why-grid">
+      <div class="why-card"><div class="why-icon">🏷️</div><h3>Precio</h3><p>Servicios al mejor precio.</p></div>
+      <div class="why-card"><div class="why-icon">🛡️</div><h3>Tranquilidad</h3><p>Profesionales de confianza. Soporte 365 días del año. Tu dinero protegido hasta el final.</p></div>
+      <div class="why-card"><div class="why-icon">🛋️</div><h3>Comodidad</h3><p>Recibe cualquier servicio sin tener que salir de casa.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- GARANTIA -->
+<section class="section guarantee-section">
+  <div class="container">
+    <div class="guarantee-label">GARANTÍA MANITA</div>
+    <h2 class="section-title" style="color:#fff;">No te preocupes, tu servicio está siempre protegido</h2>
+    <p class="section-sub" style="color:rgba(255,255,255,0.85);">El profesional solo recibe el dinero cuando confirmas que todo salió bien. Si algo va mal, te reembolsamos el importe total.</p>
+    <div class="guarantee-grid">
+      <div class="guarantee-card"><div class="g-icon">💰</div><h3>Garantía de reembolso</h3><p>Si algo sale mal, te devolvemos el dinero.</p></div>
+      <div class="guarantee-card"><div class="g-icon">🔒</div><h3>Pago seguro</h3><p>Tu dinero está protegido hasta que recibas el servicio.</p></div>
+      <div class="guarantee-card"><div class="g-icon">📞</div><h3>Atención los 365 días</h3><p>Siempre disponibles para lo que necesites.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- APP -->
+<section class="section section-alt">
+  <div class="container app-section">
+    <div class="app-text">
+      <h2>Todos los servicios<br>en una sola app.</h2>
+      <p>Descárgate Manita y encuentra profesionales de confianza donde y cuando quieras.</p>
+      <div class="app-badges"><span class="app-badge">📱 App Store</span><span class="app-badge">▶️ Google Play</span></div>
+    </div>
+    <div class="app-phone">📱</div>
+  </div>
+</section>
+
+<!-- STATS -->
+<section class="section stats-section">
+  <div class="container stats-grid">
+    <div class="stat"><strong>+50 mil</strong><span>Servicios solicitados</span></div>
+    <div class="stat"><strong>4.8</strong><span>Valoración media</span></div>
+    <div class="stat"><strong>+80%</strong><span>Clientes que repiten</span></div>
+  </div>
+</section>
+
+<!-- TESTIMONIALS -->
+<section class="section">
+  <div class="container">
+    <h2 class="section-title">Gracias por confiar en nosotros</h2>
+    <p class="section-sub">Mira algunos comentarios de nuestros clientes felices</p>
+    <div class="testimonials" id="testimonials"></div>
+  </div>
+</section>
+
+<!-- CTA PRO -->
+<section class="section cta-pro">
+  <div class="container cta-pro-inner">
+    <div>
+      <h2>¿Quieres ofrecer servicios en Manita?</h2>
+      <p>Crea tu perfil y publica tus anuncios gratis. Solo cobramos una pequeña comisión cuando ganas. ¡Únete en 5 minutos!</p>
+      <a href="ser-profesional.html" class="btn btn-primary btn-lg">Ofrecer servicios</a>
+    </div>
+    <div class="cta-pro-icon">🤝</div>
+  </div>
+</section>
+
+<!-- PRESS -->
+<section class="section section-alt">
+  <div class="container">
+    <h2 class="section-title">Hablan de nosotros...</h2>
+    <div class="press-grid">
+      <div class="press-card">"Precios hasta 25% más baratos que la media de mercado"<span>Forbes México</span></div>
+      <div class="press-card">"Manita acelera la digitalización de los servicios a domicilio"<span>Expansión</span></div>
+      <div class="press-card">"Contrata todo tipo de servicios a domicilio en tres clics"<span>El Economista</span></div>
+      <div class="press-card">"Más de 50 mil usuarios y miles de profesionales en CDMX"<span>El Financiero</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer class="footer">
+  <div class="container footer-inner">
+    <div class="footer-brand">
+      <a href="index.html" class="logo"><span class="logo-icon">🤝</span><span class="logo-text">Manita</span></a>
+      <p>Manita nace con el objetivo de hacer tu vida más fácil permitiéndote disfrutar cualquier servicio sin salir de casa.</p>
+    </div>
+    <div class="footer-col"><h4>Sobre nosotros</h4><a href="#">Contacto</a><a href="#">Manita Empresas</a></div>
+    <div class="footer-col"><h4>Empleo</h4><a href="ser-profesional.html">Ofrece tus servicios</a><a href="#">Trabaja con nosotros</a></div>
+    <div class="footer-col"><h4>Legal</h4><a href="#">Términos y condiciones</a><a href="#">Privacidad</a><a href="#">Cookies</a><a href="#">Cancelación</a></div>
+  </div>
+  <div class="footer-bottom"><div class="container">© 2026 Manita® · Hecho en CDMX 🇲🇽</div></div>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="js/supabase-client.js"></script>
+<script src="js/data.js"></script>
+<script src="js/app.js"></script>
+<script>
+// Update account button based on session
+(async function() {
+  var user = await usuarioActual();
+  var btn = document.getElementById('accBtn');
+  if (user && btn) {
+    btn.textContent = '👤 Mi cuenta';
+    btn.href = 'mis-reservas.html';
+  }
+})();
+</script>
+</body>
+</html>

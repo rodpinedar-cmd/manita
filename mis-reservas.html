@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="es-MX">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mis reservas — Manita</title>
+<link rel="stylesheet" href="css/styles.css">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+.res-wrap { max-width: 800px; margin: 32px auto; padding: 0 20px; }
+.res-card { background:#fff; border:1px solid var(--border); border-radius:var(--radius); padding:18px; margin-bottom:14px; box-shadow:var(--shadow); display:flex; justify-content:space-between; align-items:center; }
+.res-info h3 { font-size:16px; color:var(--navy); }
+.res-info p { font-size:13px; color:var(--gray); margin-top:4px; }
+.res-status { font-size:12px; padding:4px 12px; border-radius:12px; font-weight:600; }
+.st-pending { background:#FFF3E0; color:#E8850C; }
+.st-confirmed { background:#E6F7F1; color:var(--success); }
+.st-cancelled { background:#FDECEC; color:var(--danger); }
+.empty-res { text-align:center; padding:60px; color:var(--gray); }
+</style>
+</head>
+<body>
+
+<header class="header">
+  <div class="container header-inner">
+    <a href="index.html" class="logo"><span class="logo-icon">🤝</span><span class="logo-text">Manita</span></a>
+    <div class="header-actions">
+      <a href="categorias.html" class="nav-link">Buscar servicio</a>
+      <a href="#" class="btn btn-account" id="logoutBtn" onclick="doLogout(event)">Cerrar sesión</a>
+    </div>
+  </div>
+</header>
+
+<div class="res-wrap">
+  <h1 style="font-size:26px;margin-bottom:20px;">Mis reservas</h1>
+  <div id="resList"><div class="empty-res">Cargando...</div></div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="js/supabase-client.js"></script>
+<script>
+async function loadReservas() {
+  var user = await usuarioActual();
+  if (!user) {
+    window.location.href = 'login.html?next=' + encodeURIComponent('mis-reservas.html');
+    return;
+  }
+  var res = await misReservas();
+  var list = document.getElementById('resList');
+  if (!res.data.length) {
+    list.innerHTML = '<div class="empty-res">📭 Aún no tienes reservas.<br><a href="categorias.html" style="color:var(--primary)">Buscar un servicio</a></div>';
+    return;
+  }
+  var statusMap = { pending:['st-pending','Pendiente'], confirmed:['st-confirmed','Confirmada'], completed:['st-confirmed','Completada'], cancelled:['st-cancelled','Cancelada'] };
+  list.innerHTML = res.data.map(function(b) {
+    var st = statusMap[b.status] || ['st-pending','Pendiente'];
+    var svc = b.professionals ? b.professionals.service_name : 'Servicio';
+    return '<div class="res-card"><div class="res-info">' +
+      '<h3>' + svc + '</h3>' +
+      '<p>📅 ' + b.service_date + ' a las ' + b.service_time + ' · 📍 ' + b.address + ' · $' + b.price + ' MXN</p>' +
+      '</div><span class="res-status ' + st[0] + '">' + st[1] + '</span></div>';
+  }).join('');
+}
+async function doLogout(e) {
+  e.preventDefault();
+  await logout();
+  window.location.href = 'index.html';
+}
+loadReservas();
+</script>
+</body>
+</html>

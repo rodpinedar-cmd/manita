@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="es-MX">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Categorías — Manita</title>
+<link rel="stylesheet" href="css/styles.css">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+</head>
+<body>
+
+<header class="header">
+  <div class="container header-inner">
+    <a href="index.html" class="logo"><span class="logo-icon">🤝</span><span class="logo-text">Manita</span></a>
+    <nav class="nav">
+      <a href="categorias.html">Categorías</a>
+      <a href="como-funciona.html">Cómo funciona</a>
+      <a href="ser-profesional.html">Ofrecer servicios</a>
+    </nav>
+    <div class="header-actions">
+      <a href="#" class="btn btn-ghost">Entrar</a>
+      <a href="categorias.html" class="btn btn-primary">Buscar servicio</a>
+    </div>
+  </div>
+</header>
+
+<section class="section">
+  <div class="container">
+    <h2 class="section-title">Todas las categorías</h2>
+    <p class="section-sub">Encuentra el servicio a domicilio que necesitas en CDMX</p>
+    <div class="categories-grid" id="categoriesGrid"></div>
+  </div>
+</section>
+
+<footer class="footer">
+  <div class="footer-bottom"><div class="container">© 2026 Manita · Hecho en CDMX 🇲🇽</div></div>
+</footer>
+
+<script src="js/data.js"></script>
+<script>
+document.getElementById('categoriesGrid').innerHTML = CATEGORIES.map(function(c) {
+  return '<a href="servicios.html?cat=' + c.id + '" class="category-card">' +
+    '<div class="category-icon">' + c.icon + '</div><h3>' + c.name + '</h3><p>' + c.desc + '</p></a>';
+}).join('');
+</script>
+</body>
+</html>

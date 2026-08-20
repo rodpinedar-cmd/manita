@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="es-MX">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Entrar — Manita</title>
+<link rel="stylesheet" href="css/styles.css">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+.auth-wrap { max-width: 420px; margin: 60px auto; padding: 0 20px; }
+.auth-card { background:#fff; border:1px solid var(--border); border-radius:var(--radius); padding:32px; box-shadow:var(--shadow-lg); }
+.auth-tabs { display:flex; gap:8px; margin-bottom:24px; }
+.auth-tab { flex:1; padding:10px; text-align:center; border-radius:10px; cursor:pointer; font-weight:600; font-size:14px; background:var(--bg-alt); color:var(--gray); }
+.auth-tab.active { background:var(--primary); color:#fff; }
+.auth-field { margin-bottom:14px; }
+.auth-field label { display:block; font-size:13px; font-weight:600; margin-bottom:6px; }
+.auth-field input { width:100%; padding:12px; border:1px solid var(--border); border-radius:10px; font-family:inherit; font-size:14px; box-sizing:border-box; }
+.auth-msg { font-size:13px; margin-top:12px; padding:10px; border-radius:8px; display:none; }
+.auth-msg.err { background:#FDECEC; color:var(--danger); display:block; }
+.auth-msg.ok { background:#E6F7F1; color:var(--success); display:block; }
+</style>
+</head>
+<body>
+
+<header class="header">
+  <div class="container header-inner">
+    <a href="index.html" class="logo"><span class="logo-icon">🤝</span><span class="logo-text">Manita</span></a>
+    <div class="header-actions"><a href="index.html" class="nav-link">← Volver al inicio</a></div>
+  </div>
+</header>
+
+<div class="auth-wrap">
+  <div class="auth-card">
+    <div class="auth-tabs">
+      <div class="auth-tab active" id="tabLogin" onclick="switchTab('login')">Entrar</div>
+      <div class="auth-tab" id="tabReg" onclick="switchTab('reg')">Crear cuenta</div>
+    </div>
+
+    <div id="regName" class="auth-field" style="display:none;">
+      <label>Nombre completo</label>
+      <input type="text" id="fName" placeholder="Tu nombre">
+    </div>
+    <div class="auth-field">
+      <label>Correo</label>
+      <input type="email" id="fEmail" placeholder="tu@correo.com">
+    </div>
+    <div class="auth-field">
+      <label>Contraseña</label>
+      <input type="password" id="fPass" placeholder="Mínimo 6 caracteres">
+    </div>
+    <button class="btn btn-primary btn-lg" style="width:100%;" id="authBtn" onclick="doAuth()">Entrar</button>
+    <div class="auth-msg" id="authMsg"></div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="js/supabase-client.js"></script>
+<script>
+var mode = 'login';
+var nextUrl = new URLSearchParams(location.search).get('next') || 'index.html';
+
+function switchTab(m) {
+  mode = m;
+  document.getElementById('tabLogin').classList.toggle('active', m === 'login');
+  document.getElementById('tabReg').classList.toggle('active', m === 'reg');
+  document.getElementById('regName').style.display = m === 'reg' ? 'block' : 'none';
+  document.getElementById('authBtn').textContent = m === 'reg' ? 'Crear cuenta' : 'Entrar';
+  document.getElementById('authMsg').className = 'auth-msg';
+}
+
+function showMsg(text, isErr) {
+  var el = document.getElementById('authMsg');
+  el.textContent = text;
+  el.className = 'auth-msg ' + (isErr ? 'err' : 'ok');
+}
+
+async function doAuth() {
+  var email = document.getElementById('fEmail').value.trim();
+  var pass = document.getElementById('fPass').value;
+  var btn = document.getElementById('authBtn');
+  if (!email || !pass) { showMsg('Completa correo y contraseña.', true); return; }
+
+  btn.disabled = true; btn.textContent = 'Cargando...';
+
+  var res;
+  if (mode === 'reg') {
+    var name = document.getElementById('fName').value.trim();
+    res = await registrar(email, pass, name);
+  } else {
+    res = await login(email, pass);
+  }
+
+  btn.disabled = false;
+  btn.textContent = mode === 'reg' ? 'Crear cuenta' : 'Entrar';
+
+  if (res.error) { showMsg(res.error.message, true); return; }
+
+  if (mode === 'reg' && !res.data.session) {
+    showMsg('✅ Cuenta creada. Revisa tu correo para confirmar, luego inicia sesión.', false);
+    return;
+  }
+
+  showMsg('✅ ¡Listo! Redirigiendo...', false);
+  setTimeout(function(){ window.location.href = nextUrl; }, 800);
+}
+</script>
+</body>
+</html>

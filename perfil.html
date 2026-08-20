@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="es-MX">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Perfil — Manita</title>
+<link rel="stylesheet" href="css/styles.css">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+.profile-layout { display: grid; grid-template-columns: 1fr 360px; gap: 32px; padding: 32px 0; }
+.profile-header { background: #fff; border: 1px solid var(--border); border-radius: var(--radius); padding: 28px; box-shadow: var(--shadow); margin-bottom: 24px; }
+.profile-top { display: flex; gap: 20px; align-items: center; }
+.profile-avatar { font-size: 64px; background: var(--bg-alt); border-radius: 50%; width: 96px; height: 96px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.profile-name { font-size: 26px; font-weight: 800; display: flex; align-items: center; gap: 8px; }
+.profile-service { color: var(--gray); font-size: 16px; margin-bottom: 6px; }
+.profile-meta { display: flex; gap: 16px; flex-wrap: wrap; font-size: 14px; }
+.profile-meta span { color: var(--gray); }
+.rating-big { color: var(--warning); font-weight: 700; }
+.section-block { background: #fff; border: 1px solid var(--border); border-radius: var(--radius); padding: 24px; box-shadow: var(--shadow); margin-bottom: 24px; }
+.section-block h2 { font-size: 18px; margin-bottom: 14px; }
+.review { padding: 14px 0; border-bottom: 1px solid var(--border); }
+.review:last-child { border-bottom: none; }
+.review-head { display: flex; justify-content: space-between; margin-bottom: 6px; }
+.review-author { font-weight: 600; font-size: 14px; }
+.review-stars { color: var(--warning); font-size: 13px; }
+.review-text { color: var(--gray); font-size: 14px; }
+.booking-card { background: #fff; border: 1px solid var(--border); border-radius: var(--radius); padding: 24px; box-shadow: var(--shadow-lg); position: sticky; top: 90px; }
+.booking-price { font-size: 28px; font-weight: 800; color: var(--primary); margin-bottom: 4px; }
+.booking-price small { font-size: 14px; color: var(--gray); font-weight: 400; }
+.booking-field { margin-bottom: 14px; }
+.booking-field label { display: block; font-size: 13px; font-weight: 600; margin-bottom: 6px; }
+.booking-field input, .booking-field select { width: 100%; padding: 10px 12px; border: 1px solid var(--border); border-radius: 10px; font-family: inherit; font-size: 14px; }
+.booking-total { display: flex; justify-content: space-between; padding: 14px 0; border-top: 1px solid var(--border); margin-top: 8px; font-weight: 700; }
+.guarantee { background: rgba(0,184,148,0.08); border-radius: 10px; padding: 12px; font-size: 12px; color: var(--success); margin-top: 14px; display: flex; gap: 8px; }
+.breadcrumb { padding: 16px 0; font-size: 14px; color: var(--gray); }
+.breadcrumb a { color: var(--primary); }
+@media (max-width: 900px) { .profile-layout { grid-template-columns: 1fr; } .booking-card { position: static; } }
+</style>
+</head>
+<body>
+
+<header class="header">
+  <div class="container header-inner">
+    <a href="index.html" class="logo"><span class="logo-icon">🤝</span><span class="logo-text">Manita</span></a>
+    <nav class="nav">
+      <a href="categorias.html">Categorías</a>
+      <a href="como-funciona.html">Cómo funciona</a>
+      <a href="ser-profesional.html">Ofrecer servicios</a>
+    </nav>
+    <div class="header-actions">
+      <a href="#" class="btn btn-ghost">Entrar</a>
+      <a href="categorias.html" class="btn btn-primary">Buscar servicio</a>
+    </div>
+  </div>
+</header>
+
+<div class="container">
+  <div class="breadcrumb" id="breadcrumb"></div>
+  <div class="profile-layout" id="profileLayout"></div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="js/supabase-client.js"></script>
+<script src="js/data.js"></script>
+<script src="js/perfil.js"></script>
+</body>
+</html>
