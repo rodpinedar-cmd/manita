@@ -16,9 +16,31 @@
   --success: #16A97F;
   --warning: #F2A93B;
   --danger: #E5484D;
+  /* Sombras en capas (elevación tipo Material) */
+  --shadow-xs: 0 1px 2px rgba(31,37,68,0.06);
   --shadow: 0 4px 20px rgba(31,37,68,0.06);
+  --shadow-md: 0 6px 24px rgba(31,37,68,0.09);
   --shadow-lg: 0 12px 40px rgba(31,37,68,0.12);
+  --shadow-primary: 0 8px 24px rgba(255,107,74,0.35); /* sombra coral para CTAs */
+
+  /* Radios */
+  --radius-sm: 10px;
   --radius: 16px;
+  --radius-lg: 22px;
+  --radius-pill: 999px;
+
+  /* Escala de espaciado (base 4px) */
+  --sp-1: 4px;  --sp-2: 8px;  --sp-3: 12px; --sp-4: 16px;
+  --sp-5: 20px; --sp-6: 24px; --sp-8: 32px; --sp-10: 40px; --sp-12: 48px;
+
+  /* Escala tipográfica */
+  --fs-xs: 12px; --fs-sm: 13px; --fs-base: 15px; --fs-md: 17px;
+  --fs-lg: 20px; --fs-xl: 24px; --fs-2xl: 30px; --fs-3xl: 36px;
+
+  /* Curvas de animación */
+  --ease: cubic-bezier(0.4, 0, 0.2, 1);
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --dur: 0.2s;
 }
 
 * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -409,59 +431,74 @@ body.app-mode .cat-bar { position: static; }
   .bottom-nav { max-width: 480px; margin: 0 auto; border-radius: 20px 20px 0 0; }
 }
 
-/* ===== HOME TIPO APP (estilo app de servicios, identidad Manita) ===== */
-.app-home { padding: 0; }
+/* ===== HOME TIPO APP — rediseño profesional ===== */
+/* Principios: jerarquía clara, buscador prominente, grid ordenado (no absolute frágil),
+   espaciado consistente (escala 4/8), microinteracciones sutiles, contraste AA. */
+.app-home { padding: 0; max-width: 480px; margin: 0 auto; }
+
+/* Hero compacto con degradado y curva inferior */
 .ah-hero {
-  position: relative; background: linear-gradient(160deg, #FF6B4A 0%, #E8563A 100%);
-  padding: 14px 18px 30px; min-height: 62vh; overflow: hidden;
+  position: relative; background: linear-gradient(160deg, #FF7A5C 0%, #E8563A 100%);
+  padding: calc(env(safe-area-inset-top, 0) + var(--sp-4)) var(--sp-5) var(--sp-8);
+  border-radius: 0 0 28px 28px; overflow: hidden;
 }
-.ah-hero-top { display: flex; align-items: center; justify-content: space-between; }
-.ah-brand { color: #fff; font-weight: 800; font-size: 22px; display: flex; align-items: center; gap: 6px; }
+.ah-hero-top { display: flex; align-items: center; justify-content: space-between; position: relative; z-index: 2; }
+.ah-brand { color: #fff; font-weight: 800; font-size: var(--fs-xl); display: flex; align-items: center; gap: var(--sp-2); letter-spacing: -0.5px; }
 .ah-gift {
-  width: 40px; height: 40px; border-radius: 50%; border: none; background: #fff;
-  font-size: 18px; cursor: pointer; box-shadow: var(--shadow);
+  width: 42px; height: 42px; border-radius: 50%; border: none; background: rgba(255,255,255,0.2);
+  color: #fff; font-size: 18px; cursor: pointer; backdrop-filter: blur(4px); transition: transform var(--dur) var(--ease);
 }
+.ah-gift:active { transform: scale(0.9); }
 .ah-loc {
-  margin-top: 8px; background: transparent; border: none; color: #fff; font-weight: 600;
-  font-size: 14px; cursor: pointer; padding: 0;
+  margin-top: var(--sp-2); background: transparent; border: none; color: rgba(255,255,255,0.95);
+  font-weight: 600; font-size: var(--fs-sm); cursor: pointer; padding: 0; position: relative; z-index: 2;
 }
-.ah-loc span { opacity: 0.8; }
-/* Letra M gigante translúcida de fondo (identidad Manita, análogo a la W de la referencia) */
+.ah-loc span { opacity: 0.75; }
+/* M de marca translúcida, decorativa */
 .ah-letter {
-  position: absolute; top: 46%; left: 50%; transform: translate(-50%, -50%);
-  font-size: 260px; font-weight: 900; color: rgba(255,255,255,0.14); line-height: 1;
-  pointer-events: none; user-select: none;
+  position: absolute; top: 50%; right: -20px; transform: translateY(-40%);
+  font-size: 220px; font-weight: 900; color: rgba(255,255,255,0.10); line-height: 1;
+  pointer-events: none; user-select: none; z-index: 1;
 }
-/* Círculos de categorías flotantes */
-.ah-circles { position: relative; margin-top: 24px; min-height: 380px; }
-.ah-circle {
-  position: absolute; display: flex; flex-direction: column; align-items: center; justify-content: center;
-  width: 92px; height: 92px; background: #fff; border-radius: 50%; box-shadow: var(--shadow-lg);
-  text-decoration: none; color: var(--navy); transition: transform 0.15s;
+/* Buscador prominente (CTA principal de descubrimiento) */
+.ah-searchbar {
+  position: relative; z-index: 2; margin-top: var(--sp-5);
+  display: flex; align-items: center; gap: var(--sp-3);
+  background: #fff; border-radius: var(--radius); padding: var(--sp-4) var(--sp-4);
+  box-shadow: var(--shadow-lg); text-decoration: none;
 }
-.ah-circle:active { transform: scale(0.94); }
-.ah-circle-ic { font-size: 34px; line-height: 1; }
-.ah-circle-lb { font-size: 11px; font-weight: 700; margin-top: 3px; }
-/* Posiciones tipo constelación (7 categorías) */
-.ah-c0 { top: 0;    left: 6%; }
-.ah-c1 { top: 8%;   left: 50%; transform: translateX(-50%); }
-.ah-c2 { top: 0;    right: 6%; }
-.ah-c3 { top: 40%;  left: 2%; }
-.ah-c4 { top: 40%;  right: 2%; }
-.ah-c5 { top: 74%;  left: 22%; }
-.ah-c6 { top: 74%;  right: 22%; }
-.ah-c0:active,.ah-c2:active,.ah-c3:active,.ah-c4:active,.ah-c5:active,.ah-c6:active { transform: scale(0.94); }
-.ah-c1:active { transform: translateX(-50%) scale(0.94); }
-/* Tarjeta repetir servicio (sobre el borde inferior del hero) */
-.ah-repeat { padding: 0 16px; margin-top: -18px; position: relative; z-index: 2; }
+.ah-searchbar .ic { font-size: 20px; }
+.ah-searchbar .tx { color: var(--gray); font-size: var(--fs-base); font-weight: 500; }
+
+/* Título de sección */
+.ah-h { font-size: var(--fs-md); font-weight: 800; color: var(--navy); margin: var(--sp-6) var(--sp-5) var(--sp-4); letter-spacing: -0.3px; }
+
+/* Grid ordenado de categorías (3 columnas, tarjetas — robusto, no absolute) */
+.ah-cats { display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--sp-3); padding: 0 var(--sp-5); }
+.ah-cat {
+  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: var(--sp-2);
+  background: #fff; border: 1px solid var(--border); border-radius: var(--radius); padding: var(--sp-4) var(--sp-2);
+  text-decoration: none; color: var(--navy); box-shadow: var(--shadow-xs);
+  transition: transform var(--dur) var(--ease), box-shadow var(--dur) var(--ease); min-height: 88px;
+}
+.ah-cat:active { transform: scale(0.95); box-shadow: var(--shadow-md); }
+.ah-cat-ic {
+  width: 48px; height: 48px; display: flex; align-items: center; justify-content: center;
+  font-size: 26px; background: var(--mint); border-radius: 14px;
+}
+.ah-cat-lb { font-size: var(--fs-xs); font-weight: 700; text-align: center; line-height: 1.2; }
+
+/* Tarjeta repetir servicio */
+.ah-repeat { padding: 0 var(--sp-5); margin-top: var(--sp-6); }
 .ah-repeat-card {
-  display: flex; align-items: center; justify-content: space-between; gap: 12px;
-  background: #fff; border-radius: 16px; padding: 14px 16px; box-shadow: var(--shadow-lg);
-  text-decoration: none; color: var(--navy);
+  display: flex; align-items: center; justify-content: space-between; gap: var(--sp-3);
+  background: #fff; border: 1px solid var(--border); border-radius: var(--radius); padding: var(--sp-4);
+  box-shadow: var(--shadow); text-decoration: none; color: var(--navy);
+  transition: transform var(--dur) var(--ease);
 }
-.ah-repeat-info { display: flex; flex-direction: column; }
-.ah-repeat-info small { color: var(--gray); font-size: 11px; }
-.ah-repeat-info strong { font-size: 15px; }
-.ah-repeat-info span { color: var(--gray); font-size: 12px; }
-.ah-repeat-btn { background: var(--navy); color: #fff; padding: 9px 18px; border-radius: 10px; font-weight: 700; font-size: 14px; }
-@media (min-width: 640px) { .ah-hero { max-width: 480px; margin: 0 auto; border-radius: 0 0 24px 24px; } .ah-repeat { max-width: 480px; margin: -18px auto 0; } }
+.ah-repeat-card:active { transform: scale(0.98); }
+.ah-repeat-info { display: flex; flex-direction: column; gap: 2px; }
+.ah-repeat-info small { color: var(--primary); font-size: var(--fs-xs); font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; }
+.ah-repeat-info strong { font-size: var(--fs-base); }
+.ah-repeat-info span { color: var(--gray); font-size: var(--fs-xs); }
+.ah-repeat-btn { background: var(--primary); color: #fff; padding: var(--sp-3) var(--sp-5); border-radius: var(--radius-sm); font-weight: 700; font-size: var(--fs-sm); box-shadow: var(--shadow-primary); }

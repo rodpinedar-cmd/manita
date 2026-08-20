@@ -70,9 +70,10 @@ for (const page of PAGES) {
   // Home tipo app: appHome visible, hero de landing oculto, círculos de categorías presentes
   const appHomeVisible = await pg.evaluate(() => { const h = document.getElementById('appHome'); return h && h.style.display !== 'none'; });
   const heroHidden = await pg.evaluate(() => { const h = document.querySelector('section.hero'); return h && h.style.display === 'none'; });
-  const circles = await pg.$$eval('.ah-circle', els => els.length);
+  const cards = await pg.$$eval('.ah-cat', els => els.length);
   const brand = await pg.$$eval('.ah-brand', els => els.length);
-  rec('Modo app: home estilo Webel (círculos categorías + marca) reemplaza landing', appHomeVisible && heroHidden && circles >= 7 && brand === 1, `home=${appHomeVisible} heroHidden=${heroHidden} circles=${circles}`);
+  const searchbar = await pg.$$eval('.ah-searchbar', els => els.length);
+  rec('Modo app: home rediseñado (buscador + grid categorías + marca) reemplaza landing', appHomeVisible && heroHidden && cards >= 7 && brand === 1 && searchbar === 1, `home=${appHomeVisible} heroHidden=${heroHidden} cards=${cards} search=${searchbar}`);
   await ctx.close();
 }
 

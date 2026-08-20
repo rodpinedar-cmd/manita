@@ -206,25 +206,27 @@ function alertToast(msg) {
       '<span>' + p.name + '</span></a>';
   }).join('');
 
-  // Círculos de categorías dispuestos en forma de "M" (identidad Manita, no la "W" de Webel)
+  // Grid de categorías (tarjetas ordenadas, robusto en cualquier pantalla)
   var cats = (typeof CATEGORIES !== 'undefined' ? CATEGORIES : []);
-  var circles = cats.map(function (c, i) {
-    return '<a class="ah-circle ah-c' + i + '" href="servicios.html?cat=' + c.id + '">' +
-      '<span class="ah-circle-ic">' + c.icon + '</span>' +
-      '<span class="ah-circle-lb">' + c.name + '</span></a>';
+  var catCards = cats.map(function (c) {
+    return '<a class="ah-cat" href="servicios.html?cat=' + c.id + '" aria-label="' + c.name + '">' +
+      '<span class="ah-cat-ic" aria-hidden="true">' + c.icon + '</span>' +
+      '<span class="ah-cat-lb">' + c.name + '</span></a>';
   }).join('');
 
   home.style.display = 'block';
   home.innerHTML =
     '<div class="ah-hero">' +
+      '<div class="ah-letter" aria-hidden="true">M</div>' +
       '<div class="ah-hero-top">' +
-        '<div class="ah-brand"><span>🤝</span> Manita</div>' +
+        '<div class="ah-brand"><span aria-hidden="true">🤝</span> Manita</div>' +
         '<button class="ah-gift" type="button" aria-label="Invita y gana" onclick="location.href=\'cuenta.html\'">🎁</button>' +
       '</div>' +
-      '<button class="ah-loc" type="button" id="ahLoc">📍 Ciudad de México <span>▾</span></button>' +
-      '<div class="ah-letter">M</div>' +
-      '<div class="ah-circles">' + circles + '</div>' +
+      '<button class="ah-loc" type="button" id="ahLoc" aria-label="Cambiar ubicación">📍 Ciudad de México <span aria-hidden="true">▾</span></button>' +
+      '<a class="ah-searchbar" href="categorias.html"><span class="ic" aria-hidden="true">🔍</span><span class="tx">¿Qué servicio necesitas?</span></a>' +
     '</div>' +
+    '<h2 class="ah-h">Categorías</h2>' +
+    '<div class="ah-cats">' + catCards + '</div>' +
     '<div class="ah-repeat" id="ahRepeat" style="display:none;"></div>';
 
   // Tarjeta "repetir último servicio" si hay reservas previas
