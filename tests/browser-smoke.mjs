@@ -160,6 +160,36 @@ for (const page of PAGES) {
   await ctx.close();
 }
 
+// ===== Verificación banner iOS "instálame desde Safari" =====
+{
+  const iosUA = 'Mozilla/5.0 (iPhone; CPU iPhone OS 17_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.0 Mobile/15E148 Safari/604.1';
+  const ctx = await browser.newContext({ viewport: { width: 390, height: 800 }, userAgent: iosUA });
+  const pg = await ctx.newPage();
+  await pg.goto(`http://localhost:${PORT}/index.html?ioshint=1`, { waitUntil: 'networkidle', timeout: 15000 });
+  await pg.waitForSelector('#iosHint', { timeout: 5000 }).catch(()=>{});
+  const hintVisible = await pg.isVisible('#iosHint');
+  const hasClose = await pg.$('#iosHintClose') !== null;
+  rec('iOS: banner "instálame desde Safari" aparece en iPhone Safari', hintVisible && hasClose, `visible=${hintVisible} close=${hasClose}`);
+  if (hintVisible) {
+    await pg.click('#iosHintClose');
+    await pg.waitForTimeout(200);
+    const gone = await pg.$('#iosHint') === null;
+    const stored = await pg.evaluate(() => { try { return localStorage.getItem('manita_ios_hint') === '1'; } catch(e){ return false; } });
+    rec('iOS: cerrar el banner lo oculta y lo recuerda', gone && stored, `gone=${gone} stored=${stored}`);
+  }
+  await ctx.close();
+}
+// El banner NO debe aparecer en Android/desktop (sin UA de iPhone)
+{
+  const ctx = await browser.newContext({ viewport: { width: 390, height: 800 } });
+  const pg = await ctx.newPage();
+  await pg.goto(`http://localhost:${PORT}/index.html?ioshint=1`, { waitUntil: 'networkidle', timeout: 15000 });
+  await pg.waitForTimeout(400);
+  const hint = await pg.$('#iosHint');
+  rec('iOS: banner NO aparece fuera de iPhone', hint === null);
+  await ctx.close();
+}
+
 await browser.close();
 server.close();
 

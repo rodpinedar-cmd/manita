@@ -18,6 +18,8 @@ async function registrar(email, password, fullName) {
 
 async function login(email, password) {
   const { data, error } = await supa.auth.signInWithPassword({ email, password });
+  // Red de seguridad: asegura que exista el perfil (por si el trigger no lo creó).
+  if (!error) { try { await supa.rpc('ensure_profile'); } catch (e) {} }
   return { data, error };
 }
 

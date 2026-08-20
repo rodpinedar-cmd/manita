@@ -405,6 +405,30 @@ CREATE POLICY "Editar mi direccion" ON client_addresses FOR UPDATE USING (auth.u
 DROP POLICY IF EXISTS "Borrar mi direccion" ON client_addresses;
 CREATE POLICY "Borrar mi direccion" ON client_addresses FOR DELETE USING (auth.uid() = user_id);
 
+-- ========== 0011: FIX SIGNUP — trigger a prueba de fallos ==========
+-- Evita "Database error saving user": si crear el perfil falla, NO se aborta el registro.
+CREATE OR REPLACE FUNCTION handle_new_user()
+RETURNS TRIGGER LANGUAGE plpgsql SECURITY DEFINER SET search_path = public AS $$
+BEGIN
+  BEGIN
+    INSERT INTO public.profiles (id, full_name)
+    VALUES (NEW.id, NULLIF(NEW.raw_user_meta_data->>'full_name', ''))
+    ON CONFLICT (id) DO NOTHING;
+  EXCEPTION WHEN OTHERS THEN
+    RAISE WARNING 'handle_new_user: perfil no creado para %: %', NEW.id, SQLERRM;
+  END;
+  RETURN NEW;
+END; $$;
+DROP TRIGGER IF EXISTS on_auth_user_created ON auth.users;
+CREATE TRIGGER on_auth_user_created AFTER INSERT ON auth.users FOR EACH ROW EXECUTE FUNCTION handle_new_user();
+CREATE OR REPLACE FUNCTION ensure_profile()
+RETURNS void LANGUAGE plpgsql SECURITY DEFINER SET search_path = public AS $$
+BEGIN
+  IF auth.uid() IS NULL THEN RETURN; END IF;
+  INSERT INTO public.profiles (id) VALUES (auth.uid()) ON CONFLICT (id) DO NOTHING;
+END; $$;
+GRANT EXECUTE ON FUNCTION ensure_profile() TO authenticated;
+
 -- ============================================================
 -- FIN DEL SETUP. Deberías ver "Success. No rows returned".
 --

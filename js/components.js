@@ -243,6 +243,43 @@ async function mountBottomNav(active) {
   document.body.appendChild(nav);
 }
 
+// ===== BANNER iOS: "instálame desde Safari" =====
+// iOS no dispara beforeinstallprompt: hay que guiar manualmente (Compartir → Agregar a inicio).
+// Se muestra solo en iPhone/iPad con Safari, cuando NO está instalada, una vez (localStorage).
+(function initIosInstallHint() {
+  var ua = navigator.userAgent || '';
+  var isIOS = /iphone|ipad|ipod/i.test(ua) ||
+    (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+  if (!isIOS) return;
+  // Safari real (no Chrome/Firefox/otros webviews de iOS, que no permiten "Agregar a inicio")
+  var isSafari = /^((?!chrome|crios|fxios|edgios|opios).)*safari/i.test(ua);
+  if (!isSafari) return;
+  if (isStandalone()) return; // ya instalada
+  try { if (localStorage.getItem('manita_ios_hint')) return; } catch (e) {}
+
+  var force = new URLSearchParams(location.search).get('ioshint') === '1';
+  // Espera breve para no competir con el splash
+  setTimeout(function () {
+    if (document.getElementById('iosHint')) return;
+    var b = document.createElement('div');
+    b.id = 'iosHint';
+    b.className = 'ios-hint';
+    b.setAttribute('role', 'dialog');
+    b.setAttribute('aria-label', 'Instalar Manita en tu iPhone');
+    b.innerHTML =
+      '<span class="ih-icon" aria-hidden="true">🤝</span>' +
+      '<span class="ih-body"><strong>Instala Manita en tu iPhone</strong>' +
+      'Toca <span aria-hidden="true">⬆️</span> Compartir y luego “Agregar a pantalla de inicio”.</span>' +
+      '<span class="ih-arrow" aria-hidden="true">👇</span>' +
+      '<button type="button" class="ih-close" id="iosHintClose" aria-label="Cerrar">✕</button>';
+    document.body.appendChild(b);
+    document.getElementById('iosHintClose').addEventListener('click', function () {
+      try { localStorage.setItem('manita_ios_hint', '1'); } catch (e) {}
+      b.remove();
+    });
+  }, force ? 0 : 1600);
+})();
+
 // ===== PWA: registro de service worker + botón de instalación (M045) =====
 (function initPWA() {
   // Registrar el service worker (solo en http/https, no en file://)
