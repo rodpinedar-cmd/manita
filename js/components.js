@@ -104,10 +104,11 @@ async function mountBottomNav(active) {
   var cuentaHref = user ? 'cuenta.html' : 'login.html';
 
   var tabs = [
-    { id: 'inicio',   label: 'Inicio',   icon: '🏠', href: 'index.html' },
-    { id: 'buscar',   label: 'Buscar',   icon: '🔍', href: 'categorias.html' },
-    { id: 'reservas', label: 'Reservas', icon: '📅', href: 'mis-reservas.html' },
-    { id: 'cuenta',   label: 'Cuenta',   icon: '👤', href: cuentaHref }
+    { id: 'buscar',    label: 'Buscar',    icon: '🔍', href: 'index.html' },
+    { id: 'favoritos', label: 'Favoritos', icon: '🤍', href: 'favoritos.html' },
+    { id: 'servicios', label: 'Servicios', icon: '📅', href: 'mis-reservas.html' },
+    { id: 'mensajes',  label: 'Mensajes',  icon: '💬', href: 'mensajes.html' },
+    { id: 'perfil',    label: 'Perfil',    icon: '👤', href: cuentaHref }
   ];
 
   var nav = document.createElement('nav');

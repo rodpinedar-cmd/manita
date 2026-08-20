@@ -206,24 +206,40 @@ function alertToast(msg) {
       '<span>' + p.name + '</span></a>';
   }).join('');
 
+  // Círculos de categorías dispuestos en forma de "M" (identidad Manita, no la "W" de Webel)
+  var cats = (typeof CATEGORIES !== 'undefined' ? CATEGORIES : []);
+  var circles = cats.map(function (c, i) {
+    return '<a class="ah-circle ah-c' + i + '" href="servicios.html?cat=' + c.id + '">' +
+      '<span class="ah-circle-ic">' + c.icon + '</span>' +
+      '<span class="ah-circle-lb">' + c.name + '</span></a>';
+  }).join('');
+
   home.style.display = 'block';
   home.innerHTML =
-    '<div class="ah-top">' +
-      '<div class="ah-hi" id="ahHi">¿Qué necesitas hoy?</div>' +
-      '<a class="ah-search" href="categorias.html"><span>🔍</span> Buscar un servicio…</a>' +
+    '<div class="ah-hero">' +
+      '<div class="ah-hero-top">' +
+        '<div class="ah-brand"><span>🤝</span> Manita</div>' +
+        '<button class="ah-gift" type="button" aria-label="Invita y gana" onclick="location.href=\'cuenta.html\'">🎁</button>' +
+      '</div>' +
+      '<button class="ah-loc" type="button" id="ahLoc">📍 Ciudad de México <span>▾</span></button>' +
+      '<div class="ah-letter">M</div>' +
+      '<div class="ah-circles">' + circles + '</div>' +
     '</div>' +
-    '<div class="ah-section"><h2>Categorías</h2><div class="ah-chips">' + chips + '</div></div>' +
-    '<div class="ah-section"><h2>Populares en tu zona</h2><div class="ah-pops">' + pops + '</div></div>' +
-    '<div class="ah-section"><a class="btn btn-primary btn-lg" style="width:100%;" href="categorias.html">Explorar todos los servicios</a></div>';
+    '<div class="ah-repeat" id="ahRepeat" style="display:none;"></div>';
 
-  // Saludo personalizado si hay sesión
-  if (typeof usuarioActual === 'function') {
-    usuarioActual().then(function (u) {
-      if (u) {
-        var nombre = (u.user_metadata && u.user_metadata.full_name) ? u.user_metadata.full_name.split(' ')[0] : '';
-        var hi = document.getElementById('ahHi');
-        if (hi && nombre) hi.textContent = 'Hola, ' + nombre + ' 👋';
-      }
+  // Tarjeta "repetir último servicio" si hay reservas previas
+  if (typeof misReservas === 'function') {
+    misReservas().then(function (res) {
+      var b = (res.data || []).find(function (x) { return ['completed','reviewed'].includes(x.status); });
+      if (!b) return;
+      var el = document.getElementById('ahRepeat');
+      var svc = b.professionals ? b.professionals.service_name : 'Servicio';
+      el.innerHTML =
+        '<a class="ah-repeat-card" href="perfil.html?id=' + (b.professional_id || '') + '">' +
+          '<div class="ah-repeat-info"><small>Repetir servicio</small><strong>' + svc + '</strong>' +
+          '<span>Último: ' + b.service_date + '</span></div>' +
+          '<span class="ah-repeat-btn">Repetir</span></a>';
+      el.style.display = 'block';
     }).catch(function () {});
   }
 })();

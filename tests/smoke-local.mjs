@@ -12,7 +12,7 @@ const results = [];
 function rec(name, ok, detail){ results.push({name,ok}); console.log(`[${ok?'PASS':'FAIL'}] ${name}${detail?' — '+detail:''}`); }
 
 const PAGES = ['index.html','servicios.html','perfil.html','categorias.html','como-funciona.html',
-  'ser-profesional.html','mis-reservas.html','pro-panel.html','reserva-confirmada.html','login.html','cuenta.html','legal.html'];
+  'ser-profesional.html','mis-reservas.html','pro-panel.html','reserva-confirmada.html','login.html','cuenta.html','legal.html','favoritos.html','mensajes.html'];
 const JS = ['supabase-client.js','components.js','data.js','app.js','servicios.js','perfil.js'];
 
 // 1. Páginas existen y tienen estructura mínima

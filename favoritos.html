@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="es-MX">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Favoritos — Manita</title>
+<meta name="description" content="Tus profesionales favoritos en Manita.">
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#FF6B4A">
+<link rel="stylesheet" href="css/styles.css">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+</head>
+<body>
+<header class="header" id="appHeader"></header>
+<div style="max-width:720px;margin:24px auto;padding:0 20px;">
+  <h1 style="font-size:24px;margin-bottom:16px;">Favoritos</h1>
+  <div id="favList"><div class="skeleton skeleton-card"></div></div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="js/supabase-client.js"></script>
+<script src="js/components.js"></script>
+<script>
+mountHeader({ search: false }); mountBottomNav('favoritos');
+(async function(){
+  var list = document.getElementById('favList');
+  var user = await usuarioActual();
+  if (!user) { list.innerHTML = '<div class="state-empty">Inicia sesión para guardar favoritos. <a href="login.html?next=favoritos.html">Entrar</a></div>'; return; }
+  // Favoritos aún no implementados como tabla: estado vacío honesto
+  list.innerHTML = '<div class="state-empty">Aún no tienes favoritos.<br>Guarda profesionales que te gusten con el corazón 🤍 desde su perfil.<br><br><a class="btn btn-primary" href="categorias.html">Explorar servicios</a></div>';
+})();
+</script>
+</body>
+</html>
