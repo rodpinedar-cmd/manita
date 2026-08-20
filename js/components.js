@@ -122,6 +122,8 @@ async function mountBottomNav(active) {
   if (!isStandalone() && !force) return;
 
   document.body.classList.add('app-mode');
+  // Transición de entrada suave (fade-in) — sensación app. Respeta reduce-motion vía CSS.
+  document.body.classList.add('page-enter');
 
   var user = null;
   try { user = await usuarioActual(); } catch (e) {}

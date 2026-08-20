@@ -31,7 +31,17 @@
 <header class="header" id="appHeader"></header>
 
 <div class="acc-wrap">
-  <h1 style="font-size:26px;margin-bottom:20px;">Mi cuenta</h1>
+  <!-- Cabecera de usuario -->
+  <div class="acc-user" id="accUser">
+    <div class="acc-avatar" id="accAvatar">👤</div>
+    <div><div class="acc-uname" id="accName">Mi cuenta</div><div class="acc-usub" id="accSub">Gestiona tu perfil</div></div>
+  </div>
+
+  <!-- Banner de referidos -->
+  <div class="acc-referral">
+    <div><strong>🎁 Invita y gana</strong><p>Comparte Manita con tus amigos.</p></div>
+    <button type="button" class="btn" id="shareBtn">Invitar</button>
+  </div>
 
   <div class="acc-card">
     <h2>Datos personales</h2>
@@ -69,6 +79,11 @@ async function loadProfile() {
   var res = await obtenerMiPerfil();
   if (res.error) { box.innerHTML = '<div class="state-error" role="alert">No se pudo cargar tu perfil. <button class="btn btn-ghost" onclick="loadProfile()">Reintentar</button></div>'; return; }
   var p = res.data || {};
+  // Cabecera de usuario con datos reales
+  var nombre = p.full_name || 'Mi cuenta';
+  document.getElementById('accName').textContent = nombre;
+  document.getElementById('accSub').textContent = p.city || 'Ciudad de México';
+  document.getElementById('accAvatar').textContent = (nombre.trim().charAt(0) || '👤').toUpperCase();
   box.innerHTML =
     '<div class="acc-field"><label for="pfName">Nombre</label><input id="pfName" value="' + esc(p.full_name||'') + '"></div>' +
     '<div class="acc-field"><label for="pfPhone">Teléfono</label><input id="pfPhone" value="' + esc(p.phone||'') + '"></div>' +
@@ -76,6 +91,17 @@ async function loadProfile() {
     '<button class="btn btn-primary" id="saveProfileBtn">Guardar cambios</button>';
   document.getElementById('saveProfileBtn').onclick = saveProfile;
 }
+
+// Compartir Manita (Web Share nativo, con fallback a copiar enlace)
+document.getElementById('shareBtn').onclick = async function() {
+  var url = 'https://manita-cdmx.netlify.app';
+  var texto = 'Encuentra profesionales de confianza para tu hogar en Manita 🤝';
+  try {
+    if (navigator.share) { await navigator.share({ title: 'Manita', text: texto, url: url }); return; }
+    await navigator.clipboard.writeText(url);
+    toast('Enlace copiado. ¡Compártelo!', 'success');
+  } catch (e) { /* usuario canceló */ }
+};
 
 async function saveProfile() {
   var btn = document.getElementById('saveProfileBtn');
