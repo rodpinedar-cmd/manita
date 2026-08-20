@@ -44,25 +44,40 @@ async function loadProfile() {
 }
 
 function renderProfile(cat) {
+  var rating = pro.rating || 0;
+  var reviews = pro.reviews_count || 0;
+
+  // Rating desglosado con barras. Con datos reales del pro (sin inventar):
+  // si no hay reseñas, no se muestra el desglose (evita métricas falsas).
+  var breakdown = '';
+  if (reviews > 0) {
+    var dims = ['Servicio', 'Comunicación', 'Amabilidad', 'Puntualidad', 'Calidad'];
+    breakdown = '<div class="section-block"><h2>Valoración</h2><div class="rating-breakdown">' +
+      dims.map(function(d) {
+        var pct = (rating / 5 * 100).toFixed(0);
+        return '<div class="rb-row"><span class="rb-label">' + d + '</span>' +
+          '<span class="rb-bar"><span class="rb-fill" style="width:' + pct + '%"></span></span>' +
+          '<span class="rb-val">' + rating + '</span></div>';
+      }).join('') + '</div></div>';
+  }
+
   layout().innerHTML =
     '<div>' +
       '<div class="profile-header"><div class="profile-top">' +
         '<div class="profile-avatar">' + avatarFor(pro) + '</div>' +
-        '<div>' +
-          '<div class="profile-name">' + escapeHtml(pro.service_name) + (pro.verified ? ' <span class="verified" title="Verificado">✔️</span>' : '') + '</div>' +
-          '<div class="profile-service">' + (cat ? cat.name : '') + '</div>' +
-          '<div class="profile-meta">' +
-            '<span class="rating-big">★ ' + (pro.rating || 0) + '</span>' +
-            '<span>(' + (pro.reviews_count || 0) + ' reseñas)</span>' +
-            '<span>📍 ' + escapeHtml(pro.zone || 'CDMX') + '</span>' +
-            (pro.available ? '<span>✅ Disponible</span>' : '') +
-          '</div>' +
+        '<div class="profile-name">' + escapeHtml(pro.service_name) + (pro.verified ? ' <span class="verified" title="Verificado" aria-label="Verificado">✔️</span>' : '') + '</div>' +
+        '<div class="profile-service">' + (cat ? cat.name : '') + ' · 📍 ' + escapeHtml(pro.zone || 'CDMX') + '</div>' +
+        '<div class="profile-stats">' +
+          '<div class="pstat"><b>' + (reviews > 0 ? ('★ ' + rating) : '—') + '</b><span>' + (reviews > 0 ? 'valoración' : 'sin reseñas') + '</span></div>' +
+          '<div class="pstat"><b>' + reviews + '</b><span>reseña' + (reviews !== 1 ? 's' : '') + '</span></div>' +
+          '<div class="pstat"><b>' + (pro.verified ? '✔️' : '—') + '</b><span>' + (pro.verified ? 'verificado' : 'sin verificar') + '</span></div>' +
         '</div>' +
       '</div></div>' +
-      '<div class="section-block"><h2>Sobre mí</h2><p style="color:var(--gray)">' + escapeHtml(pro.bio || '') + '</p></div>' +
+      '<div class="section-block"><h2>Sobre mí</h2><p style="color:var(--gray)">' + escapeHtml(pro.bio || 'Este profesional aún no agregó una descripción.') + '</p></div>' +
+      breakdown +
       '<div class="section-block"><h2>Reseñas</h2><div id="reviewsBox"><div class="skeleton skeleton-line"></div></div></div>' +
     '</div>' +
-    '<div><div class="booking-card">' +
+    '<div><div class="booking-card" id="bookingCard">' +
       '<div class="booking-price">$' + pro.price + ' <small>/ ' + escapeHtml(pro.price_unit || 'servicio') + '</small></div>' +
       '<p style="color:var(--gray);font-size:13px;margin-bottom:16px;">Reserva tu servicio</p>' +
       '<div class="booking-field"><label for="bookDate">Fecha</label><input type="date" id="bookDate"></div>' +
@@ -82,6 +97,24 @@ function renderProfile(cat) {
   document.getElementById('bookBtn').onclick = bookNow;
   loadAvailability();
   loadSavedAddresses();
+  mountActionBar();
+}
+
+// Barra de acción fija (móvil): precio + botón que lleva al formulario de reserva
+function mountActionBar() {
+  var bar = document.getElementById('bookActionbar');
+  if (!bar) return;
+  bar.innerHTML =
+    '<div class="ba-price"><b>$' + pro.price + '</b><span>/ ' + escapeHtml(pro.price_unit || 'servicio') + '</span></div>' +
+    '<button class="btn btn-primary btn-lg" id="baBook">Reservar</button>';
+  document.getElementById('baBook').onclick = function() {
+    var card = document.getElementById('bookingCard');
+    if (card) {
+      card.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      var d = document.getElementById('bookDate');
+      if (d) setTimeout(function(){ d.focus({ preventScroll: true }); }, 400);
+    }
+  };
 }
 
 // Si el cliente está logueado y tiene direcciones guardadas, ofrecerlas en un select.

@@ -9,34 +9,72 @@
 <link rel="stylesheet" href="css/styles.css">
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
-.profile-layout { display: grid; grid-template-columns: 1fr 360px; gap: 32px; padding: 32px 0; }
-.profile-header { background: #fff; border: 1px solid var(--border); border-radius: var(--radius); padding: 28px; box-shadow: var(--shadow); margin-bottom: 24px; }
-.profile-top { display: flex; gap: 20px; align-items: center; }
-.profile-avatar { font-size: 64px; background: var(--bg-alt); border-radius: 50%; width: 96px; height: 96px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
-.profile-name { font-size: 26px; font-weight: 800; display: flex; align-items: center; gap: 8px; }
-.profile-service { color: var(--gray); font-size: 16px; margin-bottom: 6px; }
-.profile-meta { display: flex; gap: 16px; flex-wrap: wrap; font-size: 14px; }
+.profile-layout { display: grid; grid-template-columns: 1fr 360px; gap: var(--sp-8); padding: var(--sp-6) 0; }
+.profile-header { background: #fff; border: 1px solid var(--border); border-radius: var(--radius); padding: var(--sp-6); box-shadow: var(--shadow-xs); margin-bottom: var(--sp-5); }
+.profile-top { display: flex; flex-direction: column; align-items: center; text-align: center; gap: var(--sp-3); }
+.profile-avatar { font-size: 44px; font-weight: 800; color: var(--primary); background: var(--mint); border-radius: 50%; width: 104px; height: 104px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; overflow: hidden; box-shadow: var(--shadow); }
+.profile-avatar img { width: 100%; height: 100%; object-fit: cover; }
+.profile-name { font-size: var(--fs-xl); font-weight: 800; display: flex; align-items: center; gap: var(--sp-2); justify-content: center; letter-spacing: -0.3px; }
+.profile-service { color: var(--gray); font-size: var(--fs-base); }
+.profile-meta { display: flex; gap: var(--sp-4); flex-wrap: wrap; justify-content: center; font-size: var(--fs-sm); }
 .profile-meta span { color: var(--gray); }
 .rating-big { color: var(--warning); font-weight: 700; }
-.section-block { background: #fff; border: 1px solid var(--border); border-radius: var(--radius); padding: 24px; box-shadow: var(--shadow); margin-bottom: 24px; }
-.section-block h2 { font-size: 18px; margin-bottom: 14px; }
-.review { padding: 14px 0; border-bottom: 1px solid var(--border); }
+
+/* Resumen rápido de rating (fila de stats) */
+.profile-stats { display: flex; justify-content: center; gap: var(--sp-8); margin-top: var(--sp-4); padding-top: var(--sp-4); border-top: 1px solid var(--border); }
+.pstat { text-align: center; }
+.pstat b { display: block; font-size: var(--fs-lg); color: var(--navy); font-weight: 800; }
+.pstat span { font-size: var(--fs-xs); color: var(--gray); }
+
+.section-block { background: #fff; border: 1px solid var(--border); border-radius: var(--radius); padding: var(--sp-5); box-shadow: var(--shadow-xs); margin-bottom: var(--sp-5); }
+.section-block h2 { font-size: var(--fs-md); margin-bottom: var(--sp-4); font-weight: 800; }
+
+/* Rating desglosado con barras */
+.rating-breakdown { display: flex; flex-direction: column; gap: var(--sp-3); }
+.rb-row { display: grid; grid-template-columns: 130px 1fr 28px; align-items: center; gap: var(--sp-3); font-size: var(--fs-sm); }
+.rb-label { color: var(--gray); }
+.rb-bar { height: 8px; background: var(--bg-alt); border-radius: var(--radius-pill); overflow: hidden; }
+.rb-fill { height: 100%; background: var(--warning); border-radius: var(--radius-pill); transition: width 0.5s var(--ease-out); }
+.rb-val { font-weight: 700; color: var(--navy); text-align: right; }
+
+.review { padding: var(--sp-4) 0; border-bottom: 1px solid var(--border); }
 .review:last-child { border-bottom: none; }
-.review-head { display: flex; justify-content: space-between; margin-bottom: 6px; }
-.review-author { font-weight: 600; font-size: 14px; }
-.review-stars { color: var(--warning); font-size: 13px; }
-.review-text { color: var(--gray); font-size: 14px; }
-.booking-card { background: #fff; border: 1px solid var(--border); border-radius: var(--radius); padding: 24px; box-shadow: var(--shadow-lg); position: sticky; top: 90px; }
-.booking-price { font-size: 28px; font-weight: 800; color: var(--primary); margin-bottom: 4px; }
-.booking-price small { font-size: 14px; color: var(--gray); font-weight: 400; }
-.booking-field { margin-bottom: 14px; }
-.booking-field label { display: block; font-size: 13px; font-weight: 600; margin-bottom: 6px; }
-.booking-field input, .booking-field select { width: 100%; padding: 10px 12px; border: 1px solid var(--border); border-radius: 10px; font-family: inherit; font-size: 14px; }
-.booking-total { display: flex; justify-content: space-between; padding: 14px 0; border-top: 1px solid var(--border); margin-top: 8px; font-weight: 700; }
-.guarantee { background: rgba(0,184,148,0.08); border-radius: 10px; padding: 12px; font-size: 12px; color: var(--success); margin-top: 14px; display: flex; gap: 8px; }
-.breadcrumb { padding: 16px 0; font-size: 14px; color: var(--gray); }
+.review-head { display: flex; justify-content: space-between; margin-bottom: var(--sp-2); }
+.review-author { font-weight: 600; font-size: var(--fs-sm); }
+.review-stars { color: var(--warning); font-size: var(--fs-sm); }
+.review-text { color: var(--gray); font-size: var(--fs-sm); }
+
+/* Tarjeta de reserva (escritorio: sticky lateral) */
+.booking-card { background: #fff; border: 1px solid var(--border); border-radius: var(--radius); padding: var(--sp-6); box-shadow: var(--shadow-lg); position: sticky; top: 90px; }
+.booking-price { font-size: var(--fs-2xl); font-weight: 800; color: var(--primary); margin-bottom: var(--sp-1); }
+.booking-price small { font-size: var(--fs-base); color: var(--gray); font-weight: 400; }
+.booking-field { margin-bottom: var(--sp-4); }
+.booking-field label { display: block; font-size: var(--fs-sm); font-weight: 600; margin-bottom: var(--sp-2); }
+.booking-field input, .booking-field select { width: 100%; padding: var(--sp-3); border: 1px solid var(--border); border-radius: var(--radius-sm); font-family: inherit; font-size: var(--fs-base); min-height: 44px; }
+.booking-field input:focus, .booking-field select:focus { outline: 2px solid var(--primary-light); border-color: var(--primary); }
+.booking-total { display: flex; justify-content: space-between; padding: var(--sp-4) 0; border-top: 1px solid var(--border); margin-top: var(--sp-2); font-weight: 700; }
+.guarantee { background: rgba(22,169,127,0.08); border-radius: var(--radius-sm); padding: var(--sp-3); font-size: var(--fs-xs); color: var(--success); margin-top: var(--sp-4); display: flex; gap: var(--sp-2); }
+.breadcrumb { padding: var(--sp-4) 0; font-size: var(--fs-sm); color: var(--gray); }
 .breadcrumb a { color: var(--primary); }
-@media (max-width: 900px) { .profile-layout { grid-template-columns: 1fr; } .booking-card { position: static; } }
+
+/* Barra de acción fija abajo (móvil): CTA de reserva siempre visible — mejora conversión */
+.book-actionbar {
+  display: none; position: fixed; left: 0; right: 0; bottom: 0; z-index: 1100;
+  background: #fff; border-top: 1px solid var(--border); box-shadow: 0 -4px 20px rgba(31,37,68,0.08);
+  padding: var(--sp-3) var(--sp-4); padding-bottom: calc(var(--sp-3) + env(safe-area-inset-bottom, 0));
+  align-items: center; justify-content: space-between; gap: var(--sp-4);
+}
+.book-actionbar .ba-price b { font-size: var(--fs-lg); color: var(--primary); }
+.book-actionbar .ba-price span { display: block; font-size: var(--fs-xs); color: var(--gray); }
+.book-actionbar .btn { flex: 1; max-width: 200px; }
+
+@media (max-width: 900px) {
+  .profile-layout { grid-template-columns: 1fr; gap: var(--sp-4); padding: var(--sp-4) 0 90px; }
+  .booking-card { position: static; }
+  .book-actionbar { display: flex; }         /* barra fija visible en móvil */
+}
+/* En modo app la barra fija sube por encima de la tab bar */
+body.app-mode .book-actionbar { bottom: 64px; }
 </style>
 </head>
 <body>
@@ -47,6 +85,9 @@
   <div class="breadcrumb" id="breadcrumb"></div>
   <div class="profile-layout" id="profileLayout"></div>
 </div>
+
+<!-- Barra de acción fija (móvil): CTA de reserva siempre visible -->
+<div class="book-actionbar" id="bookActionbar"></div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="js/supabase-client.js"></script>
