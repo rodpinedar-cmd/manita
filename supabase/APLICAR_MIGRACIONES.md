@@ -13,6 +13,7 @@ Se aplican **manualmente** en el SQL Editor de Supabase, en orden estricto.
 7. `migrations/0007_reviews_rpc.sql` — crear_resena + trigger de rating real
 8. `migrations/0008_rls.sql` — RLS corregido (revoca INSERT/UPDATE directos)
 9. `migrations/0009_storage.sql` — buckets y policies de Storage (**ejecutar en Supabase**; se omite en tests locales porque usa el esquema `storage.*`)
+10. `migrations/0010_client_addresses.sql` — direcciones guardadas del cliente + RLS + trigger single-default
 
 ## Pasos
 1. Supabase → SQL Editor → New query.

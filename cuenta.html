@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="es-MX">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mi cuenta — Manita</title>
+<meta name="description" content="Gestiona tu perfil y direcciones en Manita.">
+<link rel="stylesheet" href="css/styles.css">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+.acc-wrap { max-width: 720px; margin: 32px auto; padding: 0 20px; }
+.acc-card { background:#fff; border:1px solid var(--border); border-radius:var(--radius); padding:24px; box-shadow:var(--shadow); margin-bottom:20px; }
+.acc-card h2 { font-size:18px; margin-bottom:16px; }
+.acc-field { margin-bottom:14px; }
+.acc-field label { display:block; font-size:13px; font-weight:600; margin-bottom:6px; }
+.acc-field input { width:100%; padding:11px 12px; border:1px solid var(--border); border-radius:10px; font-family:inherit; font-size:14px; box-sizing:border-box; }
+.addr-row { display:flex; justify-content:space-between; align-items:center; padding:14px; border:1px solid var(--border); border-radius:12px; margin-bottom:10px; gap:12px; }
+.addr-info strong { font-size:14px; }
+.addr-info p { font-size:13px; color:var(--gray); margin-top:2px; }
+.addr-actions { display:flex; gap:8px; flex-shrink:0; }
+.badge-default { font-size:11px; background:var(--mint); color:var(--primary-dark); padding:3px 8px; border-radius:8px; font-weight:600; }
+.addr-form { display:grid; grid-template-columns:1fr 2fr; gap:10px; margin-top:12px; }
+.addr-form input { padding:10px; border:1px solid var(--border); border-radius:10px; font-family:inherit; font-size:14px; }
+@media(max-width:600px){ .addr-form { grid-template-columns:1fr; } }
+</style>
+</head>
+<body>
+<header class="header" id="appHeader"></header>
+
+<div class="acc-wrap">
+  <h1 style="font-size:26px;margin-bottom:20px;">Mi cuenta</h1>
+
+  <div class="acc-card">
+    <h2>Datos personales</h2>
+    <div id="profileBox"><div class="skeleton skeleton-line"></div></div>
+  </div>
+
+  <div class="acc-card">
+    <h2>Mis direcciones</h2>
+    <div id="addrList"><div class="skeleton skeleton-line"></div></div>
+    <div class="addr-form">
+      <input type="text" id="naLabel" placeholder="Etiqueta (Casa, Oficina...)">
+      <input type="text" id="naAddr" placeholder="Dirección completa en CDMX">
+    </div>
+    <button class="btn btn-primary" style="margin-top:10px;" id="addAddrBtn">Agregar dirección</button>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="js/supabase-client.js"></script>
+<script src="js/components.js"></script>
+<script>
+mountHeader({ search: false });
+function esc(s){return String(s==null?'':s).replace(/[&<>"']/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];});}
+function toast(msg,kind){var t=document.createElement('div');t.className='toast toast-'+(kind||'info');t.setAttribute('role','status');t.textContent=msg;document.body.appendChild(t);requestAnimationFrame(function(){t.classList.add('show');});setTimeout(function(){t.classList.remove('show');setTimeout(function(){t.remove();},300);},3200);}
+
+async function init() {
+  var user = await usuarioActual();
+  if (!user) { window.location.href = 'login.html?next=' + encodeURIComponent('cuenta.html'); return; }
+  loadProfile();
+  loadAddresses();
+}
+
+async function loadProfile() {
+  var box = document.getElementById('profileBox');
+  var res = await obtenerMiPerfil();
+  if (res.error) { box.innerHTML = '<div class="state-error" role="alert">No se pudo cargar tu perfil. <button class="btn btn-ghost" onclick="loadProfile()">Reintentar</button></div>'; return; }
+  var p = res.data || {};
+  box.innerHTML =
+    '<div class="acc-field"><label for="pfName">Nombre</label><input id="pfName" value="' + esc(p.full_name||'') + '"></div>' +
+    '<div class="acc-field"><label for="pfPhone">Teléfono</label><input id="pfPhone" value="' + esc(p.phone||'') + '"></div>' +
+    '<div class="acc-field"><label for="pfCity">Ciudad</label><input id="pfCity" value="' + esc(p.city||'Ciudad de México') + '"></div>' +
+    '<button class="btn btn-primary" id="saveProfileBtn">Guardar cambios</button>';
+  document.getElementById('saveProfileBtn').onclick = saveProfile;
+}
+
+async function saveProfile() {
+  var btn = document.getElementById('saveProfileBtn');
+  btn.disabled = true; btn.textContent = 'Guardando...';
+  var res = await actualizarMiPerfil({
+    full_name: document.getElementById('pfName').value.trim(),
+    phone: document.getElementById('pfPhone').value.trim(),
+    city: document.getElementById('pfCity').value.trim()
+  });
+  btn.disabled = false; btn.textContent = 'Guardar cambios';
+  if (res.error) { toast('No se pudo guardar: ' + res.error.message, 'error'); return; }
+  toast('Perfil actualizado.', 'success');
+}
+
+async function loadAddresses() {
+  var list = document.getElementById('addrList');
+  var res = await misDirecciones();
+  if (res.error) { list.innerHTML = '<div class="state-error">No se pudieron cargar tus direcciones.</div>'; return; }
+  if (!res.data.length) { list.innerHTML = '<div class="state-empty" style="padding:20px;">Aún no tienes direcciones guardadas.</div>'; return; }
+  list.innerHTML = res.data.map(function(a){
+    return '<div class="addr-row"><div class="addr-info">' +
+      '<strong>' + esc(a.label) + '</strong>' + (a.is_default ? ' <span class="badge-default">Predeterminada</span>' : '') +
+      '<p>' + esc(a.address) + '</p></div>' +
+      '<div class="addr-actions">' +
+        (a.is_default ? '' : '<button class="btn btn-ghost" data-def="' + a.id + '">Predeterminar</button>') +
+        '<button class="btn btn-ghost" data-del="' + a.id + '">Eliminar</button>' +
+      '</div></div>';
+  }).join('');
+  list.querySelectorAll('[data-del]').forEach(function(b){ b.onclick = function(){ delAddr(b.getAttribute('data-del')); }; });
+  list.querySelectorAll('[data-def]').forEach(function(b){ b.onclick = function(){ defAddr(b.getAttribute('data-def')); }; });
+}
+
+document.getElementById('addAddrBtn').onclick = async function() {
+  var label = document.getElementById('naLabel').value.trim();
+  var addr = document.getElementById('naAddr').value.trim();
+  if (!label) { toast('Ponle una etiqueta (Casa, Oficina...).', 'error'); return; }
+  if (addr.length < 5) { toast('La dirección debe tener al menos 5 caracteres.', 'error'); return; }
+  var btn = this; btn.disabled = true;
+  var res = await crearDireccion({ label: label, address: addr });
+  btn.disabled = false;
+  if (res.error) { toast('No se pudo guardar: ' + res.error.message, 'error'); return; }
+  document.getElementById('naLabel').value = ''; document.getElementById('naAddr').value = '';
+  toast('Dirección guardada.', 'success');
+  loadAddresses();
+};
+
+async function delAddr(id) {
+  var res = await borrarDireccion(id);
+  if (res.error) { toast('No se pudo eliminar.', 'error'); return; }
+  toast('Dirección eliminada.', 'info'); loadAddresses();
+}
+async function defAddr(id) {
+  var res = await marcarDireccionDefault(id);
+  if (res.error) { toast('No se pudo actualizar.', 'error'); return; }
+  loadAddresses();
+}
+
+init();
+</script>
+</body>
+</html>

@@ -134,6 +134,51 @@ async function misReservas() {
   return { data: data || [], error };
 }
 
+// ===== PERFIL DE CLIENTE =====
+async function obtenerMiPerfil() {
+  const user = await usuarioActual();
+  if (!user) return { data: null, error: null };
+  const { data, error } = await supa.from('profiles').select('*').eq('id', user.id).single();
+  return { data, error };
+}
+
+async function actualizarMiPerfil(campos) {
+  const user = await usuarioActual();
+  if (!user) return { error: { message: 'Debes iniciar sesión' } };
+  // role/suspended están protegidos por trigger server-side; aquí solo enviamos campos editables
+  const permitido = {};
+  ['full_name', 'phone', 'city', 'avatar_url'].forEach(function(k){ if (campos[k] !== undefined) permitido[k] = campos[k]; });
+  const { data, error } = await supa.from('profiles').update(permitido).eq('id', user.id).select();
+  return { data, error };
+}
+
+// ===== DIRECCIONES DEL CLIENTE =====
+async function misDirecciones() {
+  const user = await usuarioActual();
+  if (!user) return { data: [], error: null };
+  const { data, error } = await supa.from('client_addresses')
+    .select('*').eq('user_id', user.id).order('is_default', { ascending: false });
+  return { data: data || [], error };
+}
+
+async function crearDireccion(dir) {
+  const user = await usuarioActual();
+  if (!user) return { error: { message: 'Debes iniciar sesión' } };
+  dir.user_id = user.id;
+  const { data, error } = await supa.from('client_addresses').insert(dir).select();
+  return { data, error };
+}
+
+async function borrarDireccion(id) {
+  const { data, error } = await supa.from('client_addresses').delete().eq('id', id);
+  return { data, error };
+}
+
+async function marcarDireccionDefault(id) {
+  const { data, error } = await supa.from('client_addresses').update({ is_default: true }).eq('id', id).select();
+  return { data, error };
+}
+
 // ===== RESEÑAS =====
 async function obtenerReseñas(professionalId) {
   const { data, error } = await supa.from('reviews')

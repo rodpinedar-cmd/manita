@@ -22,7 +22,7 @@ const server = createServer(async (req, res) => {
 await new Promise(r => server.listen(PORT, r));
 
 const PAGES = ['index.html','servicios.html','categorias.html','como-funciona.html',
-  'ser-profesional.html','login.html','legal.html','perfil.html?id=x','mis-reservas.html','pro-panel.html','reserva-confirmada.html'];
+  'ser-profesional.html','login.html','legal.html','perfil.html?id=x','mis-reservas.html','pro-panel.html','reserva-confirmada.html','cuenta.html'];
 
 const results = [];
 function rec(name, ok, detail){ results.push({name,ok}); console.log(`[${ok?'PASS':'FAIL'}] ${name}${detail?' — '+detail:''}`); }

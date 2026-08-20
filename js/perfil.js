@@ -67,7 +67,8 @@ function renderProfile(cat) {
       '<p style="color:var(--gray);font-size:13px;margin-bottom:16px;">Reserva tu servicio</p>' +
       '<div class="booking-field"><label for="bookDate">Fecha</label><input type="date" id="bookDate"></div>' +
       '<div class="booking-field"><label for="bookTime">Hora</label><select id="bookTime"><option value="">Elige fecha primero</option></select></div>' +
-      '<div class="booking-field"><label for="bookAddr">Dirección</label><input type="text" id="bookAddr" placeholder="Tu dirección en CDMX"></div>' +
+      '<div class="booking-field" id="savedAddrWrap" style="display:none;"><label for="savedAddr">Dirección</label><select id="savedAddr"></select></div>' +
+      '<div class="booking-field"><label for="bookAddr" id="bookAddrLabel">Dirección</label><input type="text" id="bookAddr" placeholder="Tu dirección en CDMX"></div>' +
       '<div class="booking-total"><span>Total</span><span>$' + pro.price + ' MXN</span></div>' +
       '<button class="btn btn-primary btn-lg" style="width:100%;margin-top:8px;" id="bookBtn">Reservar ahora</button>' +
       '<div class="guarantee">🛡️ Garantía Manita: tu dinero queda protegido hasta que confirmes que el servicio salió bien.</div>' +
@@ -80,6 +81,31 @@ function renderProfile(cat) {
   dateInput.onchange = refreshSlots;
   document.getElementById('bookBtn').onclick = bookNow;
   loadAvailability();
+  loadSavedAddresses();
+}
+
+// Si el cliente está logueado y tiene direcciones guardadas, ofrecerlas en un select.
+async function loadSavedAddresses() {
+  var user = await usuarioActual();
+  if (!user) return; // sin sesión: solo input manual
+  var res = await misDirecciones();
+  if (res.error || !res.data.length) return;
+  var wrap = document.getElementById('savedAddrWrap');
+  var sel = document.getElementById('savedAddr');
+  var input = document.getElementById('bookAddr');
+  var label = document.getElementById('bookAddrLabel');
+  sel.innerHTML = res.data.map(function(a){
+    return '<option value="' + escapeHtml(a.address) + '"' + (a.is_default?' selected':'') + '>' + escapeHtml(a.label) + ' — ' + escapeHtml(a.address) + '</option>';
+  }).join('') + '<option value="__other__">Otra dirección…</option>';
+  wrap.style.display = 'block';
+  // Con direcciones guardadas, el input manual se oculta salvo que elijan "Otra"
+  input.style.display = 'none'; label.style.display = 'none';
+  sel.onchange = function(){
+    var other = sel.value === '__other__';
+    input.style.display = other ? 'block' : 'none';
+    label.style.display = other ? 'block' : 'none';
+    if (other) input.value = '';
+  };
 }
 
 // Carga la disponibilidad publicada del profesional y genera slots por día
@@ -139,8 +165,17 @@ async function loadReviews() {
 async function bookNow() {
   var date = document.getElementById('bookDate').value;
   var time = document.getElementById('bookTime').value;
-  var addr = document.getElementById('bookAddr').value.trim();
   var btn = document.getElementById('bookBtn');
+
+  // Dirección: si hay selector de direcciones guardadas y no eligieron "Otra", usar esa
+  var addr;
+  var sel = document.getElementById('savedAddr');
+  var wrap = document.getElementById('savedAddrWrap');
+  if (wrap && wrap.style.display !== 'none' && sel && sel.value !== '__other__') {
+    addr = sel.value;
+  } else {
+    addr = document.getElementById('bookAddr').value.trim();
+  }
 
   if (!time) { toast('Elige un horario disponible.', 'error'); return; }
   if (!addr) { toast('Por favor ingresa tu dirección.', 'error'); return; }

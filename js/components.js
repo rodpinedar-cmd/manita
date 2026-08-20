@@ -25,6 +25,7 @@ async function mountHeader(opts) {
   var accountHtml = user
     ? '<a href="mis-reservas.html" class="nav-link">Mis reservas</a>' +
       '<a href="pro-panel.html" class="nav-link">Panel pro</a>' +
+      '<a href="cuenta.html" class="nav-link">Mi cuenta</a>' +
       '<button type="button" class="btn btn-account" id="hdrLogout">Cerrar sesión</button>'
     : '<a href="ser-profesional.html" class="nav-link">Ofrecer servicios</a>' +
       '<a href="login.html" class="btn btn-account">👤 Acceder</a>';
