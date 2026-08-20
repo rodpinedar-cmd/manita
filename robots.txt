@@ -1,0 +1,11 @@
+User-agent: *
+Allow: /
+# Páginas privadas (requieren sesión): no indexar
+Disallow: /cuenta.html
+Disallow: /mis-reservas.html
+Disallow: /pro-panel.html
+Disallow: /reserva-confirmada.html
+Disallow: /favoritos.html
+Disallow: /mensajes.html
+
+Sitemap: https://manita-cdmx.netlify.app/sitemap.xml
