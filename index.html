@@ -24,18 +24,19 @@
 
 <!-- QR MODAL -->
 <div class="modal-overlay" id="qrModal" onclick="closeQR(event)">
-  <div class="modal-box" onclick="event.stopPropagation()">
-    <button class="modal-close" onclick="closeQR(event)">✕</button>
+  <div class="modal-box" onclick="event.stopPropagation()" role="dialog" aria-modal="true" aria-label="Descargar la app de Manita">
+    <button class="modal-close" onclick="closeQR(event)" aria-label="Cerrar">✕</button>
     <h3>Descarga la app de Manita</h3>
-    <p class="modal-sub">Escanea el código QR para descargar la app.</p>
+    <p class="modal-sub">Escanea el código QR con tu celular para descargar la app.</p>
     <div class="qr-code">
-      <img src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=https://manita.mx" alt="QR Manita">
+      <img id="qrImg" src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=https://manita-cdmx.netlify.app/downloads/Manita.apk&color=1F2544&bgcolor=ffffff" alt="Código QR para descargar Manita" width="200" height="200">
     </div>
-    <p class="modal-sub">O accede directamente a:</p>
-    <div class="modal-badges">
-      <span class="app-badge">📱 App Store</span>
-      <span class="app-badge">▶️ Google Play</span>
+    <p class="modal-sub">O desde este dispositivo:</p>
+    <div class="modal-badges" style="flex-direction:column;gap:10px;">
+      <a href="downloads/Manita.apk" class="btn btn-primary btn-lg" id="apkBtn" download>⬇️ Descargar APK (Android)</a>
+      <button type="button" class="btn btn-ghost" id="modalInstallBtn">📲 Instalar como app (PWA)</button>
     </div>
+    <p class="modal-sub" style="font-size:12px;">El APK es para Android. En iPhone usa "Instalar como app".</p>
   </div>
 </div>
 
@@ -129,10 +130,16 @@
   <div class="container app-section">
     <div class="app-text">
       <h2>Todos los servicios<br>en una sola app.</h2>
-      <p>Descárgate Manita y encuentra profesionales de confianza donde y cuando quieras.</p>
-      <div class="app-badges"><span class="app-badge">📱 App Store</span><span class="app-badge">▶️ Google Play</span></div>
+      <p>Descarga Manita en tu celular y encuentra profesionales de confianza donde y cuando quieras.</p>
+      <div class="app-badges">
+        <a href="downloads/Manita.apk" class="btn btn-primary btn-lg" download>⬇️ Descargar app (Android)</a>
+        <button type="button" class="btn btn-ghost btn-lg" onclick="openQR(event)">📱 Ver QR</button>
+      </div>
     </div>
-    <div class="app-phone">📱</div>
+    <div class="app-qr-side">
+      <img src="https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=https://manita-cdmx.netlify.app/downloads/Manita.apk" alt="QR para descargar Manita" width="180" height="180" loading="lazy">
+      <span>Escanéame</span>
+    </div>
   </div>
 </section>
 

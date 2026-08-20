@@ -98,6 +98,7 @@ function mountFooter() {
   window.addEventListener('beforeinstallprompt', function (e) {
     e.preventDefault();
     deferredPrompt = e;
+    window._manitaInstallPrompt = e; // disponible para botones de instalación en cualquier página
     showInstallButton();
   });
 

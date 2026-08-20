@@ -8,7 +8,7 @@ import { join, extname } from 'node:path';
 
 const ROOT = join(process.cwd(), '..');
 const MIME = { '.html':'text/html', '.js':'text/javascript', '.css':'text/css', '.json':'application/json' };
-const PORT = 4611;
+const PORT = 4600 + Math.floor(Math.random() * 300); // puerto dinámico para evitar EADDRINUSE
 
 const server = createServer(async (req, res) => {
   try {
@@ -83,6 +83,29 @@ for (const page of PAGES) {
   const theme = await pg.getAttribute('meta[name="theme-color"]', 'content');
   rec('PWA: theme-color presente', theme === '#FF6B4A', theme);
 
+  await ctx.close();
+}
+
+// ===== Verificación botones de descarga + QR (index) =====
+{
+  const ctx = await browser.newContext();
+  const pg = await ctx.newPage();
+  await pg.goto(`http://localhost:${PORT}/index.html`, { waitUntil: 'networkidle', timeout: 15000 });
+  await pg.waitForTimeout(400);
+  // Botón de descarga de APK presente (por texto; el href se degrada a # si el APK aún no existe)
+  const hasDownload = await pg.$$eval('a.btn', els => els.some(e => /Descargar app/i.test(e.textContent)));
+  rec('Descarga: botón "Descargar app (Android)" presente', hasDownload);
+  // QR lateral de la sección app
+  const qrSide = await pg.$$eval('.app-qr-side img', els => els.length > 0 && els[0].getAttribute('src').includes('qrserver'));
+  rec('Descarga: QR lateral apunta a generador de QR', qrSide);
+  // Abrir modal QR y verificar que el QR se genera dinámicamente
+  await pg.evaluate(() => openQR());
+  await pg.waitForTimeout(600);
+  await pg.waitForFunction(() => { const i = document.getElementById('qrImg'); return i && i.src && i.src.indexOf('qrserver') !== -1; }, { timeout: 5000 }).catch(()=>{});
+  const modalOpen = await pg.evaluate(() => document.getElementById('qrModal').classList.contains('open'));
+  const qrGenerated = await pg.evaluate(() => { const i = document.getElementById('qrImg'); return !!(i && i.src && i.src.indexOf('qrserver') !== -1); });
+  const hasInstallBtn = await pg.$('#modalInstallBtn') !== null;
+  rec('Descarga: modal abre + QR generado + botón instalar', modalOpen && qrGenerated && hasInstallBtn, `open=${modalOpen} qr=${qrGenerated} btn=${hasInstallBtn}`);
   await ctx.close();
 }
 

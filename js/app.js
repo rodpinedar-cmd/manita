@@ -99,10 +99,62 @@ if (heroSearch) {
 function openQR(e) {
   if (e) e.preventDefault();
   var m = document.getElementById('qrModal');
-  if (m) m.classList.add('open');
+  if (m) m.classList.add('open'); // el QR ya tiene src fijo en el HTML (patrón simple y robusto)
 }
 function closeQR(e) {
   if (e) e.preventDefault();
   var m = document.getElementById('qrModal');
   if (m) m.classList.remove('open');
 }
+// Cerrar modal con Escape (accesibilidad)
+document.addEventListener('keydown', function(e){ if (e.key === 'Escape') closeQR(); });
+
+// Botón "Instalar como app (PWA)" dentro del modal — usa el prompt diferido de components.js
+(function () {
+  var btn = document.getElementById('modalInstallBtn');
+  if (!btn) return;
+  btn.addEventListener('click', function () {
+    if (window._manitaInstallPrompt) {
+      window._manitaInstallPrompt.prompt();
+      window._manitaInstallPrompt.userChoice.then(function(){ window._manitaInstallPrompt = null; });
+    } else {
+      // Fallback: instrucción manual si el navegador no expone el prompt
+      alertToast('Usa el menú del navegador → "Agregar a pantalla de inicio".');
+    }
+  });
+})();
+
+// Toast local mínimo para el index (sin depender de otros archivos)
+function alertToast(msg) {
+  var t = document.createElement('div');
+  t.className = 'toast toast-info'; t.setAttribute('role','status'); t.textContent = msg;
+  document.body.appendChild(t);
+  requestAnimationFrame(function(){ t.classList.add('show'); });
+  setTimeout(function(){ t.classList.remove('show'); setTimeout(function(){ t.remove(); }, 300); }, 3500);
+}
+
+
+// Si el APK aún no está publicado, evita links de descarga rotos:
+// convierte los botones de "Descargar APK" en "Instalar como app" con aviso.
+(function checkApk() {
+  var apkLinks = document.querySelectorAll('a[href$="downloads/Manita.apk"], a[href="downloads/Manita.apk"]');
+  if (!apkLinks.length) return;
+  fetch('downloads/Manita.apk', { method: 'HEAD' }).then(function (r) {
+    if (!r.ok) disableApk();
+  }).catch(disableApk);
+
+  function disableApk() {
+    apkLinks.forEach(function (a) {
+      a.removeAttribute('download');
+      a.setAttribute('href', '#');
+      a.addEventListener('click', function (e) {
+        e.preventDefault();
+        if (window._manitaInstallPrompt) {
+          window._manitaInstallPrompt.prompt();
+        } else {
+          alertToast('La app para Android estará disponible muy pronto. Por ahora, instálala desde el navegador.');
+        }
+      });
+    });
+  }
+})();

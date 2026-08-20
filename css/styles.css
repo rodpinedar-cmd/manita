@@ -355,3 +355,14 @@ a { text-decoration: none; color: inherit; }
 @media (prefers-reduced-motion: reduce) {
   * { animation-duration: 0.001ms !important; transition-duration: 0.001ms !important; }
 }
+
+/* ===== QR lateral en sección app ===== */
+.app-qr-side {
+  display: flex; flex-direction: column; align-items: center; gap: 8px;
+  background: #fff; border: 1px solid var(--border); border-radius: var(--radius);
+  padding: 20px; box-shadow: var(--shadow); width: fit-content; margin: 0 auto;
+}
+.app-qr-side img { border-radius: 12px; display: block; }
+.app-qr-side span { font-size: 13px; color: var(--gray); font-weight: 600; }
+.app-badges { display: flex; gap: 12px; flex-wrap: wrap; align-items: center; }
+@media (max-width: 900px) { .app-qr-side { margin-top: 20px; } }
