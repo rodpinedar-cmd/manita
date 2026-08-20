@@ -60,10 +60,32 @@ catFilters.innerHTML = '<label><input type="radio" name="cat" value="all" ' + (c
 
 catFilters.addEventListener('change', function(e) {
   currentCat = e.target.value;
+  renderChips();
   render();
 });
 document.getElementById('availToday').addEventListener('change', render);
 document.getElementById('verifiedOnly').addEventListener('change', render);
+
+// Chips de filtro por categoría (móvil) — patrón app, scroll horizontal
+function renderChips() {
+  var el = document.getElementById('filterChips');
+  if (!el) return;
+  var items = [{ id: 'all', name: 'Todas', icon: '✨' }].concat(CATEGORIES);
+  el.innerHTML = items.map(function(c) {
+    var on = (currentCat === c.id) ? ' active' : '';
+    return '<button type="button" class="fchip' + on + '" data-cat="' + c.id + '">' + c.icon + ' ' + c.name + '</button>';
+  }).join('');
+  el.querySelectorAll('.fchip').forEach(function(b) {
+    b.onclick = function() {
+      currentCat = b.getAttribute('data-cat');
+      var radio = document.querySelector('input[name="cat"][value="' + currentCat + '"]');
+      if (radio) radio.checked = true;
+      renderChips();
+      render();
+    };
+  });
+}
+renderChips();
 
 var AVATARS = ['👩','🧑','👨','👩‍🦰','💇‍♀️','👨‍🔧','🧔‍♂️','👩‍🏫','🧑‍🎤','👧','👨‍⚕️','👩‍🦱','👷','🛼'];
 
@@ -117,16 +139,17 @@ async function render() {
       ? ('★ ' + p.rating + ' · ' + p.reviews_count + ' reseña' + (p.reviews_count !== 1 ? 's' : ''))
       : 'Sin reseñas todavía';
 
-    return '<a href="perfil.html?id=' + p.id + '" class="pro-card">' +
+    return '<a href="perfil.html?id=' + p.id + '" class="pro-card" aria-label="Ver ' + escapeHtml(p.service_name) + '">' +
       '<div class="pro-avatar">' + avatarFor(p) + '</div>' +
       '<div class="pro-main">' +
-        '<div class="pro-name">' + escapeHtml(p.service_name) + (p.verified ? ' <span class="verified" title="Verificado">✔️</span>' : '') + '</div>' +
+        '<div class="pro-name">' + escapeHtml(p.service_name) + (p.verified ? ' <span class="verified" title="Verificado" aria-label="Verificado">✔️</span>' : '') + '</div>' +
         '<div class="pro-rating">' + reviewsLabel + ' <span>· 📍 ' + escapeHtml(p.zone||'CDMX') + '</span></div>' +
-        '<div class="pro-badges">' + verifiedBadge + '</div>' +
         '<p class="pro-bio">' + escapeHtml(p.bio||'') + '</p>' +
+        (verifiedBadge ? '<div class="pro-badges">' + verifiedBadge + '</div>' : '') +
       '</div>' +
       '<div class="pro-right">' +
         '<div class="pro-price">$' + p.price + '<small>/ ' + escapeHtml(p.price_unit||'servicio') + '</small></div>' +
+        '<span class="pro-cta">Ver</span>' +
       '</div>' +
     '</a>';
   }).join('');

@@ -9,34 +9,53 @@
 <link rel="stylesheet" href="css/styles.css">
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
-.results-layout { display: grid; grid-template-columns: 260px 1fr; gap: 32px; padding: 32px 0; }
-.filters { background: #fff; border: 1px solid var(--border); border-radius: var(--radius); padding: 20px; height: fit-content; position: sticky; top: 90px; }
-.filters h3 { font-size: 15px; margin-bottom: 14px; }
-.filter-group { margin-bottom: 20px; }
-.filter-group label { display: flex; align-items: center; gap: 8px; padding: 6px 0; font-size: 14px; color: var(--gray); cursor: pointer; }
-.filter-group input { accent-color: var(--primary); }
-.results-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 12px; }
-.results-header h1 { font-size: 26px; }
-.results-count { color: var(--gray); font-size: 14px; }
-.pros-list { display: flex; flex-direction: column; gap: 16px; }
-.pro-card { background: #fff; border: 1px solid var(--border); border-radius: var(--radius); padding: 20px; box-shadow: var(--shadow); transition: all 0.2s; cursor: pointer; display: flex; gap: 16px; }
-.pro-card:hover { transform: translateY(-2px); box-shadow: var(--shadow-lg); }
-.pro-avatar { font-size: 40px; background: var(--bg-alt); border-radius: 50%; width: 64px; height: 64px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
-.pro-main { flex: 1; }
-.pro-name { font-size: 16px; font-weight: 700; display: flex; align-items: center; gap: 6px; color: var(--navy); }
-.verified { color: var(--primary); font-size: 13px; }
-.pro-rating { color: var(--warning); font-size: 13px; font-weight: 600; margin: 2px 0; }
+.results-layout { display: grid; grid-template-columns: 260px 1fr; gap: var(--sp-8); padding: var(--sp-6) 0; }
+.filters { background: #fff; border: 1px solid var(--border); border-radius: var(--radius); padding: var(--sp-5); height: fit-content; position: sticky; top: 90px; }
+.filters h3 { font-size: var(--fs-base); margin-bottom: var(--sp-4); }
+.filter-group { margin-bottom: var(--sp-5); }
+.filter-group label { display: flex; align-items: center; gap: var(--sp-2); padding: var(--sp-2) 0; font-size: var(--fs-sm); color: var(--gray); cursor: pointer; min-height: 32px; }
+.filter-group input { accent-color: var(--primary); width: 18px; height: 18px; }
+.results-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: var(--sp-5); flex-wrap: wrap; gap: var(--sp-3); }
+.results-header h1 { font-size: var(--fs-xl); letter-spacing: -0.3px; }
+.results-count { color: var(--gray); font-size: var(--fs-sm); }
+
+/* Chips de filtro (visibles en móvil) */
+.filter-chips { display: none; gap: var(--sp-2); overflow-x: auto; padding: var(--sp-3) var(--sp-4) var(--sp-2); -webkit-overflow-scrolling: touch; scrollbar-width: none; }
+.filter-chips::-webkit-scrollbar { display: none; }
+.fchip { flex-shrink: 0; padding: var(--sp-2) var(--sp-4); border-radius: var(--radius-pill); border: 1px solid var(--border); background: #fff; font-size: var(--fs-sm); font-weight: 600; color: var(--navy); cursor: pointer; white-space: nowrap; transition: all var(--dur) var(--ease); }
+.fchip.active { background: var(--primary); color: #fff; border-color: var(--primary); }
+
+.pros-list { display: flex; flex-direction: column; gap: var(--sp-3); }
+.pro-card {
+  background: #fff; border: 1px solid var(--border); border-radius: var(--radius); padding: var(--sp-4);
+  box-shadow: var(--shadow-xs); transition: transform var(--dur) var(--ease), box-shadow var(--dur) var(--ease);
+  cursor: pointer; display: flex; gap: var(--sp-4); text-decoration: none; color: inherit; align-items: flex-start;
+}
+.pro-card:hover { transform: translateY(-2px); box-shadow: var(--shadow-md); }
+.pro-card:active { transform: scale(0.99); }
+.pro-avatar { font-size: 28px; font-weight: 800; color: var(--primary); background: var(--mint); border-radius: 50%; width: 60px; height: 60px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; overflow: hidden; }
+.pro-main { flex: 1; min-width: 0; }
+.pro-name { font-size: var(--fs-md); font-weight: 700; display: flex; align-items: center; gap: var(--sp-1); color: var(--navy); }
+.verified { color: var(--success); font-size: var(--fs-sm); }
+.pro-rating { font-size: var(--fs-sm); font-weight: 600; margin: 3px 0; color: var(--warning); }
 .pro-rating span { color: var(--gray); font-weight: 400; }
-.pro-badges { display: flex; gap: 8px; margin: 6px 0; flex-wrap: wrap; }
-.pro-badge { font-size: 11px; padding: 3px 8px; border-radius: 8px; font-weight: 600; display: flex; align-items: center; gap: 4px; }
-.badge-repeat { background: var(--mint); color: var(--primary-dark); }
-.badge-agenda { background: rgba(18,199,180,0.1); color: var(--primary); }
-.pro-bio { font-size: 13px; color: var(--gray); margin-top: 6px; }
-.pro-right { text-align: right; flex-shrink: 0; }
-.pro-price { font-size: 20px; font-weight: 800; color: var(--navy); }
-.pro-price small { font-size: 11px; color: var(--gray); font-weight: 400; display: block; }
-.empty { text-align: center; padding: 60px; color: var(--gray); }
-@media (max-width: 900px) { .results-layout { grid-template-columns: 1fr; } .filters { position: static; } }
+.pro-badges { display: flex; gap: var(--sp-2); margin: var(--sp-2) 0 0; flex-wrap: wrap; }
+.pro-badge { font-size: var(--fs-xs); padding: 3px var(--sp-2); border-radius: var(--radius-sm); font-weight: 600; display: flex; align-items: center; gap: 4px; }
+.badge-agenda { background: rgba(22,169,127,0.12); color: var(--success); }
+.pro-bio { font-size: var(--fs-sm); color: var(--gray); margin-top: var(--sp-2); display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+.pro-right { text-align: right; flex-shrink: 0; display: flex; flex-direction: column; align-items: flex-end; gap: var(--sp-1); }
+.pro-price { font-size: var(--fs-lg); font-weight: 800; color: var(--primary); line-height: 1; }
+.pro-price small { font-size: var(--fs-xs); color: var(--gray); font-weight: 500; display: block; margin-top: 2px; }
+.pro-cta { font-size: var(--fs-xs); font-weight: 700; color: var(--navy); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 4px var(--sp-3); }
+.empty { text-align: center; padding: var(--sp-12) var(--sp-5); color: var(--gray); }
+
+@media (max-width: 900px) {
+  .results-layout { grid-template-columns: 1fr; gap: 0; padding: 0; }
+  .filters { display: none; }        /* sidebar oculto en móvil */
+  .filter-chips { display: flex; }    /* chips en su lugar */
+  .results-header { padding: var(--sp-4) var(--sp-4) 0; margin-bottom: var(--sp-3); }
+  .pros-list { padding: 0 var(--sp-4) var(--sp-6); }
+}
 </style>
 </head>
 <body>
@@ -45,16 +64,8 @@
   <div class="cat-bar"><div class="container cat-bar-inner" id="catBar"></div></div>
 </header>
 
-<div class="modal-overlay" id="qrModal" onclick="closeQR(event)">
-  <div class="modal-box" onclick="event.stopPropagation()" role="dialog" aria-modal="true" aria-label="Descargar la app de Manita">
-    <button class="modal-close" onclick="closeQR(event)" aria-label="Cerrar">✕</button>
-    <h3>Descarga la app de Manita</h3>
-    <p class="modal-sub">Escanea el código QR para descargar la app.</p>
-    <div class="qr-code"><img src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=https://manita.mx" alt="QR"></div>
-    <p class="modal-sub">O accede directamente a:</p>
-    <div class="modal-badges"><span class="app-badge">📱 App Store</span><span class="app-badge">▶️ Google Play</span></div>
-  </div>
-</div>
+<!-- Chips de filtro (móvil) -->
+<div class="filter-chips" id="filterChips"></div>
 
 <div class="container">
   <div class="results-layout">
@@ -86,9 +97,6 @@
 <script src="js/servicios.js"></script>
 <script>
 mountHeader(); mountBottomNav('buscar');
-function openQR(e){if(e)e.preventDefault();document.getElementById('qrModal').classList.add('open');}
-function closeQR(e){if(e)e.preventDefault();document.getElementById('qrModal').classList.remove('open');}
-document.addEventListener('keydown', function(e){ if(e.key==='Escape') closeQR(); });
 </script>
 </body>
 </html>
