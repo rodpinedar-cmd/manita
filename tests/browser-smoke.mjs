@@ -67,6 +67,12 @@ for (const page of PAGES) {
   const bodyAppMode = await pg.evaluate(() => document.body.classList.contains('app-mode'));
   rec('Modo app: barra inferior visible con 4 pestañas', navVisible && tabs === 4, `nav=${navVisible} tabs=${tabs}`);
   rec('Modo app: pestaña Inicio activa + body.app-mode', activeTab === 'Inicio' && bodyAppMode, `active=${activeTab} appMode=${bodyAppMode}`);
+  // Home tipo app: appHome visible, hero de landing oculto, chips y populares presentes
+  const appHomeVisible = await pg.evaluate(() => { const h = document.getElementById('appHome'); return h && h.style.display !== 'none'; });
+  const heroHidden = await pg.evaluate(() => { const h = document.querySelector('section.hero'); return h && h.style.display === 'none'; });
+  const chips = await pg.$$eval('.ah-chip', els => els.length);
+  const pops = await pg.$$eval('.ah-pop', els => els.length);
+  rec('Modo app: home de app (chips + populares) reemplaza landing', appHomeVisible && heroHidden && chips >= 5 && pops >= 4, `home=${appHomeVisible} heroHidden=${heroHidden} chips=${chips} pops=${pops}`);
   await ctx.close();
 }
 

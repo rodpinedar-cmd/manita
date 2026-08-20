@@ -176,3 +176,54 @@ function alertToast(msg) {
     });
   }
 })();
+
+
+// ===== HOME TIPO APP (cuando corre instalada) — estilo app, no landing =====
+(function initAppHome() {
+  var forced = new URLSearchParams(location.search).get('app') === '1';
+  var standalone = window.matchMedia('(display-mode: standalone)').matches ||
+    window.navigator.standalone === true || document.referrer.startsWith('android-app://');
+  if (!standalone && !forced) return; // en web normal se ve la landing
+
+  var home = document.getElementById('appHome');
+  if (!home) return;
+
+  // Oculta TODAS las secciones de landing y el hero web
+  document.querySelectorAll('section.hero, section.section, .cat-bar').forEach(function (s) {
+    if (s.id !== 'appHome') s.style.display = 'none';
+  });
+
+  // Categorías principales como chips (usa CATEGORIES de data.js)
+  var chips = (typeof CATEGORIES !== 'undefined' ? CATEGORIES : []).map(function (c) {
+    return '<a class="ah-chip" href="servicios.html?cat=' + c.id + '">' +
+      '<span class="ah-chip-ic">' + c.icon + '</span>' + c.name + '</a>';
+  }).join('');
+
+  // Populares (usa POPULAR de data.js)
+  var pops = (typeof POPULAR !== 'undefined' ? POPULAR : []).map(function (p) {
+    return '<a class="ah-pop" href="servicios.html?cat=' + p.id + '">' +
+      '<div class="ah-pop-img"><img src="' + p.img + '" alt="' + p.name + '" loading="lazy"></div>' +
+      '<span>' + p.name + '</span></a>';
+  }).join('');
+
+  home.style.display = 'block';
+  home.innerHTML =
+    '<div class="ah-top">' +
+      '<div class="ah-hi" id="ahHi">¿Qué necesitas hoy?</div>' +
+      '<a class="ah-search" href="categorias.html"><span>🔍</span> Buscar un servicio…</a>' +
+    '</div>' +
+    '<div class="ah-section"><h2>Categorías</h2><div class="ah-chips">' + chips + '</div></div>' +
+    '<div class="ah-section"><h2>Populares en tu zona</h2><div class="ah-pops">' + pops + '</div></div>' +
+    '<div class="ah-section"><a class="btn btn-primary btn-lg" style="width:100%;" href="categorias.html">Explorar todos los servicios</a></div>';
+
+  // Saludo personalizado si hay sesión
+  if (typeof usuarioActual === 'function') {
+    usuarioActual().then(function (u) {
+      if (u) {
+        var nombre = (u.user_metadata && u.user_metadata.full_name) ? u.user_metadata.full_name.split(' ')[0] : '';
+        var hi = document.getElementById('ahHi');
+        if (hi && nombre) hi.textContent = 'Hola, ' + nombre + ' 👋';
+      }
+    }).catch(function () {});
+  }
+})();
