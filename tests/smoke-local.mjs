@@ -49,7 +49,11 @@ const FLOW = ['perfil.html','mis-reservas.html','pro-panel.html','ser-profesiona
 const FLOW_JS = ['perfil.js','servicios.js','components.js'];
 for (const p of [...FLOW, ...FLOW_JS.map(f=>'js/'+f)]) {
   const src = await readFile(join(ROOT, p), 'utf8');
-  const bad = /\balert\(|\bconfirm\(|\bprompt\(/.test(src);
+  // Detecta llamadas GLOBALES a alert/confirm/prompt (no métodos como deferredPrompt.prompt()
+  // ni el evento beforeinstallprompt, que son API legítima de PWA).
+  const bad = /(^|[^.\w])(alert|confirm|prompt)\s*\(/.test(
+    src.replace(/beforeinstallprompt/g, '').replace(/deferredPrompt/g, '')
+  );
   rec(`${p} sin alert/confirm/prompt`, !bad);
 }
 for (const p of FLOW) {

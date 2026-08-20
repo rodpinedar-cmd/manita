@@ -46,8 +46,8 @@
 </header>
 
 <div class="modal-overlay" id="qrModal" onclick="closeQR(event)">
-  <div class="modal-box" onclick="event.stopPropagation()">
-    <button class="modal-close" onclick="closeQR(event)">✕</button>
+  <div class="modal-box" onclick="event.stopPropagation()" role="dialog" aria-modal="true" aria-label="Descargar la app de Manita">
+    <button class="modal-close" onclick="closeQR(event)" aria-label="Cerrar">✕</button>
     <h3>Descarga la app de Manita</h3>
     <p class="modal-sub">Escanea el código QR para descargar la app.</p>
     <div class="qr-code"><img src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=https://manita.mx" alt="QR"></div>
@@ -88,6 +88,7 @@
 mountHeader();
 function openQR(e){if(e)e.preventDefault();document.getElementById('qrModal').classList.add('open');}
 function closeQR(e){if(e)e.preventDefault();document.getElementById('qrModal').classList.remove('open');}
+document.addEventListener('keydown', function(e){ if(e.key==='Escape') closeQR(); });
 </script>
 </body>
 </html>

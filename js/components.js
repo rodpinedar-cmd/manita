@@ -41,7 +41,10 @@ async function mountHeader(opts) {
     '<div class="container header-inner">' +
       '<a href="index.html" class="logo"><span class="logo-icon" aria-hidden="true">🤝</span><span class="logo-text">Manita</span></a>' +
       searchHtml +
-      '<div class="header-actions">' + accountHtml + '</div>' +
+      '<div class="header-actions" id="hdrActions">' + accountHtml + '</div>' +
+      '<button type="button" class="hamburger" id="hdrHamburger" aria-label="Abrir menú" aria-expanded="false" aria-controls="hdrActions">' +
+        '<span></span><span></span><span></span>' +
+      '</button>' +
     '</div>';
 
   // Inserta la barra al inicio del header, preservando cualquier cat-bar existente
@@ -51,6 +54,26 @@ async function mountHeader(opts) {
 
   var logoutBtn = document.getElementById('hdrLogout');
   if (logoutBtn) logoutBtn.onclick = async function(){ await logout(); window.location.href = 'index.html'; };
+
+  // Menú móvil (hamburguesa) — M089/M090, accesible
+  var burger = document.getElementById('hdrHamburger');
+  var actions = document.getElementById('hdrActions');
+  if (burger && actions) {
+    burger.addEventListener('click', function () {
+      var open = actions.classList.toggle('open');
+      burger.setAttribute('aria-expanded', open ? 'true' : 'false');
+      burger.setAttribute('aria-label', open ? 'Cerrar menú' : 'Abrir menú');
+    });
+    // Cerrar con Escape
+    document.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape' && actions.classList.contains('open')) {
+        actions.classList.remove('open');
+        burger.setAttribute('aria-expanded', 'false');
+        burger.setAttribute('aria-label', 'Abrir menú');
+        burger.focus();
+      }
+    });
+  }
 }
 
 function mountFooter() {

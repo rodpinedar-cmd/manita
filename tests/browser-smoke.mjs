@@ -86,6 +86,25 @@ for (const page of PAGES) {
   await ctx.close();
 }
 
+// ===== Verificación menú móvil (M089/M090) =====
+{
+  const ctx = await browser.newContext({ viewport: { width: 390, height: 800 } }); // iPhone-ish
+  const pg = await ctx.newPage();
+  await pg.goto(`http://localhost:${PORT}/index.html`, { waitUntil: 'networkidle', timeout: 15000 });
+  await pg.waitForTimeout(400);
+  // El hamburguesa debe estar visible en móvil
+  const burgerVisible = await pg.isVisible('#hdrHamburger');
+  rec('Móvil: hamburguesa visible', burgerVisible);
+  if (burgerVisible) {
+    await pg.click('#hdrHamburger');
+    await pg.waitForTimeout(350);
+    const expanded = await pg.getAttribute('#hdrHamburger', 'aria-expanded');
+    const menuOpen = await pg.evaluate(() => document.getElementById('hdrActions').classList.contains('open'));
+    rec('Móvil: menú se despliega + aria-expanded=true', expanded === 'true' && menuOpen);
+  }
+  await ctx.close();
+}
+
 await browser.close();
 server.close();
 
