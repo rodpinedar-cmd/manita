@@ -69,6 +69,14 @@ for (const p of ['index.html','servicios.html','perfil.html','categorias.html','
   rec(`${p} usa header componentizado`, ok);
 }
 
+// 6. Rendimiento: preconnect a gstatic (dominio de los .woff2) en todas las páginas con fuente
+for (const p of PAGES) {
+  const src = await readFile(join(ROOT, p), 'utf8');
+  if (!src.includes('fonts.googleapis.com')) continue; // páginas sin fuente externa
+  const ok = src.includes('fonts.gstatic.com');
+  rec(`${p} tiene preconnect a fonts.gstatic.com`, ok);
+}
+
 const fail = results.filter(r=>!r.ok).length;
 console.log(`\n===== SMOKE LOCAL: ${results.length-fail} PASS · ${fail} FAIL =====`);
 process.exit(fail>0?1:0);
