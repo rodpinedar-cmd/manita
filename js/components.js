@@ -285,7 +285,28 @@ async function mountBottomNav(active) {
   // Registrar el service worker (solo en http/https, no en file://)
   if ('serviceWorker' in navigator && location.protocol.startsWith('http')) {
     window.addEventListener('load', function () {
-      navigator.serviceWorker.register('sw.js').catch(function () {});
+      navigator.serviceWorker.register('sw.js').then(function (reg) {
+        // Si hay una versión nueva esperando, actívala de inmediato
+        function promote(w) {
+          if (!w) return;
+          w.addEventListener('statechange', function () {
+            if (w.state === 'installed' && navigator.serviceWorker.controller) {
+              w.postMessage('SKIP_WAITING');
+            }
+          });
+        }
+        if (reg.waiting) reg.waiting.postMessage('SKIP_WAITING');
+        promote(reg.installing);
+        reg.addEventListener('updatefound', function () { promote(reg.installing); });
+      }).catch(function () {});
+
+      // Cuando el SW nuevo toma control, recarga una vez para servir la versión fresca
+      var refreshed = false;
+      navigator.serviceWorker.addEventListener('controllerchange', function () {
+        if (refreshed) return;
+        refreshed = true;
+        window.location.reload();
+      });
     });
   }
 

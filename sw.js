@@ -1,8 +1,11 @@
 // ===== MANITA — Service Worker (PWA) =====
 // Estrategia:
-//   - Shell (HTML/CSS/JS propios): cache-first con actualización en segundo plano.
+//   - Navegación (HTML) y assets propios (CSS/JS): NETWORK-FIRST.
+//       Siempre intenta la versión más reciente de la red; si no hay conexión, usa la copia en caché.
+//       Esto evita que los usuarios se queden con una versión vieja tras un deploy.
 //   - Supabase y APIs externas: NUNCA se cachean (datos frescos y sensibles).
-const CACHE = 'manita-v1';
+// IMPORTANTE: sube el número de versión del caché en cada release para forzar limpieza.
+const CACHE = 'manita-v3';
 const SHELL = [
   './',
   './index.html',
@@ -43,6 +46,11 @@ self.addEventListener('activate', (e) => {
   );
 });
 
+// Permite que la página fuerce la activación inmediata del SW nuevo
+self.addEventListener('message', (e) => {
+  if (e.data === 'SKIP_WAITING') self.skipWaiting();
+});
+
 self.addEventListener('fetch', (e) => {
   const req = e.request;
   const url = new URL(req.url);
@@ -57,17 +65,18 @@ self.addEventListener('fetch', (e) => {
     return; // deja pasar a la red directamente
   }
 
-  // Shell propio: cache-first, actualiza en segundo plano
+  // NETWORK-FIRST para el shell propio: siempre lo más reciente; caché como respaldo offline.
   e.respondWith(
-    caches.match(req).then((cached) => {
-      const network = fetch(req).then((res) => {
+    fetch(req)
+      .then((res) => {
         if (res && res.status === 200) {
           const copy = res.clone();
           caches.open(CACHE).then((c) => c.put(req, copy));
         }
         return res;
-      }).catch(() => cached); // sin red: usa cache
-      return cached || network;
-    }).catch(() => caches.match('./index.html'))
+      })
+      .catch(() =>
+        caches.match(req).then((cached) => cached || caches.match('./index.html'))
+      )
   );
 });
