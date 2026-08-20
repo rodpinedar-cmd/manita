@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="es-MX">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Panel del profesional — Manita</title>
+<meta name="description" content="Gestiona tus reservas en Manita.">
+<link rel="stylesheet" href="css/styles.css">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+.pp-wrap { max-width: 860px; margin: 32px auto; padding: 0 20px; }
+.pp-card { background:#fff; border:1px solid var(--border); border-radius:var(--radius); padding:18px; margin-bottom:14px; box-shadow:var(--shadow); display:flex; justify-content:space-between; align-items:center; gap:12px; flex-wrap:wrap; }
+.pp-info h3 { font-size:16px; color:var(--navy); }
+.pp-info p { font-size:13px; color:var(--gray); margin-top:4px; }
+.pp-actions { display:flex; gap:8px; align-items:center; flex-wrap:wrap; }
+.pp-status { font-size:12px; padding:4px 12px; border-radius:12px; font-weight:600; }
+.st-pending { background:#FFF3E0; color:#E8850C; }
+.st-confirmed { background:#E6F7F1; color:var(--success); }
+.st-cancelled { background:#FDECEC; color:var(--danger); }
+</style>
+</head>
+<body>
+<header class="header">
+  <div class="container header-inner">
+    <a href="index.html" class="logo"><span class="logo-icon">🤝</span><span class="logo-text">Manita</span></a>
+    <div class="header-actions">
+      <a href="servicios.html" class="nav-link">Ver marketplace</a>
+      <button type="button" class="btn btn-account" onclick="doLogout(event)">Cerrar sesión</button>
+    </div>
+  </div>
+</header>
+
+<div class="pp-wrap">
+  <h1 style="font-size:26px;margin-bottom:6px;">Panel del profesional</h1>
+  <p style="color:var(--gray);margin-bottom:20px;">Reservas que has recibido</p>
+  <div id="ppList"><div class="skeleton skeleton-card"></div></div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="js/supabase-client.js"></script>
+<script>
+function esc(s){return String(s==null?'':s).replace(/[&<>"']/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];});}
+function toast(msg,kind){var t=document.createElement('div');t.className='toast toast-'+(kind||'info');t.setAttribute('role','status');t.textContent=msg;document.body.appendChild(t);requestAnimationFrame(function(){t.classList.add('show');});setTimeout(function(){t.classList.remove('show');setTimeout(function(){t.remove();},300);},3200);}
+
+var STATUS_MAP = {
+  pending:['st-pending','Pendiente'], confirmed:['st-confirmed','Confirmada'],
+  in_progress:['st-pending','En progreso'], completed:['st-confirmed','Completada'],
+  reviewed:['st-confirmed','Reseñada'], cancelled:['st-cancelled','Cancelada']
+};
+// Siguiente acción posible del profesional según estado
+var NEXT = { pending:['confirmed','Confirmar'], confirmed:['in_progress','Iniciar'], in_progress:['completed','Completar'] };
+
+async function load() {
+  var user = await usuarioActual();
+  if (!user) { window.location.href = 'login.html?next=' + encodeURIComponent('pro-panel.html'); return; }
+
+  var list = document.getElementById('ppList');
+  list.innerHTML = '<div class="skeleton skeleton-card"></div><div class="skeleton skeleton-card"></div>';
+
+  var res = await reservasDelProfesional();
+  if (res.error) {
+    list.innerHTML = '<div class="state-error" role="alert">⚠️ No pudimos cargar las reservas. <button class="btn btn-ghost" onclick="load()">Reintentar</button></div>';
+    return;
+  }
+  if (!res.data.length) {
+    list.innerHTML = '<div class="empty-res" style="text-align:center;padding:60px;color:var(--gray)">📭 Aún no tienes reservas.<br>Asegúrate de tener tu perfil activo en <a href="ser-profesional.html" style="color:var(--primary)">Ofrecer servicios</a>.</div>';
+    return;
+  }
+  list.innerHTML = res.data.map(function(b){
+    var st = STATUS_MAP[b.status] || ['st-pending','Pendiente'];
+    var next = NEXT[b.status];
+    var actions = '';
+    if (next) actions += '<button class="btn btn-primary" data-next="' + b.id + '" data-to="' + next[0] + '">' + next[1] + '</button>';
+    if (b.status === 'pending' || b.status === 'confirmed') actions += '<button class="btn btn-ghost" data-cancel="' + b.id + '">Rechazar</button>';
+    var svc = b.professionals ? b.professionals.service_name : 'Servicio';
+    return '<div class="pp-card"><div class="pp-info">' +
+      '<h3>' + esc(svc) + '</h3>' +
+      '<p>📅 ' + esc(b.service_date) + ' a las ' + esc(b.service_time) + ' · 📍 ' + esc(b.address) + ' · $' + esc(b.price) + ' MXN</p>' +
+      '</div><div class="pp-actions">' + actions + '<span class="pp-status ' + st[0] + '">' + st[1] + '</span></div></div>';
+  }).join('');
+
+  list.querySelectorAll('[data-next]').forEach(function(btn){
+    btn.onclick = function(){ transicion(btn.getAttribute('data-next'), btn.getAttribute('data-to')); };
+  });
+  list.querySelectorAll('[data-cancel]').forEach(function(btn){
+    btn.onclick = function(){ transicion(btn.getAttribute('data-cancel'), 'cancelled'); };
+  });
+}
+
+async function transicion(id, to) {
+  var res = await transicionReserva(id, to);
+  if (res.error) { toast(res.error.message, 'error'); return; }
+  toast('Reserva actualizada.', 'success');
+  load();
+}
+
+async function doLogout(e){ e.preventDefault(); await logout(); window.location.href='index.html'; }
+load();
+</script>
+</body>
+</html>

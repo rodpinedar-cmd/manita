@@ -20,51 +20,119 @@
 </head>
 <body>
 
-<header class="header">
-  <div class="container header-inner">
-    <a href="index.html" class="logo"><span class="logo-icon">🤝</span><span class="logo-text">Manita</span></a>
-    <div class="header-actions">
-      <a href="categorias.html" class="nav-link">Buscar servicio</a>
-      <a href="#" class="btn btn-account" id="logoutBtn" onclick="doLogout(event)">Cerrar sesión</a>
-    </div>
-  </div>
-</header>
+<header class="header" id="appHeader"></header>
 
 <div class="res-wrap">
   <h1 style="font-size:26px;margin-bottom:20px;">Mis reservas</h1>
   <div id="resList"><div class="empty-res">Cargando...</div></div>
 </div>
 
+<div class="modal-overlay" id="reviewModal" onclick="closeReview(event)">
+  <div class="modal-box" onclick="event.stopPropagation()" role="dialog" aria-modal="true" aria-labelledby="rvTitle">
+    <button class="modal-close" onclick="closeReview(event)" aria-label="Cerrar">✕</button>
+    <h3 id="rvTitle">Deja tu reseña</h3>
+    <p class="modal-sub">¿Cómo estuvo el servicio?</p>
+    <div id="rvStars" style="font-size:32px;cursor:pointer;">
+      <span data-v="1">☆</span><span data-v="2">☆</span><span data-v="3">☆</span><span data-v="4">☆</span><span data-v="5">☆</span>
+    </div>
+    <textarea id="rvComment" placeholder="Cuéntanos tu experiencia (opcional)" style="width:100%;margin-top:12px;padding:10px;border:1px solid var(--border);border-radius:10px;font-family:inherit;"></textarea>
+    <button class="btn btn-primary btn-lg" style="width:100%;margin-top:12px;" id="rvSubmit">Enviar reseña</button>
+  </div>
+</div>
+
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="js/supabase-client.js"></script>
+<script src="js/components.js"></script>
 <script>
+mountHeader({ search: false });
+function esc(s){return String(s==null?'':s).replace(/[&<>"']/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];});}
+function toast(msg, kind){var t=document.createElement('div');t.className='toast toast-'+(kind||'info');t.setAttribute('role','status');t.textContent=msg;document.body.appendChild(t);requestAnimationFrame(function(){t.classList.add('show');});setTimeout(function(){t.classList.remove('show');setTimeout(function(){t.remove();},300);},3200);}
+
+var STATUS_MAP = {
+  pending:['st-pending','Pendiente'], confirmed:['st-confirmed','Confirmada'],
+  in_progress:['st-pending','En progreso'], completed:['st-confirmed','Completada'],
+  reviewed:['st-confirmed','Reseñada'], cancelled:['st-cancelled','Cancelada']
+};
+var currentReviewBooking = null, currentRating = 0;
+
 async function loadReservas() {
   var user = await usuarioActual();
-  if (!user) {
-    window.location.href = 'login.html?next=' + encodeURIComponent('mis-reservas.html');
+  if (!user) { window.location.href = 'login.html?next=' + encodeURIComponent('mis-reservas.html'); return; }
+
+  var list = document.getElementById('resList');
+  list.innerHTML = '<div class="skeleton skeleton-card"></div><div class="skeleton skeleton-card"></div>';
+
+  var res = await misReservas();
+  if (res.error) {
+    list.innerHTML = '<div class="state-error" role="alert">⚠️ No pudimos cargar tus reservas. <button class="btn btn-ghost" onclick="loadReservas()">Reintentar</button></div>';
     return;
   }
-  var res = await misReservas();
-  var list = document.getElementById('resList');
   if (!res.data.length) {
     list.innerHTML = '<div class="empty-res">📭 Aún no tienes reservas.<br><a href="categorias.html" style="color:var(--primary)">Buscar un servicio</a></div>';
     return;
   }
-  var statusMap = { pending:['st-pending','Pendiente'], confirmed:['st-confirmed','Confirmada'], completed:['st-confirmed','Completada'], cancelled:['st-cancelled','Cancelada'] };
   list.innerHTML = res.data.map(function(b) {
-    var st = statusMap[b.status] || ['st-pending','Pendiente'];
+    var st = STATUS_MAP[b.status] || ['st-pending','Pendiente'];
     var svc = b.professionals ? b.professionals.service_name : 'Servicio';
+    var actions = '';
+    if (b.status === 'pending' || b.status === 'confirmed') {
+      actions += '<button class="btn btn-ghost" data-cancel="' + b.id + '">Cancelar</button>';
+    }
+    if (b.status === 'completed') {
+      actions += '<button class="btn btn-primary" data-review="' + b.id + '">Dejar reseña</button>';
+    }
     return '<div class="res-card"><div class="res-info">' +
-      '<h3>' + svc + '</h3>' +
-      '<p>📅 ' + b.service_date + ' a las ' + b.service_time + ' · 📍 ' + b.address + ' · $' + b.price + ' MXN</p>' +
-      '</div><span class="res-status ' + st[0] + '">' + st[1] + '</span></div>';
+      '<h3>' + esc(svc) + '</h3>' +
+      '<p>📅 ' + esc(b.service_date) + ' a las ' + esc(b.service_time) + ' · 📍 ' + esc(b.address) + ' · $' + esc(b.price) + ' MXN</p>' +
+      '</div><div style="display:flex;align-items:center;gap:10px;">' + actions +
+      '<span class="res-status ' + st[0] + '">' + st[1] + '</span></div></div>';
   }).join('');
+
+  list.querySelectorAll('[data-cancel]').forEach(function(btn){
+    btn.onclick = function(){ cancelar(btn.getAttribute('data-cancel')); };
+  });
+  list.querySelectorAll('[data-review]').forEach(function(btn){
+    btn.onclick = function(){ openReview(btn.getAttribute('data-review')); };
+  });
 }
-async function doLogout(e) {
-  e.preventDefault();
-  await logout();
-  window.location.href = 'index.html';
+
+async function cancelar(id) {
+  var res = await transicionReserva(id, 'cancelled');
+  if (res.error) { toast(res.error.message, 'error'); return; }
+  toast('Reserva cancelada.', 'info');
+  loadReservas();
 }
+
+function openReview(id) {
+  currentReviewBooking = id; currentRating = 0;
+  document.querySelectorAll('#rvStars span').forEach(function(s){ s.textContent = '☆'; });
+  document.getElementById('rvComment').value = '';
+  document.getElementById('reviewModal').classList.add('open');
+}
+function closeReview(e){ if(e)e.preventDefault(); document.getElementById('reviewModal').classList.remove('open'); }
+
+document.querySelectorAll('#rvStars span').forEach(function(s){
+  s.onclick = function(){
+    currentRating = parseInt(s.getAttribute('data-v'));
+    document.querySelectorAll('#rvStars span').forEach(function(x){
+      x.textContent = parseInt(x.getAttribute('data-v')) <= currentRating ? '★' : '☆';
+    });
+  };
+});
+document.getElementById('rvSubmit').onclick = async function(){
+  if (!currentRating) { toast('Elige una calificación.', 'error'); return; }
+  var btn = this; btn.disabled = true; btn.textContent = 'Enviando...';
+  var res = await crearReseña(currentReviewBooking, currentRating, document.getElementById('rvComment').value.trim());
+  btn.disabled = false; btn.textContent = 'Enviar reseña';
+  if (res.error) { toast(res.error.message, 'error'); return; }
+  closeReview();
+  toast('¡Gracias por tu reseña!', 'success');
+  loadReservas();
+};
+
+document.addEventListener('keydown', function(e){ if (e.key === 'Escape') closeReview(); });
+
+async function doLogout(e) { e.preventDefault(); await logout(); window.location.href = 'index.html'; }
 loadReservas();
 </script>
 </body>

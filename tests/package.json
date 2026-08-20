@@ -1,0 +1,14 @@
+{
+  "name": "manita-sql-tests",
+  "private": true,
+  "type": "module",
+  "version": "1.0.0",
+  "description": "Tests SQL reproducibles del core transaccional de Manita (PGlite)",
+  "scripts": {
+    "test": "node run-tests.mjs"
+  },
+  "dependencies": {
+    "@electric-sql/pglite": "^0.2.17",
+    "playwright": "^1.62.1"
+  }
+}

@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="es-MX">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Reserva confirmada — Manita</title>
+<meta name="description" content="Detalle de tu reserva en Manita.">
+<link rel="stylesheet" href="css/styles.css">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+.rc-wrap { max-width: 560px; margin: 48px auto; padding: 0 20px; }
+.rc-card { background:#fff; border:1px solid var(--border); border-radius:var(--radius); padding:32px; box-shadow:var(--shadow-lg); text-align:center; }
+.rc-icon { font-size:56px; margin-bottom:12px; }
+.rc-detail { text-align:left; background:var(--bg-alt); border-radius:12px; padding:18px; margin:20px 0; }
+.rc-detail div { display:flex; justify-content:space-between; padding:6px 0; font-size:14px; }
+.rc-detail div span:first-child { color:var(--gray); }
+.rc-status { display:inline-block; font-size:12px; padding:4px 12px; border-radius:12px; font-weight:600; background:#FFF3E0; color:#E8850C; }
+</style>
+</head>
+<body>
+<header class="header">
+  <div class="container header-inner">
+    <a href="index.html" class="logo"><span class="logo-icon">🤝</span><span class="logo-text">Manita</span></a>
+    <div class="header-actions"><a href="mis-reservas.html" class="nav-link">Mis reservas</a></div>
+  </div>
+</header>
+
+<div class="rc-wrap">
+  <div class="rc-card" id="rcCard">
+    <div class="skeleton skeleton-line"></div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="js/supabase-client.js"></script>
+<script src="js/data.js"></script>
+<script>
+var id = new URLSearchParams(location.search).get('id');
+function esc(s){return String(s==null?'':s).replace(/[&<>"']/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];});}
+
+async function load() {
+  var card = document.getElementById('rcCard');
+  var user = await usuarioActual();
+  if (!user) { window.location.href = 'login.html?next=' + encodeURIComponent(location.href); return; }
+  if (!id) { card.innerHTML = '<div class="state-empty">Reserva no encontrada. <a href="mis-reservas.html">Ver mis reservas</a></div>'; return; }
+
+  var res = await misReservas();
+  if (res.error) { card.innerHTML = '<div class="state-error" role="alert">No pudimos cargar la reserva. <button class="btn btn-ghost" onclick="load()">Reintentar</button></div>'; return; }
+
+  var b = (res.data || []).filter(function(x){ return x.id === id; })[0];
+  if (!b) { card.innerHTML = '<div class="state-empty">Reserva no encontrada. <a href="mis-reservas.html">Ver mis reservas</a></div>'; return; }
+
+  var svc = b.professionals ? b.professionals.service_name : 'Servicio';
+  card.innerHTML =
+    '<div class="rc-icon">✅</div>' +
+    '<h2>¡Reserva creada!</h2>' +
+    '<p style="color:var(--gray);margin-top:6px;">Tu solicitud fue enviada al profesional.</p>' +
+    '<div class="rc-detail">' +
+      '<div><span>Servicio</span><span>' + esc(svc) + '</span></div>' +
+      '<div><span>Fecha</span><span>' + esc(b.service_date) + ' · ' + esc(b.service_time) + '</span></div>' +
+      '<div><span>Dirección</span><span>' + esc(b.address) + '</span></div>' +
+      '<div><span>Total</span><span>$' + esc(b.price) + ' MXN</span></div>' +
+      '<div><span>Estado</span><span class="rc-status">Pendiente de confirmación</span></div>' +
+    '</div>' +
+    '<a href="mis-reservas.html" class="btn btn-primary btn-lg" style="width:100%;">Ver mis reservas</a>';
+}
+load();
+</script>
+</body>
+</html>

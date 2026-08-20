@@ -11,20 +11,8 @@
 </head>
 <body>
 
-<!-- HEADER -->
-<header class="header">
-  <div class="container header-inner">
-    <a href="index.html" class="logo"><span class="logo-icon">🤝</span><span class="logo-text">Manita</span></a>
-    <div class="header-search">
-      <div class="hs-field"><input type="text" id="hSearchCat" placeholder="¿Qué servicio?"></div>
-      <div class="hs-field hs-loc"><input type="text" id="hSearchLoc" placeholder="Dirección o colonia, CDMX"></div>
-      <a href="categorias.html" class="btn btn-primary hs-btn">Buscar</a>
-    </div>
-    <div class="header-actions">
-      <a href="ser-profesional.html" class="nav-link">Ofrecer servicios</a>
-      <a href="login.html" class="btn btn-account" id="accBtn">👤 Acceder</a>
-    </div>
-  </div>
+<!-- HEADER (montado por components.js) -->
+<header class="header" id="appHeader">
   <!-- Category pills bar -->
   <div class="cat-bar">
     <div class="container cat-bar-inner" id="catBar"></div>
@@ -145,24 +133,6 @@
   </div>
 </section>
 
-<!-- STATS -->
-<section class="section stats-section">
-  <div class="container stats-grid">
-    <div class="stat"><strong>+50 mil</strong><span>Servicios solicitados</span></div>
-    <div class="stat"><strong>4.8</strong><span>Valoración media</span></div>
-    <div class="stat"><strong>+80%</strong><span>Clientes que repiten</span></div>
-  </div>
-</section>
-
-<!-- TESTIMONIALS -->
-<section class="section">
-  <div class="container">
-    <h2 class="section-title">Gracias por confiar en nosotros</h2>
-    <p class="section-sub">Mira algunos comentarios de nuestros clientes felices</p>
-    <div class="testimonials" id="testimonials"></div>
-  </div>
-</section>
-
 <!-- CTA PRO -->
 <section class="section cta-pro">
   <div class="container cta-pro-inner">
@@ -175,16 +145,12 @@
   </div>
 </section>
 
-<!-- PRESS -->
+<!-- LANZAMIENTO (copy honesto, sin datos inventados — M004) -->
 <section class="section section-alt">
-  <div class="container">
-    <h2 class="section-title">Hablan de nosotros...</h2>
-    <div class="press-grid">
-      <div class="press-card">"Precios hasta 25% más baratos que la media de mercado"<span>Forbes México</span></div>
-      <div class="press-card">"Manita acelera la digitalización de los servicios a domicilio"<span>Expansión</span></div>
-      <div class="press-card">"Contrata todo tipo de servicios a domicilio en tres clics"<span>El Economista</span></div>
-      <div class="press-card">"Más de 50 mil usuarios y miles de profesionales en CDMX"<span>El Financiero</span></div>
-    </div>
+  <div class="container" style="text-align:center;">
+    <h2 class="section-title">Recién llegados a CDMX 🚀</h2>
+    <p class="section-sub">Manita está comenzando en la Ciudad de México. Sé de los primeros en encontrar profesionales de confianza cerca de ti.</p>
+    <a href="categorias.html" class="btn btn-primary btn-lg">Explorar servicios</a>
   </div>
 </section>
 
@@ -195,27 +161,18 @@
       <a href="index.html" class="logo"><span class="logo-icon">🤝</span><span class="logo-text">Manita</span></a>
       <p>Manita nace con el objetivo de hacer tu vida más fácil permitiéndote disfrutar cualquier servicio sin salir de casa.</p>
     </div>
-    <div class="footer-col"><h4>Sobre nosotros</h4><a href="#">Contacto</a><a href="#">Manita Empresas</a></div>
-    <div class="footer-col"><h4>Empleo</h4><a href="ser-profesional.html">Ofrece tus servicios</a><a href="#">Trabaja con nosotros</a></div>
-    <div class="footer-col"><h4>Legal</h4><a href="#">Términos y condiciones</a><a href="#">Privacidad</a><a href="#">Cookies</a><a href="#">Cancelación</a></div>
+    <div class="footer-col"><h4>Sobre nosotros</h4><a href="legal.html">Contacto</a><a href="ser-profesional.html">Manita Empresas</a></div>
+    <div class="footer-col"><h4>Empleo</h4><a href="ser-profesional.html">Ofrece tus servicios</a><a href="ser-profesional.html">Trabaja con nosotros</a></div>
+    <div class="footer-col"><h4>Legal</h4><a href="legal.html#terminos">Términos y condiciones</a><a href="legal.html#privacidad">Privacidad</a><a href="legal.html#cookies">Cookies</a><a href="legal.html#cancelacion">Cancelación</a></div>
   </div>
   <div class="footer-bottom"><div class="container">© 2026 Manita® · Hecho en CDMX 🇲🇽</div></div>
 </footer>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="js/supabase-client.js"></script>
+<script src="js/components.js"></script>
 <script src="js/data.js"></script>
 <script src="js/app.js"></script>
-<script>
-// Update account button based on session
-(async function() {
-  var user = await usuarioActual();
-  var btn = document.getElementById('accBtn');
-  if (user && btn) {
-    btn.textContent = '👤 Mi cuenta';
-    btn.href = 'mis-reservas.html';
-  }
-})();
-</script>
+<script>mountHeader(); mountFooter();</script>
 </body>
 </html>

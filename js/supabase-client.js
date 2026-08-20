@@ -58,12 +58,70 @@ async function obtenerCategorias() {
 }
 
 // ===== RESERVAS =====
+// Mapa de errores de RPC → mensajes UX (sin exponer internals)
+const ERROR_MESSAGES = {
+  UNAUTHORIZED: 'Debes iniciar sesión.',
+  USER_SUSPENDED: 'Tu cuenta está suspendida. Contacta a soporte.',
+  ADDRESS_REQUIRED: 'Ingresa una dirección válida (mín. 5 caracteres).',
+  INVALID_TIME: 'La fecha/hora no es válida.',
+  PRO_UNAVAILABLE: 'Este profesional ya no está disponible.',
+  OUTSIDE_AVAILABILITY: 'El profesional no atiende en ese horario. Elige otro.',
+  SLOT_TAKEN: 'Ese horario acaba de ocuparse. Elige otro.',
+  INVALID_STATE: 'Esa acción no está permitida en este momento.',
+  FORBIDDEN: 'No tienes permiso para esta acción.',
+  BOOKING_NOT_FOUND: 'No se encontró la reserva.',
+  BOOKING_NOT_COMPLETED: 'Solo puedes reseñar servicios completados.',
+  ALREADY_REVIEWED: 'Ya dejaste una reseña para este servicio.',
+  INVALID_RATING: 'La calificación debe ser de 1 a 5.'
+};
+var ERROR_CODES = Object.keys(ERROR_MESSAGES).join('|');
+function traducirError(error) {
+  if (!error) return null;
+  var re = new RegExp('(' + ERROR_CODES + ')');
+  var m = re.exec(error.message || '');
+  var raw = m ? m[1] : '';
+  return { message: ERROR_MESSAGES[raw] || 'Ocurrió un error. Inténtalo de nuevo.', code: raw };
+}
+
+// Crea reserva vía RPC: el PRECIO se calcula en el servidor (nunca se envía desde el cliente).
+// start_at es un timestamp ISO; idempotency_key evita reservas duplicadas por doble submit.
 async function crearReserva(reserva) {
+  const { data, error } = await supa.rpc('crear_reserva', {
+    p_professional_id: reserva.professional_id,
+    p_start_at: reserva.start_at,
+    p_address: reserva.address,
+    p_idempotency_key: reserva.idempotency_key || null,
+    p_notes: reserva.notes || null
+  });
+  return { data, error: traducirError(error) };
+}
+
+// Disponibilidad publicada del profesional (para construir slots reales en UI)
+async function disponibilidadProfesional(professionalId) {
+  const { data, error } = await supa.from('professional_availability')
+    .select('weekday, start_time, end_time')
+    .eq('professional_id', professionalId);
+  return { data: data || [], error };
+}
+
+// Cambia el estado de una reserva vía RPC (valida rol y transición en servidor)
+async function transicionReserva(bookingId, nuevoEstado) {
+  const { data, error } = await supa.rpc('transicion_reserva', {
+    p_booking_id: bookingId,
+    p_nuevo: nuevoEstado
+  });
+  return { data, error: traducirError(error) };
+}
+
+// Reservas que recibe el profesional autenticado
+async function reservasDelProfesional() {
   const user = await usuarioActual();
-  if (!user) return { error: { message: 'Debes iniciar sesión para reservar' } };
-  reserva.client_id = user.id;
-  const { data, error } = await supa.from('bookings').insert(reserva).select();
-  return { data, error };
+  if (!user) return { data: [], error: null };
+  const { data, error } = await supa.from('bookings')
+    .select('*, professionals!inner(service_name, user_id, zone)')
+    .eq('professionals.user_id', user.id)
+    .order('service_date', { ascending: true });
+  return { data: data || [], error };
 }
 
 async function misReservas() {
@@ -83,4 +141,14 @@ async function obtenerReseñas(professionalId) {
     .eq('professional_id', professionalId)
     .order('created_at', { ascending: false });
   return { data: data || [], error };
+}
+
+// Crear reseña vía RPC (valida booking completado y propiedad en servidor)
+async function crearReseña(bookingId, rating, comment) {
+  const { data, error } = await supa.rpc('crear_resena', {
+    p_booking_id: bookingId,
+    p_rating: rating,
+    p_comment: comment || null
+  });
+  return { data, error: traducirError(error) };
 }

@@ -19,20 +19,7 @@
 </head>
 <body>
 
-<header class="header">
-  <div class="container header-inner">
-    <a href="index.html" class="logo"><span class="logo-icon">🤝</span><span class="logo-text">Manita</span></a>
-    <nav class="nav">
-      <a href="categorias.html">Categorías</a>
-      <a href="como-funciona.html">Cómo funciona</a>
-      <a href="ser-profesional.html">Ofrecer servicios</a>
-    </nav>
-    <div class="header-actions">
-      <a href="#" class="btn btn-ghost">Entrar</a>
-      <a href="categorias.html" class="btn btn-primary">Buscar servicio</a>
-    </div>
-  </div>
-</header>
+<header class="header" id="appHeader"></header>
 
 <section class="pro-hero">
   <div class="container">
@@ -46,12 +33,17 @@
     <h2 class="section-title">Regístrate en 5 minutos</h2>
     <p class="section-sub">Miles de clientes te están esperando</p>
     <form class="signup-form" onsubmit="signup(event)">
-      <div class="booking-field"><label>Nombre completo</label><input type="text" required placeholder="Tu nombre"></div>
-      <div class="booking-field"><label>Categoría de servicio</label><select id="proCat"></select></div>
-      <div class="booking-field"><label>Zona donde trabajas</label><input type="text" required placeholder="Ej. Roma Norte, Condesa..."></div>
-      <div class="booking-field"><label>Correo</label><input type="email" required placeholder="tu@correo.com"></div>
-      <div class="booking-field"><label>Teléfono</label><input type="tel" required placeholder="55 1234 5678"></div>
+      <div class="booking-field"><label for="spName">Nombre completo</label><input id="spName" type="text" required placeholder="Tu nombre"></div>
+      <div class="booking-field"><label for="proCat">Categoría de servicio</label><select id="proCat"></select></div>
+      <div class="booking-field"><label for="spService">¿Qué servicio ofreces?</label><input id="spService" type="text" required placeholder="Ej. Limpieza profunda de hogar"></div>
+      <div class="booking-field"><label for="spPrice">Precio (MXN)</label><input id="spPrice" type="number" min="50" step="10" required placeholder="Ej. 350"></div>
+      <div class="booking-field"><label for="spUnit">Se cobra por</label><select id="spUnit"><option value="servicio">Servicio</option><option value="hora">Hora</option><option value="sesión">Sesión</option><option value="visita">Visita</option></select></div>
+      <div class="booking-field"><label for="spZone">Zona donde trabajas</label><input id="spZone" type="text" required placeholder="Ej. Roma Norte, Condesa..."></div>
+      <div class="booking-field"><label for="spEmail">Correo</label><input id="spEmail" type="email" required placeholder="tu@correo.com"></div>
+      <div class="booking-field"><label for="spPass">Contraseña</label><input id="spPass" type="password" required placeholder="Mínimo 6 caracteres"></div>
+      <div class="booking-field"><label for="spPhone">Teléfono</label><input id="spPhone" type="tel" required placeholder="55 1234 5678"></div>
       <button type="submit" class="btn btn-primary btn-lg" style="width:100%;">Crear mi perfil gratis</button>
+      <div class="auth-msg" id="spMsg" style="font-size:13px;margin-top:12px;padding:10px;border-radius:8px;display:none;"></div>
     </form>
   </div>
 </section>
@@ -73,48 +65,61 @@
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="js/supabase-client.js"></script>
+<script src="js/components.js"></script>
 <script src="js/data.js"></script>
 <script>
+mountHeader({ search: false });
 document.getElementById('proCat').innerHTML = CATEGORIES.map(function(c){ return '<option value="'+c.id+'">'+c.icon+' '+c.name+'</option>'; }).join('');
+
+function spShow(msg, isErr){ var el=document.getElementById('spMsg'); el.textContent=msg; el.style.display='block'; el.style.background=isErr?'#FDECEC':'#E6F7F1'; el.style.color=isErr?'#E5484D':'#16A97F'; }
 
 async function signup(e){
   e.preventDefault();
-  var form = e.target;
-  var inputs = form.querySelectorAll('input');
-  var name = inputs[0].value.trim();
-  var zone = inputs[1].value.trim();
-  var email = inputs[2].value.trim();
-  var phone = inputs[3].value.trim();
+  var btn = e.target.querySelector('button[type=submit]');
+  var name = document.getElementById('spName').value.trim();
+  var service = document.getElementById('spService').value.trim();
+  var price = parseFloat(document.getElementById('spPrice').value);
+  var unit = document.getElementById('spUnit').value;
+  var zone = document.getElementById('spZone').value.trim();
+  var email = document.getElementById('spEmail').value.trim();
+  var pass = document.getElementById('spPass').value;
+  var phone = document.getElementById('spPhone').value.trim();
   var catId = document.getElementById('proCat').value;
+
+  if (!(price >= 50)) { spShow('El precio debe ser al menos $50 MXN.', true); return; }
+  if (pass.length < 6) { spShow('La contraseña debe tener al menos 6 caracteres.', true); return; }
+
+  btn.disabled = true; btn.textContent = 'Creando perfil...';
 
   var user = await usuarioActual();
   if (!user) {
-    // Register first
-    var pass = prompt('Crea una contraseña para tu cuenta (mín. 6 caracteres):');
-    if (!pass) return;
     var reg = await registrar(email, pass, name);
-    if (reg.error) { alert('Error al crear cuenta: ' + reg.error.message); return; }
+    if (reg.error) { spShow('Error al crear cuenta: ' + reg.error.message, true); btn.disabled=false; btn.textContent='Crear mi perfil gratis'; return; }
     if (!reg.data.session) {
-      alert('✅ Cuenta creada. Revisa tu correo para confirmar y luego vuelve a registrar tu servicio.');
+      spShow('✅ Cuenta creada. Revisa tu correo para confirmarla y luego vuelve a completar tu perfil.', false);
+      btn.disabled=false; btn.textContent='Crear mi perfil gratis';
       return;
     }
     user = reg.data.user;
   }
 
-  var catName = CATEGORIES.find(function(c){ return c.id === catId; });
+  // Guardar teléfono en el perfil (M024)
+  await supa.from('profiles').update({ phone: phone, is_professional: true }).eq('id', user.id);
+
+  // El profesional se crea como pending_review (verificación antes de activarse — M038)
   var res = await crearProfesional({
     category_id: catId,
-    service_name: (catName ? catName.name : 'Servicio') + ' a domicilio',
-    bio: 'Profesional de ' + (catName ? catName.name : '') + ' en ' + zone + '. ¡Contáctame!',
-    price: 300,
-    price_unit: 'servicio',
+    service_name: service,
+    bio: 'Profesional de ' + service + ' en ' + zone + '.',
+    price: price,
+    price_unit: unit,
     zone: zone,
     available: true
   });
 
-  if (res.error) { alert('Error: ' + res.error.message); return; }
-  alert('✅ ¡Perfil creado!\n\nTu servicio ya está publicado en Manita. Los clientes podrán encontrarte.');
-  window.location.href = 'servicios.html?cat=' + catId;
+  if (res.error) { spShow('Error: ' + res.error.message, true); btn.disabled=false; btn.textContent='Crear mi perfil gratis'; return; }
+  spShow('✅ ¡Perfil creado! Está en revisión. Te avisaremos cuando esté activo y visible para clientes.', false);
+  setTimeout(function(){ window.location.href = 'pro-panel.html'; }, 1500);
 }
 </script>
 </body>

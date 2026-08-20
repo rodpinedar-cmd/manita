@@ -69,10 +69,14 @@ var AVATARS = ['👩','🧑','👨','👩‍🦰','💇‍♀️','👨‍🔧',
 
 async function render() {
   var list = document.getElementById('prosList');
-  list.innerHTML = '<div class="empty">Cargando profesionales...</div>';
+  list.innerHTML = '<div class="skeleton skeleton-card"></div><div class="skeleton skeleton-card"></div><div class="skeleton skeleton-card"></div>';
 
   // Fetch from Supabase
   var res = await obtenerProfesionales(currentCat);
+  if (res.error) {
+    list.innerHTML = '<div class="state-error" role="alert">⚠️ No pudimos cargar los profesionales. Revisa tu conexión. <button class="btn btn-ghost" onclick="render()">Reintentar</button></div>';
+    return;
+  }
   var pros = res.data;
 
   // Text search
@@ -106,25 +110,36 @@ async function render() {
     return;
   }
 
-  list.innerHTML = pros.map(function(p, i) {
-    var avatar = AVATARS[i % AVATARS.length];
-    var repeats = (p.reviews_count % 20) + 3;
-    var badges = '<span class="pro-badge badge-repeat">🔁 ' + repeats + ' han repetido</span>';
-    if (p.available) badges += '<span class="pro-badge badge-agenda">🟢 Agenda actualizada</span>';
+  list.innerHTML = pros.map(function(p) {
+    // Solo se muestran badges basados en datos reales (verificado). Sin métricas inventadas.
+    var verifiedBadge = p.verified ? '<span class="pro-badge badge-agenda">✔️ Verificado</span>' : '';
+    var reviewsLabel = (p.reviews_count > 0)
+      ? ('★ ' + p.rating + ' · ' + p.reviews_count + ' reseña' + (p.reviews_count !== 1 ? 's' : ''))
+      : 'Sin reseñas todavía';
 
     return '<a href="perfil.html?id=' + p.id + '" class="pro-card">' +
-      '<div class="pro-avatar">' + avatar + '</div>' +
+      '<div class="pro-avatar">' + avatarFor(p) + '</div>' +
       '<div class="pro-main">' +
-        '<div class="pro-name">' + p.service_name + (p.verified ? ' <span class="verified" title="Verificado">✔️</span>' : '') + '</div>' +
-        '<div class="pro-rating">★ ' + p.rating + ' <span>· ' + p.reviews_count + ' servicios · 📍 ' + (p.zone||'CDMX') + '</span></div>' +
-        '<div class="pro-badges">' + badges + '</div>' +
-        '<p class="pro-bio">' + (p.bio||'') + '</p>' +
+        '<div class="pro-name">' + escapeHtml(p.service_name) + (p.verified ? ' <span class="verified" title="Verificado">✔️</span>' : '') + '</div>' +
+        '<div class="pro-rating">' + reviewsLabel + ' <span>· 📍 ' + escapeHtml(p.zone||'CDMX') + '</span></div>' +
+        '<div class="pro-badges">' + verifiedBadge + '</div>' +
+        '<p class="pro-bio">' + escapeHtml(p.bio||'') + '</p>' +
       '</div>' +
       '<div class="pro-right">' +
-        '<div class="pro-price">$' + p.price + '<small>/ ' + p.price_unit + '</small></div>' +
+        '<div class="pro-price">$' + p.price + '<small>/ ' + escapeHtml(p.price_unit||'servicio') + '</small></div>' +
       '</div>' +
     '</a>';
   }).join('');
+}
+
+function escapeHtml(s) {
+  return String(s == null ? '' : s).replace(/[&<>"']/g, function(c){
+    return { '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[c];
+  });
+}
+function avatarFor(p) {
+  if (p.avatar_url) return '<img src="' + escapeHtml(p.avatar_url) + '" alt="" style="width:100%;height:100%;border-radius:50%;object-fit:cover;">';
+  return (p.service_name || '?').trim().charAt(0).toUpperCase();
 }
 
 render();

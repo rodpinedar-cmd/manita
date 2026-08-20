@@ -39,19 +39,7 @@
 </head>
 <body>
 
-<header class="header">
-  <div class="container header-inner">
-    <a href="index.html" class="logo"><span class="logo-icon">🤝</span><span class="logo-text">Manita</span></a>
-    <div class="header-search">
-      <div class="hs-field"><input type="text" id="hSearchCat" placeholder="¿Qué servicio?"></div>
-      <div class="hs-field hs-loc"><input type="text" id="hSearchLoc" placeholder="Dirección o colonia, CDMX"></div>
-      <a href="#" class="btn btn-primary hs-btn">Buscar</a>
-    </div>
-    <div class="header-actions">
-      <a href="ser-profesional.html" class="nav-link">Ofrecer servicios</a>
-      <a href="#" class="btn btn-account" onclick="openQR(event)">👤 Acceder</a>
-    </div>
-  </div>
+<header class="header" id="appHeader">
   <div class="cat-bar"><div class="container cat-bar-inner" id="catBar"></div></div>
 </header>
 
@@ -91,9 +79,11 @@
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="js/supabase-client.js"></script>
+<script src="js/components.js"></script>
 <script src="js/data.js"></script>
 <script src="js/servicios.js"></script>
 <script>
+mountHeader();
 function openQR(e){if(e)e.preventDefault();document.getElementById('qrModal').classList.add('open');}
 function closeQR(e){if(e)e.preventDefault();document.getElementById('qrModal').classList.remove('open');}
 </script>
