@@ -60,3 +60,44 @@ function mountFooter() {
     '<div class="footer-bottom"><div class="container">© 2026 Manita® · Hecho en CDMX 🇲🇽 · ' +
     '<a href="legal.html" style="color:var(--light-gray)">Aviso de privacidad</a></div></div>';
 }
+
+// ===== PWA: registro de service worker + botón de instalación (M045) =====
+(function initPWA() {
+  // Registrar el service worker (solo en http/https, no en file://)
+  if ('serviceWorker' in navigator && location.protocol.startsWith('http')) {
+    window.addEventListener('load', function () {
+      navigator.serviceWorker.register('sw.js').catch(function () {});
+    });
+  }
+
+  // Capturar el evento de instalación y ofrecer un botón discreto
+  var deferredPrompt = null;
+  window.addEventListener('beforeinstallprompt', function (e) {
+    e.preventDefault();
+    deferredPrompt = e;
+    showInstallButton();
+  });
+
+  function showInstallButton() {
+    if (document.getElementById('pwaInstallBtn')) return;
+    var btn = document.createElement('button');
+    btn.id = 'pwaInstallBtn';
+    btn.type = 'button';
+    btn.className = 'pwa-install';
+    btn.innerHTML = '📲 Instalar app';
+    btn.onclick = async function () {
+      if (!deferredPrompt) return;
+      deferredPrompt.prompt();
+      await deferredPrompt.userChoice;
+      deferredPrompt = null;
+      btn.remove();
+    };
+    document.body.appendChild(btn);
+  }
+
+  // Si ya está instalada, ocultar cualquier prompt
+  window.addEventListener('appinstalled', function () {
+    var b = document.getElementById('pwaInstallBtn');
+    if (b) b.remove();
+  });
+})();

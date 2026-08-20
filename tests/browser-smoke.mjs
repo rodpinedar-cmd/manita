@@ -54,6 +54,38 @@ for (const page of PAGES) {
   }
   await ctx.close();
 }
+// ===== Verificación PWA =====
+{
+  const ctx = await browser.newContext();
+  const pg = await ctx.newPage();
+  await pg.goto(`http://localhost:${PORT}/index.html`, { waitUntil: 'networkidle', timeout: 15000 });
+
+  // Manifest enlazado y descargable con campos requeridos
+  const manifestHref = await pg.getAttribute('link[rel="manifest"]', 'href');
+  rec('PWA: manifest enlazado en index', manifestHref === 'manifest.json');
+  const mres = await pg.evaluate(async () => {
+    const r = await fetch('manifest.json'); const j = await r.json();
+    return { name: j.name, display: j.display, icons: (j.icons||[]).length, start: j.start_url, theme: j.theme_color };
+  });
+  rec('PWA: manifest válido (name/display/icons/start_url/theme)',
+    !!mres.name && mres.display === 'standalone' && mres.icons >= 1 && !!mres.start && !!mres.theme,
+    JSON.stringify(mres));
+
+  // Service worker se registra
+  const swReg = await pg.evaluate(async () => {
+    if (!('serviceWorker' in navigator)) return 'no-sw-api';
+    try { const r = await navigator.serviceWorker.ready; return r ? 'registered' : 'no-reg'; }
+    catch(e){ return 'err:' + e.message; }
+  });
+  rec('PWA: service worker registrado', swReg === 'registered', swReg);
+
+  // theme-color meta presente
+  const theme = await pg.getAttribute('meta[name="theme-color"]', 'content');
+  rec('PWA: theme-color presente', theme === '#FF6B4A', theme);
+
+  await ctx.close();
+}
+
 await browser.close();
 server.close();
 
