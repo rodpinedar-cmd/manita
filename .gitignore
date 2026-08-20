@@ -3,3 +3,12 @@ Thumbs.db
 *.log
 node_modules/
 .env
+
+# Firma de la app Android — NUNCA subir (contiene contraseñas)
+*.keystore
+signing-key-info.txt
+downloads/*.keystore
+downloads/signing-key-info.txt
+
+# Archivos temporales de tests
+tests/_*.txt
