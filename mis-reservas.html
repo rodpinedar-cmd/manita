@@ -25,8 +25,13 @@
 <header class="header" id="appHeader"></header>
 
 <div class="res-wrap">
-  <h1 style="font-size:26px;margin-bottom:20px;">Mis reservas</h1>
-  <div id="resList"><div class="empty-res">Cargando...</div></div>
+  <h1 style="font-size:var(--fs-xl);margin-bottom:var(--sp-4);letter-spacing:-0.3px;">Mis servicios</h1>
+  <div class="sub-tabs" role="tablist">
+    <button type="button" class="sub-tab active" role="tab" aria-selected="true" data-tab="upcoming">Próximos</button>
+    <button type="button" class="sub-tab" role="tab" aria-selected="false" data-tab="past">Pasados</button>
+    <button type="button" class="sub-tab" role="tab" aria-selected="false" data-tab="cancelled">Cancelados</button>
+  </div>
+  <div id="resList"><div class="skeleton skeleton-card"></div></div>
 </div>
 
 <div class="modal-overlay" id="reviewModal" onclick="closeReview(event)">
@@ -46,16 +51,38 @@
 <script src="js/supabase-client.js"></script>
 <script src="js/components.js"></script>
 <script>
-mountHeader({ search: false }); mountBottomNav('reservas');
+mountHeader({ search: false }); mountBottomNav('servicios');
 function esc(s){return String(s==null?'':s).replace(/[&<>"']/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];});}
 function toast(msg, kind){var t=document.createElement('div');t.className='toast toast-'+(kind||'info');t.setAttribute('role','status');t.textContent=msg;document.body.appendChild(t);requestAnimationFrame(function(){t.classList.add('show');});setTimeout(function(){t.classList.remove('show');setTimeout(function(){t.remove();},300);},3200);}
 
 var STATUS_MAP = {
   pending:['st-pending','Pendiente'], confirmed:['st-confirmed','Confirmada'],
   in_progress:['st-pending','En progreso'], completed:['st-confirmed','Completada'],
-  reviewed:['st-confirmed','Reseñada'], cancelled:['st-cancelled','Cancelada']
+  reviewed:['st-confirmed','Reseñada'],
+  cancelled_by_client:['st-cancelled','Cancelada'], cancelled_by_professional:['st-cancelled','Cancelada por el pro'],
+  no_show_client:['st-cancelled','No asististe'], no_show_professional:['st-cancelled','El pro no asistió'],
+  disputed:['st-pending','En disputa']
 };
 var currentReviewBooking = null, currentRating = 0;
+var ALL_RESERVAS = [];
+var currentTab = 'upcoming';
+
+// Clasifica cada reserva en una de las 3 pestañas
+function tabDe(status) {
+  if (['cancelled_by_client','cancelled_by_professional','no_show_client','no_show_professional'].includes(status)) return 'cancelled';
+  if (['completed','reviewed'].includes(status)) return 'past';
+  return 'upcoming'; // pending, confirmed, in_progress, disputed
+}
+
+// Sub-pestañas
+document.querySelectorAll('.sub-tab').forEach(function(t){
+  t.onclick = function(){
+    document.querySelectorAll('.sub-tab').forEach(function(x){ x.classList.remove('active'); x.setAttribute('aria-selected','false'); });
+    t.classList.add('active'); t.setAttribute('aria-selected','true');
+    currentTab = t.getAttribute('data-tab');
+    renderReservas();
+  };
+});
 
 async function loadReservas() {
   var user = await usuarioActual();
@@ -69,11 +96,22 @@ async function loadReservas() {
     list.innerHTML = '<div class="state-error" role="alert">⚠️ No pudimos cargar tus reservas. <button class="btn btn-ghost" onclick="loadReservas()">Reintentar</button></div>';
     return;
   }
-  if (!res.data.length) {
-    list.innerHTML = '<div class="empty-res">📭 Aún no tienes reservas.<br><a href="categorias.html" style="color:var(--primary)">Buscar un servicio</a></div>';
+  ALL_RESERVAS = res.data || [];
+  renderReservas();
+}
+
+function renderReservas() {
+  var list = document.getElementById('resList');
+  var data = ALL_RESERVAS.filter(function(b){ return tabDe(b.status) === currentTab; });
+
+  if (!data.length) {
+    var msg = currentTab === 'upcoming' ? 'No tienes servicios próximos.'
+      : currentTab === 'past' ? 'Aún no tienes servicios completados.'
+      : 'No tienes servicios cancelados.';
+    list.innerHTML = '<div class="empty-res">📭 ' + msg + '<br><a href="categorias.html" style="color:var(--primary)">Buscar un servicio</a></div>';
     return;
   }
-  list.innerHTML = res.data.map(function(b) {
+  list.innerHTML = data.map(function(b) {
     var st = STATUS_MAP[b.status] || ['st-pending','Pendiente'];
     var svc = b.professionals ? b.professionals.service_name : 'Servicio';
     var actions = '';
@@ -103,7 +141,7 @@ async function loadReservas() {
 }
 
 async function cancelar(id) {
-  var res = await transicionReserva(id, 'cancelled');
+  var res = await transicionReserva(id, 'cancelled_by_client');
   if (res.error) { toast(res.error.message, 'error'); return; }
   toast('Reserva cancelada.', 'info');
   loadReservas();

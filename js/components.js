@@ -92,6 +92,30 @@ function isStandalone() {
          document.referrer.startsWith('android-app://');
 }
 
+// ===== SPLASH SCREEN (solo al abrir la app instalada) =====
+// Se muestra una vez por sesión, refuerza la sensación de app nativa.
+(function initSplash() {
+  var force = new URLSearchParams(location.search).get('splash') === '1';
+  if ((!isStandalone() && !force)) return;
+  // Solo una vez por sesión (no en cada navegación entre páginas)
+  try { if (sessionStorage.getItem('manita_splash') && !force) return; sessionStorage.setItem('manita_splash', '1'); } catch (e) {}
+
+  var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var s = document.createElement('div');
+  s.className = 'app-splash';
+  s.setAttribute('aria-hidden', 'true');
+  s.innerHTML =
+    '<div class="splash-logo"><span class="splash-icon">🤝</span><span class="splash-name">Manita</span></div>' +
+    '<div class="splash-tag">Servicios a domicilio</div>';
+  document.body.appendChild(s);
+
+  var hold = reduce ? 200 : 1100;
+  setTimeout(function () {
+    s.classList.add('hide');
+    setTimeout(function () { s.remove(); }, reduce ? 0 : 400);
+  }, hold);
+})();
+
 async function mountBottomNav(active) {
   // Solo en modo app instalada, o si se fuerza con ?app=1 (para previsualizar)
   var force = new URLSearchParams(location.search).get('app') === '1';
