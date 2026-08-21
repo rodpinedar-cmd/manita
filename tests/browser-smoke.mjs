@@ -176,6 +176,10 @@ for (const page of PAGES) {
   await pg.goto(`http://localhost:${PORT}/legal.html`, { waitUntil: 'networkidle', timeout: 15000 });
   const secs = await pg.evaluate(() => ['terminos','datos','privacidad','pagos','reembolsos','disputas','profesionales','contacto'].every(id => document.getElementById(id)));
   rec('Legal: todas las secciones presentes (T&C, datos, privacidad, pagos, reembolsos, disputas)', secs);
+  // El footer de la landing enlaza a las secciones legales
+  await pg.goto(`http://localhost:${PORT}/index.html`, { waitUntil: 'networkidle', timeout: 15000 });
+  const footerLegal = await pg.evaluate(() => { const f = document.querySelector('footer'); return f && /Términos/.test(f.textContent) && /Privacidad/.test(f.textContent); });
+  rec('Footer landing: enlaza a Términos y Privacidad', !!footerLegal);
   // login: registro exige aceptar términos
   await pg.goto(`http://localhost:${PORT}/login.html`, { waitUntil: 'networkidle', timeout: 15000 });
   await pg.click('#tabReg').catch(()=>{});

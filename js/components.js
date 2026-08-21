@@ -94,7 +94,9 @@ function mountFooter() {
   if (!el) return;
   el.innerHTML =
     '<div class="footer-bottom"><div class="container">© 2026 Manita® · Hecho en CDMX 🇲🇽 · ' +
-    '<a href="legal.html" style="color:var(--light-gray)">Aviso de privacidad</a></div></div>';
+    '<a href="legal.html#terminos" style="color:var(--light-gray)">Términos</a> · ' +
+    '<a href="legal.html#privacidad" style="color:var(--light-gray)">Privacidad</a> · ' +
+    '<a href="legal.html#reembolsos" style="color:var(--light-gray)">Reembolsos</a></div></div>';
 }
 
 // ===== MODO APP: barra de navegación inferior (tab bar tipo app nativa) =====

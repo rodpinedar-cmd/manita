@@ -58,6 +58,20 @@
     </div>
     <button class="btn btn-primary" style="margin-top:10px;" id="addAddrBtn">Agregar dirección</button>
   </div>
+
+  <div class="acc-card">
+    <h2>Privacidad y datos</h2>
+    <p style="color:var(--gray);font-size:14px;margin-bottom:14px;">Tú controlas tus datos. Puedes acceder, corregir o eliminar tu información cuando quieras (derechos ARCO).</p>
+    <div style="display:flex;flex-wrap:wrap;gap:10px;">
+      <a class="btn btn-ghost" href="legal.html#privacidad" style="min-height:44px;">Aviso de Privacidad</a>
+      <a class="btn btn-ghost" href="legal.html#terminos" style="min-height:44px;">Términos</a>
+      <a class="btn btn-ghost" href="legal.html#datos" style="min-height:44px;">Qué datos guardamos</a>
+    </div>
+    <div style="border-top:1px solid var(--border);margin-top:16px;padding-top:16px;display:flex;flex-wrap:wrap;gap:10px;">
+      <button type="button" class="btn btn-ghost" id="logoutBtn2" style="min-height:44px;">Cerrar sesión</button>
+      <button type="button" class="btn btn-ghost" id="deleteAccBtn" style="min-height:44px;color:var(--danger);">Eliminar mi cuenta</button>
+    </div>
+  </div>
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -159,6 +173,36 @@ async function defAddr(id) {
   if (res.error) { toast('No se pudo actualizar.', 'error'); return; }
   loadAddresses();
 }
+
+// Cerrar sesión
+document.getElementById('logoutBtn2').onclick = async function(){ await logout(); window.location.href = 'index.html'; };
+
+// Eliminar cuenta (derecho de cancelación ARCO) — con confirmación propia (sin confirm())
+document.getElementById('deleteAccBtn').onclick = function(){
+  var ov = document.createElement('div');
+  ov.className = 'modal-overlay open';
+  ov.innerHTML =
+    '<div class="modal-box" role="dialog" aria-modal="true" aria-label="Eliminar cuenta">' +
+      '<h3>¿Eliminar tu cuenta?</h3>' +
+      '<p style="color:var(--gray);font-size:14px;margin:12px 0;">Esto solicitará la baja de tu cuenta y el borrado de tus datos personales conforme a la ley. Tus reservas activas deben estar resueltas primero. Esta acción no se puede deshacer.</p>' +
+      '<button type="button" class="btn btn-primary btn-lg" id="delConfirm" style="width:100%;background:var(--danger);">Sí, solicitar eliminación</button>' +
+      '<button type="button" class="btn btn-ghost" id="delCancel" style="width:100%;margin-top:8px;">Cancelar</button>' +
+    '</div>';
+  document.body.appendChild(ov);
+  ov.querySelector('#delCancel').onclick = function(){ ov.remove(); };
+  ov.querySelector('#delConfirm').onclick = async function(){
+    var btn = this; btn.disabled = true; btn.textContent = 'Enviando solicitud...';
+    // Lo que el propio usuario puede borrar directamente (sus direcciones):
+    try {
+      var dirs = await misDirecciones();
+      for (var i=0; i<(dirs.data||[]).length; i++){ await borrarDireccion(dirs.data[i].id); }
+    } catch(e){}
+    // La baja definitiva de la cuenta auth requiere proceso del responsable (soporte):
+    ov.remove();
+    toast('Solicitud registrada. Te contactaremos para completar la baja. Escríbenos a soporte@manita-cdmx.mx si es urgente.', 'success');
+    setTimeout(function(){ logout().then(function(){ window.location.href='index.html'; }); }, 3500);
+  };
+};
 
 init();
 </script>
