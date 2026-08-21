@@ -86,7 +86,7 @@
 <script src="js/components.js"></script>
 <script src="js/data.js"></script>
 <script>
-mountHeader({ search: false }); mountBottomNav('cuenta');
+mountHeader({ search: false }); mountBottomNav('perfil');
 document.getElementById('proCat').innerHTML = CATEGORIES.map(function(c){ return '<option value="'+c.id+'">'+c.icon+' '+c.name+'</option>'; }).join('');
 
 function spShow(msg, isErr){ var el=document.getElementById('spMsg'); el.textContent=msg; el.style.display='block'; el.style.background=isErr?'#FDECEC':'#E6F7F1'; el.style.color=isErr?'#E5484D':'#16A97F'; }

@@ -104,6 +104,21 @@ for (const page of PAGES) {
   await ctx.close();
 }
 
+// ===== Verificación congruencia app: pestaña activa correcta en cuenta/ser-profesional =====
+{
+  const ctx = await browser.newContext({ viewport: { width: 390, height: 800 } });
+  const pg = await ctx.newPage();
+  // cuenta.html exige sesión: sin login redirige a login.html (comportamiento correcto).
+  // Verificamos el marcado de pestaña vía código fuente (mountBottomNav('perfil')).
+  const cuentaSrc = await readFile(join(ROOT, 'cuenta.html'), 'utf8');
+  rec('Congruencia app: cuenta.html usa mountBottomNav("perfil")', /mountBottomNav\('perfil'\)/.test(cuentaSrc));
+  await pg.goto(`http://localhost:${PORT}/ser-profesional.html?app=1`, { waitUntil: 'networkidle', timeout: 15000 });
+  await pg.waitForTimeout(400);
+  const activo2 = await pg.$$eval('.bn-item.active .bn-label', els => els[0] ? els[0].textContent : '');
+  rec('Congruencia app: ser-profesional.html marca la pestaña Perfil activa', activo2 === 'Perfil', `activo=${activo2}`);
+  await ctx.close();
+}
+
 // ===== Verificación PWA =====
 {
   const ctx = await browser.newContext();
