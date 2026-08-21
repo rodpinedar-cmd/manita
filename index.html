@@ -95,13 +95,27 @@
 <!-- HOME MODO APP (solo visible como app instalada; lo llena app.js) -->
 <section id="appHome" class="app-home" style="display:none;"></section>
 
-<!-- HERO (web / landing) -->
+<!-- HERO (web / landing) — buscador central + populares -->
 <section class="hero web-only">
   <div class="hero-overlay">
-    <h1>Haz tu vida más fácil</h1>
-    <p>Disfruta cualquier servicio, en la comodidad de tu hogar</p>
+    <h1>Encuentra el servicio que necesitas en CDMX</h1>
+    <p>Profesionales de confianza para tu hogar, belleza, clases y más. Sin salir de casa.</p>
+    <form class="hero-search-box" id="heroSearchBox" role="search" aria-label="Buscar servicios">
+      <div class="hsb-field">
+        <span class="hsb-icon" aria-hidden="true">🔍</span>
+        <input type="text" id="heroQuery" placeholder="¿Qué necesitas? Ej. limpieza, plomero, clases..." aria-label="Servicio que buscas">
+      </div>
+      <div class="hsb-field hsb-zone">
+        <span class="hsb-icon" aria-hidden="true">📍</span>
+        <input type="text" id="heroZone" placeholder="Tu zona" aria-label="Tu zona en CDMX">
+      </div>
+      <button type="submit" class="btn btn-primary hsb-btn">Buscar</button>
+    </form>
+    <div class="hero-populares" id="heroPopulares" aria-label="Búsquedas populares">
+      <span class="hp-label">Populares:</span>
+    </div>
   </div>
-  <div class="hero-scene">
+  <div class="hero-scene" aria-hidden="true">
     <div class="scene-house">🏡</div>
     <div class="scene-items">
       <span>🧹</span><span>💅</span><span>🔧</span><span>📚</span><span>🐕</span>

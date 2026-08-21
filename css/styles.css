@@ -137,7 +137,23 @@ a { text-decoration: none; color: inherit; }
   background: linear-gradient(180deg, #1E3A8A 0%, #2563EB 45%, #60A5FA 80%, #BFDBFE 100%);
   overflow: hidden; text-align: center;
 }
-.hero-overlay { position: relative; z-index: 2; padding-top: 60px; color: #fff; }
+.hero-overlay { position: relative; z-index: 2; padding-top: 56px; color: #fff; padding-left: 20px; padding-right: 20px; max-width: 780px; margin: 0 auto; }
+/* Buscador central del hero (mezcla GetNinjas/Webel) */
+.hero-search-box { display: flex; gap: 8px; background: #fff; border-radius: var(--radius-pill); padding: 8px; box-shadow: var(--shadow-lg); max-width: 640px; margin: 28px auto 0; }
+.hsb-field { display: flex; align-items: center; gap: 8px; flex: 1; padding: 0 10px; }
+.hsb-field.hsb-zone { flex: 0 0 34%; border-left: 1px solid var(--border); }
+.hsb-icon { font-size: 16px; flex-shrink: 0; }
+.hsb-field input { border: none; outline: none; width: 100%; font-family: inherit; font-size: var(--fs-base); color: var(--dark); background: transparent; min-height: 44px; }
+.hsb-btn { border-radius: var(--radius-pill); padding: 0 24px; min-height: 48px; flex-shrink: 0; }
+.hero-populares { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; justify-content: center; margin-top: 18px; }
+.hero-populares .hp-label { font-size: var(--fs-sm); opacity: 0.9; }
+.hp-chip { display: inline-flex; align-items: center; background: rgba(255,255,255,0.18); color: #fff; border: 1px solid rgba(255,255,255,0.3); border-radius: var(--radius-pill); padding: 6px 16px; font-size: var(--fs-sm); font-weight: 600; cursor: pointer; transition: background var(--dur) var(--ease); min-height: 44px; }
+.hp-chip:hover { background: rgba(255,255,255,0.3); }
+@media (max-width: 600px){
+  .hero-search-box { flex-direction: column; border-radius: var(--radius); }
+  .hsb-field.hsb-zone { border-left: none; border-top: 1px solid var(--border); }
+  .hsb-btn { width: 100%; }
+}
 .hero-overlay h1 { font-size: 42px; font-weight: 800; margin-bottom: 12px; text-shadow: 0 2px 10px rgba(0,0,0,0.15); }
 .hero-overlay p { font-size: 18px; opacity: 0.95; }
 .highlight { color: var(--primary-text); }

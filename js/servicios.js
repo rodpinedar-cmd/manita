@@ -75,6 +75,9 @@ if (priceMax) priceMax.addEventListener('input', function(){
 // Zona / colonia (texto): refiltra con pequeño debounce
 var zoneFilter = document.getElementById('zoneFilter');
 var zoneTimer = null;
+// Prellenar con la zona que venga del buscador del hero
+var zonaUrl = params.get('zona');
+if (zoneFilter && zonaUrl) zoneFilter.value = zonaUrl;
 if (zoneFilter) zoneFilter.addEventListener('input', function(){
   clearTimeout(zoneTimer); zoneTimer = setTimeout(render, 200);
 });

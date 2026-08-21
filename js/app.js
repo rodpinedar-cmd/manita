@@ -95,14 +95,27 @@ if (popGrid) {
 })();
 
 // Hero search → go to services
-var heroSearch = document.getElementById('heroSearch');
-if (heroSearch) {
-  heroSearch.addEventListener('keydown', function(e) {
-    if (e.key === 'Enter') {
-      var q = this.value.trim().toLowerCase();
-      window.location.href = 'servicios.html?q=' + encodeURIComponent(q);
-    }
+// Buscador central del hero (servicio + zona) → servicios.html
+var heroSearchBox = document.getElementById('heroSearchBox');
+if (heroSearchBox) {
+  heroSearchBox.addEventListener('submit', function(e) {
+    e.preventDefault();
+    var q = (document.getElementById('heroQuery').value || '').trim();
+    var z = (document.getElementById('heroZone').value || '').trim();
+    var params = [];
+    if (q) params.push('q=' + encodeURIComponent(q));
+    if (z) params.push('zona=' + encodeURIComponent(z));
+    window.location.href = 'servicios.html' + (params.length ? '?' + params.join('&') : '');
   });
+}
+
+// Chips de búsquedas populares (usa las categorías reales del proyecto)
+var heroPop = document.getElementById('heroPopulares');
+if (heroPop && typeof CATEGORIES !== 'undefined') {
+  var topCats = CATEGORIES.slice(0, 5);
+  heroPop.insertAdjacentHTML('beforeend', topCats.map(function(c){
+    return '<a class="hp-chip" href="servicios.html?cat=' + c.id + '">' + c.name + '</a>';
+  }).join(''));
 }
 
 // QR Modal
