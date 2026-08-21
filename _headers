@@ -1,0 +1,20 @@
+# Headers para Cloudflare Pages / Netlify (Manita PWA + TWA)
+
+# El Service Worker nunca se cachea (para que las actualizaciones lleguen al instante)
+/sw.js
+  Cache-Control: no-cache
+
+# Digital Asset Links (requisito de la app Android TWA) — debe ser JSON y sin caché
+/.well-known/assetlinks.json
+  Content-Type: application/json
+  Cache-Control: no-cache
+
+# El manifest de la PWA como tipo correcto
+/manifest.json
+  Content-Type: application/manifest+json
+
+# CSS y JS: revalidar para que los cambios de diseño lleguen pronto
+/css/*
+  Cache-Control: public, max-age=0, must-revalidate
+/js/*
+  Cache-Control: public, max-age=0, must-revalidate
