@@ -130,16 +130,14 @@
   </div>
 </section>
 
-<footer class="footer">
-  <div class="footer-bottom"><div class="container">© 2026 Manita · Hecho en CDMX 🇲🇽</div></div>
-</footer>
+<footer class="footer" id="appFooter"></footer>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="js/supabase-client.js"></script>
 <script src="js/components.js"></script>
 <script src="js/data.js"></script>
 <script>
-mountHeader({ search: false }); mountBottomNav('perfil');
+mountHeader({ search: false }); mountFooter(); mountBottomNav('perfil');
 document.getElementById('proCat').innerHTML = CATEGORIES.map(function(c){ return '<option value="'+c.id+'">'+c.icon+' '+c.name+'</option>'; }).join('');
 
 // Ayuda contextual del selector "¿Cómo cobras?"

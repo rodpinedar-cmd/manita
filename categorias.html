@@ -33,16 +33,14 @@
   </div>
 </section>
 
-<footer class="footer">
-  <div class="footer-bottom"><div class="container">© 2026 Manita · Hecho en CDMX 🇲🇽</div></div>
-</footer>
+<footer class="footer" id="appFooter"></footer>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="js/supabase-client.js"></script>
 <script src="js/components.js"></script>
 <script src="js/data.js"></script>
 <script>
-mountHeader(); mountBottomNav('buscar');
+mountHeader(); mountFooter(); mountBottomNav('buscar');
 document.getElementById('categoriesGrid').innerHTML = CATEGORIES.map(function(c) {
   return '<a href="servicios.html?cat=' + c.id + '" class="category-card">' +
     '<div class="category-icon">' + c.icon + '</div><h3>' + c.name + '</h3><p>' + c.desc + '</p></a>';
