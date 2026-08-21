@@ -91,6 +91,25 @@ function slide(bgc){ n++; const s = p.addSlide(); s.background = { color: bgc ||
   foot(s,n);
 }
 
+// ---- 4b. Más capturas WEB ----
+{
+  const s = slide(); bar(s); tag(s,'La web'); title(s,'Recorrido por la web');
+  const shots = [
+    ['18-inicio-web-hero.png','Portada / hero'],
+    ['13-categorias-web.png','Categorías'],
+    ['14-como-funciona-web.png','Cómo funciona'],
+    ['15-ser-profesional-web.png','Únete como profesional'],
+    ['16-perfil-web.png','Perfil del profesional'],
+    ['17-login-web.png','Acceso / registro'],
+  ];
+  shots.forEach((sh,i)=>{
+    const col=i%3,row=Math.floor(i/3); const x=0.7+col*4.05, y=1.9+row*2.65;
+    if (has(sh[0])) s.addImage({ path: img(sh[0]), x, y, w:3.8, h:2.3, sizing:{type:'contain',w:3.8,h:2.3} });
+    s.addText(sh[1], { x, y:y+2.25, w:3.8, h:0.35, fontSize:11, align:'center', color:GRAY });
+  });
+  foot(s,n);
+}
+
 // ---- 5. Capturas APP ----
 {
   const s = slide(); bar(s); tag(s,'La app'); title(s,'Versión app (instalada)');
@@ -282,7 +301,13 @@ function slide(bgc){ n++; const s = p.addSlide(); s.background = { color: bgc ||
   s.addText('manita-cdmx.netlify.app', { x:0, y:5.3, w:W, h:0.5, fontSize:15, align:'center', color:'A9B4D9' });
 }
 
-const OUT = join(process.cwd(), 'Manita_Presentacion.pptx');
-await p.writeFile({ fileName: OUT });
+let OUT = join(process.cwd(), 'Manita_Presentacion.pptx');
+try {
+  await p.writeFile({ fileName: OUT });
+} catch (e) {
+  // Si el archivo está abierto (bloqueado), escribe una copia con sufijo.
+  OUT = join(process.cwd(), 'Manita_Presentacion_v2.pptx');
+  await p.writeFile({ fileName: OUT });
+}
 console.log('OK · ' + n + ' slides → ' + OUT);
 

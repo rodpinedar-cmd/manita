@@ -81,7 +81,14 @@ const SHOTS = [
   { file:'09-login-iphone.png',            url:'login.html?app=1',      dev:'iphone' },
   { file:'10-descarga-modal-iphone.png',   url:'index.html?app=1',      dev:'iphone', clickQR:true },
   { file:'11-onboarding-iphone.png',       url:'index.html?onboarding=1', dev:'iphone' },
-  { file:'12-legal-desktop.png',           url:'legal.html',            dev:'desktop', full:true }
+  { file:'12-legal-desktop.png',           url:'legal.html',            dev:'desktop', full:true },
+  // Más vistas de WEB (escritorio) para la presentación
+  { file:'13-categorias-web.png',          url:'categorias.html',       dev:'desktop', full:true },
+  { file:'14-como-funciona-web.png',       url:'como-funciona.html',    dev:'desktop', full:true },
+  { file:'15-ser-profesional-web.png',     url:'ser-profesional.html',  dev:'desktop', full:true },
+  { file:'16-perfil-web.png',              url:'perfil.html?id=demo',   dev:'desktop', full:true },
+  { file:'17-login-web.png',               url:'login.html',            dev:'desktop' },
+  { file:'18-inicio-web-hero.png',         url:'index.html',            dev:'desktop' }
 ];
 async function shoot(){
   for (const s of SHOTS){
