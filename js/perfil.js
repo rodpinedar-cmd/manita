@@ -69,7 +69,9 @@ function renderProfile(cat) {
     '<div>' +
       '<div class="profile-header"><div class="profile-top">' +
         '<div class="profile-avatar">' + avatarFor(pro) + '</div>' +
-        '<div class="profile-name">' + escapeHtml(pro.service_name) + (pro.verified ? ' <span class="verified" title="Verificado" aria-label="Verificado">✔️</span>' : '') + '</div>' +
+        '<div class="profile-name">' + escapeHtml(pro.service_name) + (pro.verified ? ' <span class="verified" title="Verificado" aria-label="Verificado">✔️</span>' : '') +
+          '<button type="button" class="profile-fav" id="profileFav" aria-label="Guardar en favoritos" aria-pressed="false">🤍</button>' +
+        '</div>' +
         '<div class="profile-service">' + (cat ? cat.name : '') + ' · 📍 ' + escapeHtml(pro.zone || 'CDMX') + '</div>' +
         '<div class="profile-stats">' +
           '<div class="pstat"><b>' + (reviews > 0 ? ('★ ' + rating) : '—') + '</b><span>' + (reviews > 0 ? 'valoración' : 'sin reseñas') + '</span></div>' +
@@ -77,7 +79,9 @@ function renderProfile(cat) {
           '<div class="pstat"><b>' + (pro.verified ? '✔️' : '—') + '</b><span>' + (pro.verified ? 'verificado' : 'sin verificar') + '</span></div>' +
         '</div>' +
       '</div></div>' +
-      '<div class="section-block"><h2>Sobre mí</h2><p style="color:var(--gray)">' + escapeHtml(pro.bio || 'Este profesional aún no agregó una descripción.') + '</p></div>' +
+      '<div class="section-block"><h2>Sobre mí</h2><p style="color:var(--gray)">' + escapeHtml(pro.bio || 'Este profesional aún no agregó una descripción.') + '</p>' +
+        recurBadge(pro.bio) + '</div>' +
+      galeriaBloque() +
       breakdown +
       '<div class="section-block"><h2>Reseñas</h2><div id="reviewsBox"><div class="skeleton skeleton-line"></div></div></div>' +
     '</div>' +
@@ -107,6 +111,29 @@ function renderProfile(cat) {
   loadAvailability();
   loadSavedAddresses();
   mountActionBar();
+}
+
+// Muestra el descuento por recurrencia si el pro lo indicó en su bio (patrón "N% de descuento").
+function recurBadge(bio) {
+  var m = String(bio || '').match(/(\d{1,2})\s*%\s*de\s*descuento/i);
+  if (!m) return '';
+  return '<div class="recur-badge" role="note">🔁 <strong>' + m[1] + '% de descuento</strong> para clientes recurrentes</div>';
+}
+
+// Sección "Trabajos anteriores". Sin Storage aún: muestra un estado vacío honesto
+// (no inventamos fotos). Cuando el pro suba su portafolio se poblará aquí.
+function galeriaBloque() {
+  var fotos = Array.isArray(pro.portfolio) ? pro.portfolio : [];
+  if (fotos.length) {
+    return '<div class="section-block"><h2>Trabajos anteriores</h2><div class="portfolio-grid">' +
+      fotos.map(function(url){ return '<img class="portfolio-img" src="' + escapeHtml(url) + '" alt="Trabajo anterior" loading="lazy">'; }).join('') +
+      '</div></div>';
+  }
+  return '<div class="section-block"><h2>Trabajos anteriores</h2>' +
+    '<div class="state-empty" style="padding:24px;text-align:center;">' +
+    '<div style="font-size:32px;margin-bottom:8px;">📷</div>' +
+    '<p style="color:var(--gray);">Este profesional aún no ha subido fotos de sus trabajos.</p>' +
+    '</div></div>';
 }
 
 // Barra de acción fija (móvil): precio + botón que lleva al formulario de reserva

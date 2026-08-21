@@ -30,6 +30,10 @@
 
 .section-block { background: #fff; border: 1px solid var(--border); border-radius: var(--radius); padding: var(--sp-5); box-shadow: var(--shadow-xs); margin-bottom: var(--sp-5); }
 .section-block h2 { font-size: var(--fs-md); margin-bottom: var(--sp-4); font-weight: 800; }
+.recur-badge { display: inline-flex; align-items: center; gap: 6px; margin-top: var(--sp-3); background: var(--mint); color: var(--primary-text); font-size: var(--fs-sm); padding: 8px 12px; border-radius: var(--radius-pill); }
+.portfolio-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--sp-2); }
+.portfolio-img { width: 100%; aspect-ratio: 1; object-fit: cover; border-radius: var(--radius-sm); }
+@media (max-width: 480px){ .portfolio-grid { grid-template-columns: repeat(2, 1fr); } }
 
 /* Rating desglosado con barras */
 .rating-breakdown { display: flex; flex-direction: column; gap: var(--sp-3); }
