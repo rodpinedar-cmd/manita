@@ -33,6 +33,15 @@
 .st-pending { background:#FFF3E0; color:var(--warning-text); }
 .st-confirmed { background:#E6F7F1; color:var(--success-text); }
 .st-cancelled { background:#FDECEC; color:var(--danger); }
+/* Disponibilidad */
+.avail-box { background:#fff; border:1px solid var(--border); border-radius:var(--radius); box-shadow:var(--shadow-xs); overflow:hidden; }
+.avail-box summary { padding:var(--sp-4); font-weight:700; color:var(--navy); cursor:pointer; min-height:44px; display:flex; align-items:center; gap:var(--sp-2); }
+.avail-body { padding:0 var(--sp-4) var(--sp-4); }
+.avail-day { display:flex; align-items:center; gap:var(--sp-3); padding:var(--sp-2) 0; flex-wrap:wrap; min-height:44px; }
+.avail-day label.dchk { display:flex; align-items:center; gap:var(--sp-2); min-width:120px; font-size:var(--fs-sm); font-weight:600; color:var(--navy); cursor:pointer; }
+.avail-day input[type=checkbox] { width:22px; height:22px; accent-color:var(--primary); }
+.avail-day select { min-height:44px; padding:var(--sp-2) var(--sp-3); border:1px solid var(--border); border-radius:var(--radius-sm); font-family:inherit; }
+.avail-day .to { color:var(--gray); font-size:var(--fs-sm); }
 </style>
 </head>
 <body>
@@ -45,6 +54,17 @@
     <div class="pp-stat hot"><b id="stPending">0</b><span>Pendientes</span></div>
     <div class="pp-stat"><b id="stConfirmed">0</b><span>Confirmadas</span></div>
     <div class="pp-stat"><b id="stDone">0</b><span>Completadas</span></div>
+  </div>
+  <!-- Editar disponibilidad (horario del profesional) -->
+  <div id="availSection" style="display:none;margin-bottom:var(--sp-5);">
+    <details class="avail-box">
+      <summary>🗓️ Mi disponibilidad <span id="availSummary" style="color:var(--gray);font-weight:400;font-size:var(--fs-sm);"></span></summary>
+      <div class="avail-body">
+        <p style="color:var(--gray);font-size:var(--fs-sm);margin-bottom:var(--sp-3);">Marca los días y el horario en que atiendes. Los clientes solo podrán reservarte en esas horas.</p>
+        <div id="availDays"></div>
+        <button type="button" class="btn btn-primary" id="availSave" style="margin-top:var(--sp-3);min-height:44px;">Guardar disponibilidad</button>
+      </div>
+    </details>
   </div>
   <div class="pp-filters" id="ppFilters" style="display:none;" role="tablist">
     <button type="button" class="pp-fbtn active" data-f="all" role="tab" aria-selected="true">Todas</button>
@@ -88,6 +108,66 @@ function pasaFiltro(status){
 
 mountHeader({ search: false });
 mountBottomNav('perfil');
+
+// ===== Disponibilidad del profesional =====
+var DIAS = ['Domingo','Lunes','Martes','Miércoles','Jueves','Viernes','Sábado'];
+var HORAS = []; for (var h=6; h<=22; h++){ HORAS.push((h<10?'0':'')+h+':00'); }
+var MI_PRO_ID = null;
+
+function opcionesHora(sel){ return HORAS.map(function(hh){ return '<option value="'+hh+'"'+(hh===sel?' selected':'')+'>'+hh+'</option>'; }).join(''); }
+
+function construirDias(actual){
+  // actual: array {weekday, start_time, end_time}. Marca lo que ya existe.
+  var byDay = {}; (actual||[]).forEach(function(s){ byDay[s.weekday] = s; });
+  var box = document.getElementById('availDays');
+  // Orden lun-sáb-dom para que sea natural
+  var orden = [1,2,3,4,5,6,0];
+  box.innerHTML = orden.map(function(d){
+    var s = byDay[d];
+    var on = !!s;
+    var start = s ? String(s.start_time).slice(0,5) : '08:00';
+    var end = s ? String(s.end_time).slice(0,5) : '20:00';
+    return '<div class="avail-day">' +
+      '<label class="dchk"><input type="checkbox" data-day="'+d+'"'+(on?' checked':'')+' aria-label="Atiendo '+DIAS[d]+'"> '+DIAS[d]+'</label>' +
+      '<select data-start="'+d+'" aria-label="Hora inicio '+DIAS[d]+'">'+opcionesHora(start)+'</select>' +
+      '<span class="to">a</span>' +
+      '<select data-end="'+d+'" aria-label="Hora fin '+DIAS[d]+'">'+opcionesHora(end)+'</select>' +
+    '</div>';
+  }).join('');
+}
+
+async function cargarDisponibilidad(){
+  var mp = await misProfesionales();
+  if (mp.error || !mp.data.length){ document.getElementById('availSection').style.display='none'; return; }
+  MI_PRO_ID = mp.data[0].id;
+  var disp = await disponibilidadProfesional(MI_PRO_ID);
+  var slots = disp.data || [];
+  construirDias(slots);
+  document.getElementById('availSummary').textContent = slots.length ? '· ' + slots.length + ' día(s) activos' : '· sin horario';
+  document.getElementById('availSection').style.display = 'block';
+
+  document.getElementById('availSave').onclick = async function(){
+    var btn = this; btn.disabled = true; btn.textContent = 'Guardando...';
+    var slots = [];
+    var ok = true;
+    document.querySelectorAll('#availDays .avail-day').forEach(function(row){
+      var chk = row.querySelector('input[type=checkbox]');
+      if (!chk.checked) return;
+      var d = parseInt(chk.getAttribute('data-day'));
+      var st = row.querySelector('[data-start="'+d+'"]').value;
+      var en = row.querySelector('[data-end="'+d+'"]').value;
+      if (en <= st) ok = false;
+      slots.push({ weekday:d, start_time:st, end_time:en });
+    });
+    if (!ok){ toast('La hora de fin debe ser mayor que la de inicio.', 'error'); btn.disabled=false; btn.textContent='Guardar disponibilidad'; return; }
+    var res = await guardarDisponibilidad(MI_PRO_ID, slots);
+    btn.disabled = false; btn.textContent = 'Guardar disponibilidad';
+    if (res.error){ toast('No pudimos guardar. Intenta de nuevo.', 'error'); return; }
+    toast('Disponibilidad actualizada.', 'success');
+    document.getElementById('availSummary').textContent = slots.length ? '· ' + slots.length + ' día(s) activos' : '· sin horario';
+  };
+}
+cargarDisponibilidad();
 
 // Filtros por estado
 document.querySelectorAll('.pp-fbtn').forEach(function(btn){

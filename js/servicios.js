@@ -78,6 +78,19 @@ var zoneTimer = null;
 if (zoneFilter) zoneFilter.addEventListener('input', function(){
   clearTimeout(zoneTimer); zoneTimer = setTimeout(render, 200);
 });
+// Ordenar resultados
+var sortBy = document.getElementById('sortBy');
+if (sortBy) sortBy.addEventListener('change', render);
+
+// Aplica el orden elegido a la lista de profesionales
+function ordenar(pros){
+  var by = sortBy ? sortBy.value : 'relevance';
+  var arr = pros.slice();
+  if (by === 'price_asc') arr.sort(function(a,b){ return Number(a.price) - Number(b.price); });
+  else if (by === 'price_desc') arr.sort(function(a,b){ return Number(b.price) - Number(a.price); });
+  else if (by === 'rating') arr.sort(function(a,b){ return (Number(b.rating)||0) - (Number(a.rating)||0) || (b.reviews_count||0) - (a.reviews_count||0); });
+  return arr;
+}
 
 // Chips de filtro por categoría (móvil) — patrón app, scroll horizontal
 function renderChips() {
@@ -156,6 +169,8 @@ async function render() {
     list.innerHTML = '<div class="empty">😕 No encontramos profesionales con esos filtros. Prueba con otra categoría.</div>';
     return;
   }
+
+  pros = ordenar(pros);
 
   list.innerHTML = pros.map(function(p) {
     // Solo se muestran badges basados en datos reales (verificado). Sin métricas inventadas.

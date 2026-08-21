@@ -29,6 +29,8 @@
 .filter-group input { accent-color: var(--primary); width: 22px; height: 22px; }
 .results-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: var(--sp-5); flex-wrap: wrap; gap: var(--sp-3); }
 .results-header h1 { font-size: var(--fs-xl); letter-spacing: -0.3px; }
+.results-sort select { min-height: 44px; padding: var(--sp-2) var(--sp-4); border: 1px solid var(--border); border-radius: var(--radius-sm); background: #fff; font-family: inherit; font-size: var(--fs-sm); font-weight: 600; color: var(--navy); cursor: pointer; }
+.sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0; }
 .results-count { color: var(--gray); font-size: var(--fs-sm); }
 
 /* Chips de filtro (visibles en móvil) */
@@ -104,6 +106,15 @@
         <div>
           <h1 id="resultsTitle">Profesionales</h1>
           <div class="results-count" id="resultsCount"></div>
+        </div>
+        <div class="results-sort">
+          <label for="sortBy" class="sr-only">Ordenar por</label>
+          <select id="sortBy" aria-label="Ordenar profesionales por">
+            <option value="relevance">Relevancia</option>
+            <option value="rating">Mejor calificados</option>
+            <option value="price_asc">Precio: menor a mayor</option>
+            <option value="price_desc">Precio: mayor a menor</option>
+          </select>
         </div>
       </div>
       <div class="pros-list" id="prosList"></div>

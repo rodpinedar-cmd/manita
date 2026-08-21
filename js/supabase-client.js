@@ -115,6 +115,33 @@ async function transicionReserva(bookingId, nuevoEstado) {
   return { data, error: traducirError(error) };
 }
 
+// ===== DISPONIBILIDAD DEL PROFESIONAL (lado dueño) =====
+// Obtiene el/los profesional(es) que pertenecen al usuario autenticado.
+async function misProfesionales() {
+  const user = await usuarioActual();
+  if (!user) return { data: [], error: null };
+  const { data, error } = await supa.from('professionals')
+    .select('id, service_name, zone, price').eq('user_id', user.id);
+  return { data: data || [], error };
+}
+
+// Reemplaza la disponibilidad semanal de un profesional del que soy dueño.
+// slots: array de { weekday (0-6), start_time 'HH:MM', end_time 'HH:MM' }.
+// Borra la anterior e inserta la nueva (transacción simple del lado cliente vía RLS del dueño).
+async function guardarDisponibilidad(professionalId, slots) {
+  const user = await usuarioActual();
+  if (!user) return { error: { message: 'Debes iniciar sesión' } };
+  // Borra la existente del profesional
+  const del = await supa.from('professional_availability').delete().eq('professional_id', professionalId);
+  if (del.error) return { error: del.error };
+  if (!slots || !slots.length) return { data: [], error: null };
+  const rows = slots.map(function (s) {
+    return { professional_id: professionalId, weekday: s.weekday, start_time: s.start_time, end_time: s.end_time };
+  });
+  const { data, error } = await supa.from('professional_availability').insert(rows).select();
+  return { data, error };
+}
+
 // Reservas que recibe el profesional autenticado
 async function reservasDelProfesional() {
   const user = await usuarioActual();

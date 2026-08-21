@@ -90,7 +90,9 @@ for (const page of PAGES) {
   await pg.waitForTimeout(400);
   const hasPrice = await pg.$('#priceMax') !== null;
   const hasZone = await pg.$('#zoneFilter') !== null;
+  const hasSort = await pg.$('#sortBy') !== null;
   rec('Servicios: filtros de precio y zona presentes', hasPrice && hasZone, `price=${hasPrice} zone=${hasZone}`);
+  rec('Servicios: selector de orden presente con 4 opciones', hasSort && (await pg.$$eval('#sortBy option', o=>o.length))===4, `sort=${hasSort}`);
   if (hasPrice) {
     // Mover el slider y escribir zona no debe lanzar errores JS
     await pg.$eval('#priceMax', el => { el.value = 300; el.dispatchEvent(new Event('input', {bubbles:true})); });

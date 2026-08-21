@@ -230,6 +230,11 @@ ALTER TABLE professional_availability ENABLE ROW LEVEL SECURITY;
 ALTER TABLE professional_time_off ENABLE ROW LEVEL SECURITY;
 DROP POLICY IF EXISTS "Disponibilidad pública" ON professional_availability;
 CREATE POLICY "Disponibilidad pública" ON professional_availability FOR SELECT USING (TRUE);
+-- El dueño del profesional puede crear/editar/borrar SU disponibilidad
+DROP POLICY IF EXISTS "Dueño edita disponibilidad" ON professional_availability;
+CREATE POLICY "Dueño edita disponibilidad" ON professional_availability FOR ALL
+  USING (auth.uid() = (SELECT user_id FROM professionals WHERE id = professional_id))
+  WITH CHECK (auth.uid() = (SELECT user_id FROM professionals WHERE id = professional_id));
 
 -- ===== Trigger de signup A PRUEBA DE FALLOS (fin de "Database error saving user") =====
 CREATE OR REPLACE FUNCTION handle_new_user()
