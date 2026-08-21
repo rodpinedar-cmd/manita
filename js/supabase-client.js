@@ -146,6 +146,64 @@ async function guardarDisponibilidad(professionalId, slots) {
   return { data, error };
 }
 
+// ===== FOTOS: perfil (avatar) y portafolio (trabajos) =====
+// Requiere haber corrido supabase/ACTIVAR_FOTOS.sql (buckets + columnas).
+// Convención de ruta: {bucket}/{user_id}/{archivo} — obligatoria para las policies.
+
+function _extImagen(file) {
+  var t = (file && file.type) || '';
+  if (t.indexOf('png') > -1) return 'png';
+  if (t.indexOf('webp') > -1) return 'webp';
+  return 'jpg';
+}
+
+// Sube (o reemplaza) la foto de perfil del profesional y guarda la URL pública.
+async function subirAvatar(professionalId, file) {
+  const user = await usuarioActual();
+  if (!user) return { error: { message: 'Debes iniciar sesión' } };
+  if (!file || file.size > 2 * 1024 * 1024) return { error: { message: 'La imagen debe pesar menos de 2 MB.' } };
+  const path = user.id + '/avatar-' + Date.now() + '.' + _extImagen(file);
+  const up = await supa.storage.from('avatars').upload(path, file, { upsert: true, contentType: file.type });
+  if (up.error) return { error: up.error };
+  const pub = supa.storage.from('avatars').getPublicUrl(path);
+  const url = pub.data.publicUrl;
+  const { data, error } = await supa.from('professionals')
+    .update({ avatar_url: url }).eq('id', professionalId).eq('user_id', user.id).select();
+  return { data: data, url: url, error: error };
+}
+
+// Agrega una foto de trabajo al portafolio (arreglo de URLs) del profesional.
+async function subirTrabajo(professionalId, file) {
+  const user = await usuarioActual();
+  if (!user) return { error: { message: 'Debes iniciar sesión' } };
+  if (!file || file.size > 5 * 1024 * 1024) return { error: { message: 'La imagen debe pesar menos de 5 MB.' } };
+  const path = user.id + '/trabajo-' + Date.now() + '.' + _extImagen(file);
+  const up = await supa.storage.from('portfolio').upload(path, file, { contentType: file.type });
+  if (up.error) return { error: up.error };
+  const url = supa.storage.from('portfolio').getPublicUrl(path).data.publicUrl;
+  // Lee el portafolio actual y le agrega la nueva URL (máx. 6 fotos)
+  const cur = await supa.from('professionals').select('portfolio').eq('id', professionalId).maybeSingle();
+  if (cur.error) return { error: cur.error };
+  var lista = (cur.data && cur.data.portfolio) || [];
+  if (lista.length >= 6) return { error: { message: 'Máximo 6 fotos en tu portafolio.' } };
+  lista = lista.concat([url]);
+  const { data, error } = await supa.from('professionals')
+    .update({ portfolio: lista }).eq('id', professionalId).eq('user_id', user.id).select();
+  return { data: data, url: url, error: error };
+}
+
+// Quita una URL del portafolio del profesional.
+async function borrarTrabajo(professionalId, url) {
+  const user = await usuarioActual();
+  if (!user) return { error: { message: 'Debes iniciar sesión' } };
+  const cur = await supa.from('professionals').select('portfolio').eq('id', professionalId).maybeSingle();
+  if (cur.error) return { error: cur.error };
+  var lista = ((cur.data && cur.data.portfolio) || []).filter(function (u) { return u !== url; });
+  const { data, error } = await supa.from('professionals')
+    .update({ portfolio: lista }).eq('id', professionalId).eq('user_id', user.id).select();
+  return { data: data, error: error };
+}
+
 // Reservas que recibe el profesional autenticado
 async function reservasDelProfesional() {
   const user = await usuarioActual();

@@ -59,13 +59,17 @@ Origen: capturas reales de Webel (referencia de diseño/UX) + peticiones del usu
 
 > Verificado: browser-smoke 50/50 · a11y 0 violaciones · smoke-local 70/70 · user-sim 0 hallazgos.
 
-### Fase 2 — Requiere Supabase Storage (fotos) — CONFIG TUYA NECESARIA
-> Storage NO está activado en tu proyecto. Hay que correr el SQL de storage (buckets avatars,
-> portfolio) — está en las migraciones 0009 pero se omitió del APLICAR_TODO por seguridad.
-- [ ] **Foto de perfil** del profesional (sube a bucket `avatars`, se muestra en tarjetas/perfil).
-- [ ] **Foto de perfil** del cliente (opcional).
-- [ ] **Galería de trabajos anteriores** (bucket `portfolio`) en el perfil del pro.
-- [ ] Guía visual de "buena foto" (como Webel), validación de tamaño/tipo.
+### Fase 2 — Fotos: CÓDIGO LISTO ✅ · falta que TÚ corras el SQL
+> El código ya está implementado y probado. Para activarlo, corre UNA VEZ en el SQL Editor de
+> Supabase el archivo `supabase/ACTIVAR_FOTOS.sql` (crea buckets avatars/portfolio + policies +
+> columnas avatar_url y portfolio en professionals). En cuanto lo corras, la subida funciona sola.
+- [x] **Foto de perfil** del profesional: función `subirAvatar()` + UI en pro-panel (preview,
+      validación 2MB, tipos). Se muestra en el perfil (`avatarFor` ya usa `avatar_url`).
+- [x] **Galería de trabajos anteriores** (bucket `portfolio`): `subirTrabajo()`/`borrarTrabajo()`
+      + UI en pro-panel (hasta 6 fotos) + sección "Trabajos anteriores" en el perfil público.
+- [x] Guía visual de "buena foto" (texto de ayuda) + validación de tamaño/tipo.
+- [x] Degradación elegante: si no has corrido el SQL, muestra un aviso claro sin romper la app.
+- [ ] **Foto de perfil del cliente** (opcional) — pendiente, menor prioridad.
 
 ### Fase 3 — Backend / operación
 - [ ] Editar disponibilidad avanzada (varios rangos por día, tipo "añadir horas").
@@ -79,7 +83,8 @@ Origen: capturas reales de Webel (referencia de diseño/UX) + peticiones del usu
 ---
 
 ## D. Pendientes que dependen de TI (no puedo hacerlos yo)
-- [ ] Activar Supabase Storage (buckets) para habilitar fotos y galería.
+- [ ] **Correr `supabase/ACTIVAR_FOTOS.sql`** en el SQL Editor → habilita fotos y galería (el
+      código ya está listo, solo falta esto).
 - [ ] Config Auth → URL (Site URL + Redirect) para quitar el localhost:3000.
 - [ ] Correr ADD_EDITAR_DISPONIBILIDAD.sql (editar horario del pro).
 - [ ] Decidir modelo económico (comisión) y revisión legal antes de cobrar.

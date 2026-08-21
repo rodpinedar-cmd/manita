@@ -66,6 +66,30 @@
       </div>
     </details>
   </div>
+  <!-- Foto de perfil y portafolio de trabajos -->
+  <div id="fotosSection" style="display:none;margin-bottom:var(--sp-5);">
+    <details class="avail-box">
+      <summary>📸 Mi foto y trabajos <span id="fotosSummary" style="color:var(--gray);font-weight:400;font-size:var(--fs-sm);"></span></summary>
+      <div class="avail-body">
+        <p style="color:var(--gray);font-size:var(--fs-sm);margin-bottom:var(--sp-3);">Una buena foto y ejemplos de tus trabajos generan más confianza y reservas. Usa buena luz, cara visible y evita datos de contacto.</p>
+        <div style="display:flex;align-items:center;gap:14px;margin-bottom:var(--sp-4);">
+          <div id="avatarPreview" style="width:64px;height:64px;border-radius:50%;background:var(--mint);color:var(--primary-text);display:flex;align-items:center;justify-content:center;font-size:26px;overflow:hidden;flex-shrink:0;">👤</div>
+          <div>
+            <label class="btn btn-ghost" style="min-height:44px;cursor:pointer;">Cambiar foto de perfil
+              <input type="file" id="avatarInput" accept="image/jpeg,image/png,image/webp" style="display:none;">
+            </label>
+            <div style="font-size:var(--fs-xs);color:var(--gray);margin-top:4px;">JPG, PNG o WEBP · máx 2 MB</div>
+          </div>
+        </div>
+        <div style="font-size:var(--fs-sm);font-weight:700;color:var(--navy);margin-bottom:var(--sp-2);">Trabajos anteriores (hasta 6)</div>
+        <div id="portfolioGrid" style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:var(--sp-3);"></div>
+        <label class="btn btn-ghost" style="min-height:44px;cursor:pointer;">Agregar trabajo
+          <input type="file" id="portfolioInput" accept="image/jpeg,image/png,image/webp" style="display:none;">
+        </label>
+      </div>
+    </details>
+  </div>
+
   <div class="pp-filters" id="ppFilters" style="display:none;" role="tablist">
     <button type="button" class="pp-fbtn active" data-f="all" role="tab" aria-selected="true">Todas</button>
     <button type="button" class="pp-fbtn" data-f="pending" role="tab" aria-selected="false">Pendientes</button>
@@ -168,6 +192,61 @@ async function cargarDisponibilidad(){
   };
 }
 cargarDisponibilidad();
+
+// ===== Foto de perfil y portafolio =====
+function esc2(s){return String(s==null?'':s).replace(/[&<>"']/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];});}
+async function cargarFotos(){
+  var mp = await misProfesionales();
+  if (mp.error || !mp.data.length){ return; }
+  var proId = mp.data[0].id;
+  // Trae avatar y portfolio actuales (puede no existir la columna si no corrieron el SQL)
+  var det = await obtenerProfesional(proId);
+  var p = (det && det.data) || {};
+  var sec = document.getElementById('fotosSection');
+  sec.style.display = 'block';
+
+  var prev = document.getElementById('avatarPreview');
+  if (p.avatar_url){ prev.innerHTML = '<img src="'+esc2(p.avatar_url)+'" alt="" style="width:100%;height:100%;object-fit:cover;">'; }
+
+  function pintarPortfolio(lista){
+    var grid = document.getElementById('portfolioGrid');
+    lista = lista || [];
+    document.getElementById('fotosSummary').textContent = (p.avatar_url?'· con foto ':'') + (lista.length?('· '+lista.length+' trabajo(s)'):'');
+    if (!lista.length){ grid.innerHTML = '<div style="grid-column:1/-1;color:var(--gray);font-size:var(--fs-sm);">Aún no agregas trabajos.</div>'; return; }
+    grid.innerHTML = lista.map(function(u){
+      return '<div style="position:relative;"><img src="'+esc2(u)+'" alt="Trabajo" style="width:100%;aspect-ratio:1;object-fit:cover;border-radius:10px;">'+
+        '<button type="button" data-del="'+esc2(u)+'" aria-label="Quitar trabajo" style="position:absolute;top:4px;right:4px;width:28px;height:28px;border:none;border-radius:50%;background:rgba(0,0,0,.6);color:#fff;cursor:pointer;">✕</button></div>';
+    }).join('');
+    grid.querySelectorAll('[data-del]').forEach(function(b){
+      b.onclick = async function(){
+        var r = await borrarTrabajo(proId, b.getAttribute('data-del'));
+        if (r.error){ toast('No se pudo quitar.', 'error'); return; }
+        p.portfolio = (r.data && r.data[0] && r.data[0].portfolio) || [];
+        pintarPortfolio(p.portfolio); toast('Trabajo quitado.', 'info');
+      };
+    });
+  }
+  pintarPortfolio(p.portfolio);
+
+  document.getElementById('avatarInput').onchange = async function(){
+    var f = this.files && this.files[0]; if (!f) return;
+    toast('Subiendo foto...', 'info');
+    var r = await subirAvatar(proId, f);
+    if (r.error){ toast(r.error.message || 'No se pudo subir. ¿Activaste el almacenamiento?', 'error'); return; }
+    prev.innerHTML = '<img src="'+esc2(r.url)+'" alt="" style="width:100%;height:100%;object-fit:cover;">';
+    p.avatar_url = r.url; pintarPortfolio(p.portfolio); toast('Foto actualizada.', 'success');
+  };
+  document.getElementById('portfolioInput').onchange = async function(){
+    var f = this.files && this.files[0]; if (!f) return;
+    toast('Subiendo trabajo...', 'info');
+    var r = await subirTrabajo(proId, f);
+    this.value = '';
+    if (r.error){ toast(r.error.message || 'No se pudo subir. ¿Activaste el almacenamiento?', 'error'); return; }
+    p.portfolio = (r.data && r.data[0] && r.data[0].portfolio) || (p.portfolio||[]).concat([r.url]);
+    pintarPortfolio(p.portfolio); toast('Trabajo agregado.', 'success');
+  };
+}
+cargarFotos();
 
 // Filtros por estado
 document.querySelectorAll('.pp-fbtn').forEach(function(btn){
