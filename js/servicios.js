@@ -65,6 +65,19 @@ catFilters.addEventListener('change', function(e) {
 });
 document.getElementById('availToday').addEventListener('change', render);
 document.getElementById('verifiedOnly').addEventListener('change', render);
+// Precio máximo (slider): muestra el valor y refiltra
+var priceMax = document.getElementById('priceMax');
+if (priceMax) priceMax.addEventListener('input', function(){
+  var v = parseInt(priceMax.value);
+  document.getElementById('priceMaxVal').textContent = (v >= 1000) ? 'Sin límite' : ('$' + v);
+  render();
+});
+// Zona / colonia (texto): refiltra con pequeño debounce
+var zoneFilter = document.getElementById('zoneFilter');
+var zoneTimer = null;
+if (zoneFilter) zoneFilter.addEventListener('input', function(){
+  clearTimeout(zoneTimer); zoneTimer = setTimeout(render, 200);
+});
 
 // Chips de filtro por categoría (móvil) — patrón app, scroll horizontal
 function renderChips() {
@@ -120,6 +133,18 @@ async function render() {
   // Verified filter
   if (document.getElementById('verifiedOnly').checked) pros = pros.filter(function(p){ return p.verified; });
   if (document.getElementById('availToday').checked) pros = pros.filter(function(p){ return p.available; });
+  // Precio máximo
+  var pmaxEl = document.getElementById('priceMax');
+  if (pmaxEl) {
+    var pmax = parseInt(pmaxEl.value);
+    if (pmax < 1000) pros = pros.filter(function(p){ return Number(p.price) <= pmax; });
+  }
+  // Zona / colonia (coincidencia parcial, sin distinguir acentos/mayúsculas)
+  var zoneEl = document.getElementById('zoneFilter');
+  if (zoneEl && zoneEl.value.trim()) {
+    var z = norm(zoneEl.value.trim());
+    pros = pros.filter(function(p){ return norm(p.zone || '').indexOf(z) !== -1; });
+  }
 
   // Title
   var cat = getCategory(currentCat);
@@ -154,6 +179,9 @@ async function render() {
     '</a>';
   }).join('');
 }
+
+// Normaliza texto para búsqueda: minúsculas y sin acentos (coincidencias flexibles)
+function norm(s){ return String(s||'').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,''); }
 
 function escapeHtml(s) {
   return String(s == null ? '' : s).replace(/[&<>"']/g, function(c){

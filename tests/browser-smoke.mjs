@@ -80,6 +80,28 @@ for (const page of PAGES) {
   await ctx.close();
 }
 
+// ===== Verificación filtros de servicios (precio + zona) =====
+{
+  const ctx = await browser.newContext({ viewport: { width: 1280, height: 800 } });
+  const pg = await ctx.newPage();
+  const errs = [];
+  pg.on('pageerror', e => errs.push(e.message));
+  await pg.goto(`http://localhost:${PORT}/servicios.html`, { waitUntil: 'networkidle', timeout: 15000 });
+  await pg.waitForTimeout(400);
+  const hasPrice = await pg.$('#priceMax') !== null;
+  const hasZone = await pg.$('#zoneFilter') !== null;
+  rec('Servicios: filtros de precio y zona presentes', hasPrice && hasZone, `price=${hasPrice} zone=${hasZone}`);
+  if (hasPrice) {
+    // Mover el slider y escribir zona no debe lanzar errores JS
+    await pg.$eval('#priceMax', el => { el.value = 300; el.dispatchEvent(new Event('input', {bubbles:true})); });
+    await pg.fill('#zoneFilter', 'Roma');
+    await pg.waitForTimeout(400);
+    const label = await pg.textContent('#priceMaxVal');
+    rec('Servicios: slider de precio actualiza etiqueta y filtra sin errores', label === '$300' && errs.length === 0, `label=${label} errs=${errs.length}`);
+  }
+  await ctx.close();
+}
+
 // ===== Verificación PWA =====
 {
   const ctx = await browser.newContext();

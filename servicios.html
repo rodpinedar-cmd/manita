@@ -89,6 +89,15 @@
         <label><input type="checkbox" id="availToday" aria-label="Disponible hoy"> Disponible hoy</label>
         <label><input type="checkbox" id="verifiedOnly" aria-label="Solo profesionales verificados"> Solo verificados</label>
       </div>
+      <h3>Precio máximo</h3>
+      <div class="filter-group">
+        <input type="range" id="priceMax" min="100" max="1000" step="50" value="1000" aria-label="Precio máximo" style="width:100%;accent-color:var(--primary);">
+        <div style="display:flex;justify-content:space-between;font-size:var(--fs-sm);color:var(--gray);"><span>$100</span><span id="priceMaxVal" style="font-weight:700;color:var(--navy);">Sin límite</span></div>
+      </div>
+      <h3>Zona</h3>
+      <div class="filter-group">
+        <input type="text" id="zoneFilter" placeholder="Colonia o alcaldía" aria-label="Filtrar por zona o colonia" style="width:100%;padding:var(--sp-3);border:1px solid var(--border);border-radius:var(--radius-sm);font-family:inherit;min-height:44px;">
+      </div>
     </aside>
     <main>
       <div class="results-header">
