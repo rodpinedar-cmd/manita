@@ -168,6 +168,29 @@ for (const page of PAGES) {
   await ctx.close();
 }
 
+// ===== Verificación legal + consentimiento de términos =====
+{
+  const ctx = await browser.newContext();
+  const pg = await ctx.newPage();
+  // legal.html tiene las secciones clave
+  await pg.goto(`http://localhost:${PORT}/legal.html`, { waitUntil: 'networkidle', timeout: 15000 });
+  const secs = await pg.evaluate(() => ['terminos','datos','privacidad','pagos','reembolsos','disputas','profesionales','contacto'].every(id => document.getElementById(id)));
+  rec('Legal: todas las secciones presentes (T&C, datos, privacidad, pagos, reembolsos, disputas)', secs);
+  // login: registro exige aceptar términos
+  await pg.goto(`http://localhost:${PORT}/login.html`, { waitUntil: 'networkidle', timeout: 15000 });
+  await pg.click('#tabReg').catch(()=>{});
+  await pg.waitForTimeout(200);
+  const termsVisible = await pg.isVisible('#fTerms');
+  rec('Registro: casilla de aceptación de términos visible', termsVisible);
+  if (termsVisible) {
+    await pg.fill('#fEmail','x@x.com'); await pg.fill('#fPass','123456');
+    await pg.click('#authBtn'); await pg.waitForTimeout(300);
+    const msg = await pg.textContent('#authMsg');
+    rec('Registro: bloquea si no se aceptan términos', /Términos|Aviso de Privacidad|aceptar/i.test(msg||''), msg);
+  }
+  await ctx.close();
+}
+
 // ===== Verificación menú móvil (M089/M090) =====
 {
   const ctx = await browser.newContext({ viewport: { width: 390, height: 800 } }); // iPhone-ish

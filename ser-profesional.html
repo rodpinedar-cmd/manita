@@ -56,6 +56,10 @@
       <div class="booking-field"><label for="spEmail">Correo</label><input id="spEmail" type="email" required placeholder="tu@correo.com"></div>
       <div class="booking-field"><label for="spPass">Contraseña</label><input id="spPass" type="password" required placeholder="Mínimo 6 caracteres"></div>
       <div class="booking-field"><label for="spPhone">Teléfono</label><input id="spPhone" type="tel" required placeholder="55 1234 5678"></div>
+      <label style="display:flex;align-items:flex-start;gap:10px;font-size:13px;color:var(--gray);margin:4px 0 12px;cursor:pointer;min-height:44px;">
+        <input type="checkbox" id="spTerms" style="width:20px;height:20px;margin-top:2px;accent-color:var(--primary);" aria-label="Acepto términos y aviso de privacidad">
+        <span>Confirmo que soy prestador independiente y acepto los <a href="legal.html#terminos" target="_blank" style="color:var(--navy);font-weight:700;text-decoration:underline;">Términos</a>, el <a href="legal.html#privacidad" target="_blank" style="color:var(--navy);font-weight:700;text-decoration:underline;">Aviso de Privacidad</a> y las <a href="legal.html#profesionales" target="_blank" style="color:var(--navy);font-weight:700;text-decoration:underline;">reglas para profesionales</a>.</span>
+      </label>
       <button type="submit" class="btn btn-primary btn-lg" style="width:100%;">Crear mi perfil gratis</button>
       <div class="auth-msg" id="spMsg" style="font-size:13px;margin-top:12px;padding:10px;border-radius:8px;display:none;"></div>
     </form>
@@ -68,7 +72,7 @@
     <div class="why-grid">
       <div class="why-card"><div class="why-icon">🆓</div><h3>Publica gratis</h3><p>Crear tu perfil y anuncios no cuesta nada.</p></div>
       <div class="why-card"><div class="why-icon">📈</div><h3>Más clientes</h3><p>Accede a miles de usuarios buscando servicios.</p></div>
-      <div class="why-card"><div class="why-icon">💳</div><h3>Cobra seguro</h3><p>Pagos garantizados y puntuales.</p></div>
+      <div class="why-card"><div class="why-icon">💳</div><h3>Cobros claros</h3><p>Precios transparentes. Los pagos en línea llegarán pronto.</p></div>
     </div>
   </div>
 </section>
@@ -102,6 +106,7 @@ async function signup(e){
 
   if (!(price >= 50)) { spShow('El precio debe ser al menos $50 MXN.', true); return; }
   if (pass.length < 6) { spShow('La contraseña debe tener al menos 6 caracteres.', true); return; }
+  if (!document.getElementById('spTerms').checked) { spShow('Debes aceptar los Términos y el Aviso de Privacidad.', true); return; }
 
   btn.disabled = true; btn.textContent = 'Creando perfil...';
 

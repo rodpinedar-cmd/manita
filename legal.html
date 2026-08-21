@@ -3,8 +3,9 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Legal — Manita</title>
-<meta name="description" content="Términos, privacidad y políticas de Manita.">
+<title>Términos, Privacidad y Políticas — Manita</title>
+<meta name="description" content="Términos y Condiciones, Aviso de Privacidad y políticas de reembolso de Manita, marketplace de servicios a domicilio en CDMX.">
+<link rel="canonical" href="https://manita-cdmx.netlify.app/legal.html">
 <link rel="manifest" href="manifest.json">
 <meta name="theme-color" content="#FF6B4A">
 <link rel="stylesheet" href="css/styles.css">
@@ -12,46 +13,145 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
-.legal-wrap { max-width: 760px; margin: 40px auto; padding: 0 20px; }
-.legal-wrap h1 { font-size: 30px; margin-bottom: 8px; }
-.legal-wrap h2 { font-size: 20px; margin: 28px 0 10px; color: var(--navy); }
-.legal-wrap p { color: var(--gray); margin-bottom: 12px; }
-.legal-note { background: var(--bg-alt); border-radius: 12px; padding: 16px; font-size: 14px; color: var(--gray); }
+.legal-wrap { max-width: 780px; margin: 32px auto; padding: 0 20px; }
+.legal-wrap h1 { font-size: var(--fs-2xl); margin-bottom: 4px; }
+.legal-updated { color: var(--gray); font-size: var(--fs-sm); margin-bottom: var(--sp-5); }
+.legal-toc { background: #fff; border: 1px solid var(--border); border-radius: var(--radius); padding: var(--sp-4); margin-bottom: var(--sp-6); box-shadow: var(--shadow-xs); }
+.legal-toc strong { display: block; color: var(--navy); margin-bottom: var(--sp-2); font-size: var(--fs-sm); text-transform: uppercase; letter-spacing: 0.5px; }
+.legal-toc a { display: inline-block; padding: 6px 0; color: var(--primary-text); font-size: var(--fs-sm); font-weight: 600; margin-right: var(--sp-4); min-height: 44px; line-height: 32px; }
+.legal-wrap h2 { font-size: var(--fs-lg); margin: var(--sp-8) 0 var(--sp-3); color: var(--navy); scroll-margin-top: 80px; }
+.legal-wrap h3 { font-size: var(--fs-md); margin: var(--sp-5) 0 var(--sp-2); color: var(--navy); }
+.legal-wrap p, .legal-wrap li { color: var(--gray); margin-bottom: var(--sp-3); line-height: 1.6; }
+.legal-wrap ul { padding-left: var(--sp-5); margin-bottom: var(--sp-3); }
+.legal-wrap li { margin-bottom: var(--sp-2); }
+.legal-note { background: var(--bg-alt); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: var(--sp-4); font-size: var(--fs-sm); color: var(--gray); margin: var(--sp-4) 0; }
+.legal-note strong { color: var(--navy); }
+.legal-data { background: var(--mint); border: 1px solid var(--primary-light); border-radius: var(--radius-sm); padding: var(--sp-4); margin: var(--sp-3) 0; }
+.legal-data b { color: var(--navy); }
+.back-top { display:inline-block; margin-top: var(--sp-2); font-size: var(--fs-xs); color: var(--gray); }
 </style>
 </head>
 <body>
 <header class="header" id="appHeader"></header>
 
 <div class="legal-wrap">
-  <h1>Información legal</h1>
-  <p>Manita es un marketplace que conecta clientes con profesionales de servicios a domicilio en la Ciudad de México.</p>
+  <h1>Términos, Privacidad y Políticas</h1>
+  <p class="legal-updated">Última actualización: 21 de agosto de 2026 · Aplica a la web y a la app de Manita.</p>
 
-  <div class="legal-note">
-    ⚠️ <strong>Documento en preparación.</strong> Estamos finalizando nuestros términos, aviso de privacidad y políticas conforme a la legislación mexicana (LFPDPPP y PROFECO). Esta página se actualizará antes del lanzamiento comercial y de habilitar pagos.
+  <div class="legal-note" role="note">
+    <strong>Importante:</strong> Manita es una <strong>plataforma intermediaria</strong> que conecta a clientes con profesionales independientes de servicios a domicilio en la Ciudad de México. Manita <strong>no presta directamente</strong> los servicios ni es empleador de los profesionales. Este documento es un borrador operativo y será revisado por un abogado antes del lanzamiento comercial y de habilitar pagos.
   </div>
 
-  <h2 id="terminos">Términos y condiciones</h2>
-  <p>Al usar Manita aceptas coordinar y contratar servicios a través de la plataforma. El detalle completo estará disponible próximamente.</p>
+  <nav class="legal-toc" aria-label="Índice">
+    <strong>Contenido</strong>
+    <a href="#terminos">1. Términos y Condiciones</a>
+    <a href="#datos">2. Qué datos pedimos</a>
+    <a href="#privacidad">3. Aviso de Privacidad</a>
+    <a href="#pagos">4. Pagos y comisiones</a>
+    <a href="#reembolsos">5. Cancelaciones y reembolsos</a>
+    <a href="#disputas">6. Disputas</a>
+    <a href="#profesionales">7. Reglas para profesionales</a>
+    <a href="#contacto">8. Contacto</a>
+  </nav>
 
-  <h2 id="privacidad">Aviso de privacidad</h2>
-  <p>Tratamos tus datos personales (nombre, contacto, dirección del servicio) únicamente para operar las reservas y la comunicación con los profesionales. No compartimos tus datos con terceros salvo lo necesario para prestar el servicio.</p>
+  <h2 id="terminos">1. Términos y Condiciones</h2>
+  <h3>1.1 Qué es Manita</h3>
+  <p>Manita es una plataforma tecnológica (web y app) que conecta a personas que buscan servicios a domicilio ("Clientes") con personas que los ofrecen de forma independiente ("Profesionales"), dentro de la Ciudad de México. Manita facilita el contacto, la reserva y —cuando esté habilitado— el pago, pero <b>no ejecuta los servicios</b> ni garantiza resultados de trabajos realizados por terceros.</p>
+  <h3>1.2 Relación entre las partes</h3>
+  <p>El Profesional es un prestador de servicios <b>independiente</b>. No existe relación laboral, de subordinación ni de representación entre Manita y los Profesionales ni los Clientes. El contrato de servicio se celebra directamente entre Cliente y Profesional; Manita actúa únicamente como intermediario.</p>
+  <h3>1.3 Requisitos de uso</h3>
+  <ul>
+    <li>Ser mayor de edad (18 años) y tener capacidad legal para contratar.</li>
+    <li>Proporcionar información veraz y mantenerla actualizada.</li>
+    <li>Usar la plataforma de forma lícita, sin fraude, suplantación ni abuso.</li>
+  </ul>
+  <h3>1.4 Responsabilidad</h3>
+  <p>Manita no se hace responsable por daños derivados de la conducta de Clientes o Profesionales, ni por la calidad del servicio prestado. Recomendamos comunicar cualquier incidente a través de la plataforma. Manita puede suspender cuentas que incumplan estas reglas.</p>
+  <p class="back-top"><a href="#terminos">↑ Volver al índice</a></p>
 
-  <h2 id="cookies">Cookies</h2>
-  <p>Usamos almacenamiento local para tu sesión. Cuando activemos analítica, pediremos tu consentimiento.</p>
+  <h2 id="datos">2. Qué datos pedimos (y para qué)</h2>
+  <p>Solo pedimos los datos necesarios para operar el servicio. Estos son:</p>
+  <div class="legal-data">
+    <b>Cliente:</b>
+    <ul>
+      <li>Nombre completo y correo electrónico (para tu cuenta y confirmaciones).</li>
+      <li>Teléfono (para que el profesional coordine la visita).</li>
+      <li>Dirección del servicio (solo se comparte con el profesional de esa reserva).</li>
+      <li>Datos de pago: los procesa <b>directamente la pasarela de pago</b> certificada. Manita <b>no</b> almacena números de tarjeta.</li>
+    </ul>
+  </div>
+  <div class="legal-data">
+    <b>Profesional:</b>
+    <ul>
+      <li>Nombre completo, correo y teléfono.</li>
+      <li>Descripción del servicio, precio y zona de cobertura.</li>
+      <li>Para verificación (opcional, refuerza la confianza): identificación oficial y, según el oficio, comprobante de domicilio o certificaciones. Estos documentos son privados y solo los ve Manita para validar.</li>
+      <li>Datos bancarios/CLABE para recibir pagos (los administra la pasarela, no Manita).</li>
+    </ul>
+  </div>
+  <p>No pedimos datos sensibles innecesarios. Nunca vendemos tus datos.</p>
+  <p class="back-top"><a href="#terminos">↑ Volver al índice</a></p>
 
-  <h2 id="cancelacion">Política de cancelación</h2>
-  <p>Podrás cancelar reservas según la política vigente. Las condiciones de reembolso se publicarán junto con la activación de pagos.</p>
+  <h2 id="privacidad">3. Aviso de Privacidad (LFPDPPP)</h2>
+  <p><b>Responsable:</b> Manita (plataforma en operación de prueba, CDMX, México).</p>
+  <p><b>Finalidades primarias:</b> crear y administrar tu cuenta, gestionar reservas y pagos, comunicar a Cliente y Profesional para prestar el servicio, y dar soporte.</p>
+  <p><b>Finalidades secundarias:</b> mejorar la plataforma y enviarte avisos del servicio. Puedes oponerte a estas en cualquier momento sin afectar tu cuenta.</p>
+  <p><b>Datos que tratamos:</b> los indicados en la sección 2. Los datos de pago se tratan a través de la pasarela; Manita no guarda datos de tarjetas.</p>
+  <p><b>Transferencias:</b> compartimos con el Profesional/Cliente involucrado los datos mínimos para prestar el servicio (nombre, contacto, dirección de la reserva), y con proveedores tecnológicos (alojamiento, pasarela de pago) bajo obligación de confidencialidad. No transferimos datos a terceros con fines comerciales sin tu consentimiento.</p>
+  <p><b>Derechos ARCO:</b> puedes Acceder, Rectificar, Cancelar u Oponerte al tratamiento de tus datos, así como revocar tu consentimiento, escribiendo a nuestro contacto (sección 8). Responderemos conforme a la ley.</p>
+  <p><b>Conservación:</b> conservamos tus datos mientras tengas cuenta y el tiempo que exija la ley (fiscal/mercantil). Luego se eliminan o anonimizan.</p>
+  <p><b>Seguridad:</b> usamos cifrado en tránsito, control de acceso por reglas de seguridad (RLS) y almacenamiento seguro. Ningún sistema es 100% infalible, pero aplicamos medidas razonables.</p>
+  <p><b>Cookies/almacenamiento:</b> usamos almacenamiento local para tu sesión y preferencias. Si activamos analítica, pediremos tu consentimiento.</p>
+  <p class="back-top"><a href="#terminos">↑ Volver al índice</a></p>
 
-  <h2>Contacto</h2>
-  <p>Para dudas o soporte: escríbenos desde la sección de ayuda (próximamente).</p>
+  <h2 id="pagos">4. Pagos y comisiones</h2>
+  <p>Cuando los pagos estén habilitados, funcionarán así, con dinero protegido:</p>
+  <ul>
+    <li>Al reservar, el pago se <b>autoriza</b> (se aparta) pero no se cobra de inmediato.</li>
+    <li>El Profesional realiza el servicio y lo marca como completado.</li>
+    <li>Al confirmar el Cliente (o tras un plazo automático), el pago se <b>captura</b>: Manita descuenta su comisión y el resto se libera al Profesional.</li>
+    <li>El cobro y el reparto los realiza la <b>pasarela de pago</b> mediante división automática ("split"): el dinero <b>no</b> se retiene en cuentas de Manita.</li>
+    <li>Manita cobra una <b>comisión de plataforma</b> sobre cada servicio, informada de forma transparente antes de reservar.</li>
+    <li>Cada parte emite su comprobante fiscal (CFDI) según corresponda.</li>
+  </ul>
+  <p class="back-top"><a href="#terminos">↑ Volver al índice</a></p>
+
+  <h2 id="reembolsos">5. Cancelaciones y reembolsos</h2>
+  <ul>
+    <li><b>Cancelación por el Cliente</b> antes de que el Profesional confirme o inicie: sin costo; si hubo autorización de pago, se libera sin cobro.</li>
+    <li><b>Cancelación por el Profesional:</b> el Cliente no paga nada y puede reservar con otro profesional.</li>
+    <li><b>Servicio no realizado o incompleto:</b> el Cliente puede no confirmar y abrir una disputa; si procede, se reembolsa total o parcialmente.</li>
+    <li><b>Ya completado y confirmado:</b> el pago se libera al Profesional y no es reembolsable, salvo defectos comprobables reportados en un plazo razonable.</li>
+  </ul>
+  <p>Las condiciones específicas y plazos se mostrarán en el momento de reservar, conforme a las normas de PROFECO de información clara y no engañosa.</p>
+  <p class="back-top"><a href="#terminos">↑ Volver al índice</a></p>
+
+  <h2 id="disputas">6. Disputas</h2>
+  <p>Si un servicio no salió como se esperaba, el Cliente puede reportarlo desde su reserva. Manita mediará de buena fe entre las partes con la información disponible (estado de la reserva, mensajes, evidencia). Mientras haya disputa, el pago puede permanecer retenido hasta su resolución. Manita no es árbitro judicial; para conflictos no resueltos, aplican las vías legales y de PROFECO correspondientes.</p>
+  <p class="back-top"><a href="#terminos">↑ Volver al índice</a></p>
+
+  <h2 id="profesionales">7. Reglas para profesionales</h2>
+  <ul>
+    <li>Ofrecer servicios que realmente puedes prestar, con precios claros.</li>
+    <li>Cumplir la reserva en la fecha, hora y lugar acordados.</li>
+    <li>Actuar con respeto, seguridad y legalidad; no discriminar.</li>
+    <li>Eres responsable de tus obligaciones fiscales como prestador independiente.</li>
+    <li>La insignia "Verificado" solo la otorga Manita tras validar tu identidad; no puede auto-asignarse.</li>
+  </ul>
+  <p class="back-top"><a href="#terminos">↑ Volver al índice</a></p>
+
+  <h2 id="contacto">8. Contacto y derechos ARCO</h2>
+  <p>Para soporte, dudas o para ejercer tus derechos de privacidad (Acceso, Rectificación, Cancelación, Oposición), escríbenos a <b>soporte@manita-cdmx.mx</b> (correo de referencia; se confirmará el canal oficial al lanzamiento). Indícanos tu nombre y el motivo de tu solicitud.</p>
+  <p class="back-top"><a href="#terminos">↑ Volver al índice</a></p>
 </div>
 
 <footer class="footer">
-  <div class="footer-bottom"><div class="container">© 2026 Manita® · Hecho en CDMX 🇲🇽</div></div>
+  <div class="footer-bottom"><div class="container">© 2026 Manita® · Hecho en CDMX 🇲🇽 · Plataforma intermediaria de servicios</div></div>
 </footer>
+
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="js/supabase-client.js"></script>
 <script src="js/components.js"></script>
-<script>mountHeader({ search: false });</script>
+<script>mountHeader({ search: false }); mountBottomNav('perfil');</script>
 </body>
 </html>

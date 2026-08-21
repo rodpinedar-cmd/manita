@@ -52,6 +52,10 @@
       <label>Contraseña</label>
       <input type="password" id="fPass" placeholder="Mínimo 6 caracteres">
     </div>
+    <label id="regTerms" style="display:none;align-items:flex-start;gap:10px;font-size:13px;color:var(--gray);margin:4px 0 12px;cursor:pointer;min-height:44px;">
+      <input type="checkbox" id="fTerms" style="width:20px;height:20px;margin-top:2px;accent-color:var(--primary);" aria-label="Acepto términos y aviso de privacidad">
+      <span>Acepto los <a href="legal.html#terminos" target="_blank" style="color:var(--navy);font-weight:700;text-decoration:underline;">Términos y Condiciones</a> y el <a href="legal.html#privacidad" target="_blank" style="color:var(--navy);font-weight:700;text-decoration:underline;">Aviso de Privacidad</a>.</span>
+    </label>
     <button class="btn btn-primary btn-lg" style="width:100%;" id="authBtn" onclick="doAuth()">Entrar</button>
     <div class="auth-msg" id="authMsg"></div>
   </div>
@@ -68,6 +72,7 @@ function switchTab(m) {
   document.getElementById('tabLogin').classList.toggle('active', m === 'login');
   document.getElementById('tabReg').classList.toggle('active', m === 'reg');
   document.getElementById('regName').style.display = m === 'reg' ? 'block' : 'none';
+  document.getElementById('regTerms').style.display = m === 'reg' ? 'flex' : 'none';
   document.getElementById('authBtn').textContent = m === 'reg' ? 'Crear cuenta' : 'Entrar';
   document.getElementById('authMsg').className = 'auth-msg';
 }
@@ -88,6 +93,7 @@ async function doAuth() {
 
   var res;
   if (mode === 'reg') {
+    if (!document.getElementById('fTerms').checked) { showMsg('Debes aceptar los Términos y el Aviso de Privacidad.', true); btn.disabled=false; btn.textContent='Crear cuenta'; return; }
     var name = document.getElementById('fName').value.trim();
     res = await registrar(email, pass, name);
   } else {
