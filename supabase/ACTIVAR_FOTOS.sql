@@ -41,5 +41,9 @@ CREATE POLICY "fotos_borrar_dueno" ON storage.objects FOR DELETE
 ALTER TABLE professionals ADD COLUMN IF NOT EXISTS avatar_url text;
 ALTER TABLE professionals ADD COLUMN IF NOT EXISTS portfolio  text[] DEFAULT '{}';
 
+-- 4) COLUMNA avatar_url en profiles (foto de perfil del cliente)
+ALTER TABLE profiles ADD COLUMN IF NOT EXISTS avatar_url text;
+
 -- Listo. Tras correr esto, en la app el profesional podrá subir su foto
--- y sus trabajos desde el panel, y se mostrarán en su perfil público.
+-- y sus trabajos desde el panel, el cliente su foto de perfil, y todo
+-- se mostrará en su perfil público / cuenta.

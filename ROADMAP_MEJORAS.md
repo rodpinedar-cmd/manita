@@ -69,7 +69,8 @@ Origen: capturas reales de Webel (referencia de diseño/UX) + peticiones del usu
       + UI en pro-panel (hasta 6 fotos) + sección "Trabajos anteriores" en el perfil público.
 - [x] Guía visual de "buena foto" (texto de ayuda) + validación de tamaño/tipo.
 - [x] Degradación elegante: si no has corrido el SQL, muestra un aviso claro sin romper la app.
-- [ ] **Foto de perfil del cliente** (opcional) — pendiente, menor prioridad.
+- [x] **Foto de perfil del cliente**: avatar clickeable en cuenta.html + `subirAvatarCliente()`
+      (reusa bucket avatars, guarda en profiles.avatar_url). Incluido en ACTIVAR_FOTOS.sql.
 
 ### Fase 3 — Backend / operación
 - [ ] Editar disponibilidad avanzada (varios rangos por día, tipo "añadir horas").

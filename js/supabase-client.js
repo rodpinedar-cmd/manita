@@ -243,6 +243,20 @@ async function actualizarMiPerfil(campos) {
   return { data, error };
 }
 
+// Sube (o reemplaza) la foto de perfil del cliente y guarda la URL pública en profiles.
+// Reusa el bucket 'avatars' (público). Requiere haber corrido ACTIVAR_FOTOS.sql.
+async function subirAvatarCliente(file) {
+  const user = await usuarioActual();
+  if (!user) return { error: { message: 'Debes iniciar sesión' } };
+  if (!file || file.size > 2 * 1024 * 1024) return { error: { message: 'La imagen debe pesar menos de 2 MB.' } };
+  const path = user.id + '/perfil-' + Date.now() + '.' + _extImagen(file);
+  const up = await supa.storage.from('avatars').upload(path, file, { upsert: true, contentType: file.type });
+  if (up.error) return { error: up.error };
+  const url = supa.storage.from('avatars').getPublicUrl(path).data.publicUrl;
+  const { data, error } = await supa.from('profiles').update({ avatar_url: url }).eq('id', user.id).select();
+  return { data: data, url: url, error: error };
+}
+
 // ===== DIRECCIONES DEL CLIENTE =====
 async function misDirecciones() {
   const user = await usuarioActual();

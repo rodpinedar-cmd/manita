@@ -49,7 +49,9 @@
 <div class="acc-wrap">
   <!-- Cabecera de usuario -->
   <div class="acc-user" id="accUser">
-    <div class="acc-avatar" id="accAvatar">👤</div>
+    <label class="acc-avatar" id="accAvatar" for="avatarClienteInput" title="Cambiar foto" style="cursor:pointer;overflow:hidden;">👤
+      <input type="file" id="avatarClienteInput" accept="image/jpeg,image/png,image/webp" style="display:none;">
+    </label>
     <div><div class="acc-uname" id="accName">Mi cuenta</div><div class="acc-usub" id="accSub">Gestiona tu perfil</div></div>
   </div>
 
@@ -133,7 +135,14 @@ async function loadProfile() {
   var nombre = p.full_name || 'Mi cuenta';
   document.getElementById('accName').textContent = nombre;
   document.getElementById('accSub').textContent = p.city || 'Ciudad de México';
-  document.getElementById('accAvatar').textContent = (nombre.trim().charAt(0) || '👤').toUpperCase();
+  var avEl = document.getElementById('accAvatar');
+  var inputHtml = '<input type="file" id="avatarClienteInput" accept="image/jpeg,image/png,image/webp" style="display:none;">';
+  if (p.avatar_url) {
+    avEl.innerHTML = '<img src="' + esc(p.avatar_url) + '" alt="" style="width:100%;height:100%;object-fit:cover;">' + inputHtml;
+  } else {
+    avEl.innerHTML = (nombre.trim().charAt(0) || '👤').toUpperCase() + inputHtml;
+  }
+  bindAvatarCliente();
   // Si ya es profesional, el enlace lleva a su panel en vez del alta
   if (p.is_professional) {
     var gp = document.getElementById('goProLink');
@@ -213,6 +222,21 @@ async function defAddr(id) {
   var res = await marcarDireccionDefault(id);
   if (res.error) { toast('No se pudo actualizar.', 'error'); return; }
   loadAddresses();
+}
+
+// Subida de foto de perfil del cliente (reusa bucket avatars)
+function bindAvatarCliente(){
+  var input = document.getElementById('avatarClienteInput');
+  if (!input) return;
+  input.onchange = async function(){
+    var f = this.files && this.files[0]; if (!f) return;
+    toast('Subiendo foto...', 'info');
+    var r = await subirAvatarCliente(f);
+    if (r.error){ toast(r.error.message || 'No se pudo subir. ¿Ya activaste el almacenamiento?', 'error'); return; }
+    document.getElementById('accAvatar').innerHTML = '<img src="' + esc(r.url) + '" alt="" style="width:100%;height:100%;object-fit:cover;"><input type="file" id="avatarClienteInput" accept="image/jpeg,image/png,image/webp" style="display:none;">';
+    bindAvatarCliente();
+    toast('Foto actualizada.', 'success');
+  };
 }
 
 // Preferencia de avisos (local, sin backend). Solo controla recordatorios en el dispositivo.
