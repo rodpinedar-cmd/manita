@@ -84,8 +84,8 @@ Origen: capturas reales de Webel (referencia de diseño/UX) + peticiones del usu
 ---
 
 ## D. Pendientes que dependen de TI (no puedo hacerlos yo)
-- [ ] **Correr `supabase/ACTIVAR_FOTOS.sql`** en el SQL Editor → habilita fotos y galería (el
-      código ya está listo, solo falta esto).
+- [x] **Correr `supabase/ACTIVAR_FOTOS.sql`** → HECHO (21 ago 2026). Buckets avatars/portfolio
+      verificados públicos (2MB/5MB). Fotos y galería ya operativas.
 - [ ] Config Auth → URL (Site URL + Redirect) para quitar el localhost:3000.
 - [ ] Correr ADD_EDITAR_DISPONIBILIDAD.sql (editar horario del pro).
 - [ ] Decidir modelo económico (comisión) y revisión legal antes de cobrar.

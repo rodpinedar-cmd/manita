@@ -77,6 +77,26 @@ for (const p of PAGES) {
   rec(`${p} tiene preconnect a fonts.gstatic.com`, ok);
 }
 
+// 7. Pipeline de fotos (Fase 2) bien cableado
+{
+  const client = await readFile(join(ROOT, 'js/supabase-client.js'), 'utf8');
+  const proPanel = await readFile(join(ROOT, 'pro-panel.html'), 'utf8');
+  const perfilJs = await readFile(join(ROOT, 'js/perfil.js'), 'utf8');
+  const cuenta = await readFile(join(ROOT, 'cuenta.html'), 'utf8');
+  let sql = '';
+  try { sql = await readFile(join(ROOT, 'supabase/ACTIVAR_FOTOS.sql'), 'utf8'); } catch {}
+
+  rec('client define subirAvatar/subirTrabajo/borrarTrabajo', /function subirAvatar\b/.test(client) && /function subirTrabajo\b/.test(client) && /function borrarTrabajo\b/.test(client));
+  rec('client define subirAvatarCliente', /function subirAvatarCliente\b/.test(client));
+  rec('subida usa ruta {user_id}/... (policy de dueño)', /user\.id \+ '\//.test(client));
+  rec('pro-panel tiene inputs de foto y portafolio', proPanel.includes('avatarInput') && proPanel.includes('portfolioInput'));
+  rec('pro-panel valida almacenamiento (mensaje si no activo)', /activaste el almacenamiento/i.test(proPanel));
+  rec('perfil muestra galería de trabajos', /galeriaBloque/.test(perfilJs) && /portfolio/.test(perfilJs));
+  rec('cuenta tiene avatar de cliente clickeable', cuenta.includes('avatarClienteInput'));
+  rec('SQL ACTIVAR_FOTOS crea buckets avatars y portfolio', /storage\.buckets/.test(sql) && /'avatars'/.test(sql) && /'portfolio'/.test(sql));
+  rec('SQL crea columnas avatar_url y portfolio', /avatar_url/.test(sql) && /portfolio\s+text\[\]/.test(sql));
+}
+
 const fail = results.filter(r=>!r.ok).length;
 console.log(`\n===== SMOKE LOCAL: ${results.length-fail} PASS · ${fail} FAIL =====`);
 process.exit(fail>0?1:0);
