@@ -26,6 +26,21 @@
 .addr-form { display:grid; grid-template-columns:1fr 2fr; gap:10px; margin-top:12px; }
 .addr-form input { padding:10px; border:1px solid var(--border); border-radius:10px; font-family:inherit; font-size:14px; }
 @media(max-width:600px){ .addr-form { grid-template-columns:1fr; } }
+/* Cabecera de usuario (faltaba estilo) */
+.acc-user { display:flex; align-items:center; gap:14px; margin-bottom:16px; }
+.acc-avatar { width:56px; height:56px; border-radius:50%; background:var(--mint); color:var(--primary-text); display:flex; align-items:center; justify-content:center; font-size:24px; font-weight:700; flex-shrink:0; }
+.acc-uname { font-size:20px; font-weight:700; color:var(--navy); line-height:1.2; }
+.acc-usub { font-size:14px; color:var(--gray); }
+/* Banner de referidos minimal */
+.acc-referral { display:flex; align-items:center; justify-content:space-between; gap:12px; background:var(--mint); border-radius:var(--radius); padding:16px 18px; margin-bottom:20px; }
+.acc-referral strong { font-size:15px; color:var(--navy); }
+.acc-referral p { font-size:13px; color:var(--gray); margin-top:2px; }
+.acc-referral .btn { background:#fff; color:var(--primary-text); font-weight:600; border:1px solid var(--primary-light); min-height:44px; }
+/* Fila de enlace de sección (minimal, tipo lista) */
+.acc-link { display:flex; align-items:center; justify-content:space-between; gap:12px; width:100%; padding:14px 4px; min-height:44px; background:none; border:none; border-bottom:1px solid var(--border); font-family:inherit; font-size:15px; color:var(--dark); cursor:pointer; text-align:left; }
+.acc-link:last-child { border-bottom:none; }
+.acc-link:hover { color:var(--primary-text); }
+.acc-link .al-chevron { color:var(--light-gray); }
 </style>
 </head>
 <body>
@@ -57,6 +72,26 @@
       <input type="text" id="naAddr" placeholder="Dirección completa en CDMX">
     </div>
     <button class="btn btn-primary" style="margin-top:10px;" id="addAddrBtn">Agregar dirección</button>
+  </div>
+
+  <div class="acc-card">
+    <h2>Preferencias</h2>
+    <label class="acc-link" for="prefNotif" style="cursor:pointer;">
+      <span>🔔 Avisos de mis reservas</span>
+      <input type="checkbox" id="prefNotif" style="width:20px;height:20px;accent-color:var(--primary);">
+    </label>
+    <a class="acc-link" id="goProLink" href="ser-profesional.html">
+      <span>💼 Ofrecer mis servicios como profesional</span>
+      <span class="al-chevron">›</span>
+    </a>
+    <a class="acc-link" href="mis-reservas.html">
+      <span>📅 Mis reservas</span>
+      <span class="al-chevron">›</span>
+    </a>
+    <a class="acc-link" href="favoritos.html">
+      <span>❤️ Mis favoritos</span>
+      <span class="al-chevron">›</span>
+    </a>
   </div>
 
   <div class="acc-card">
@@ -99,6 +134,12 @@ async function loadProfile() {
   document.getElementById('accName').textContent = nombre;
   document.getElementById('accSub').textContent = p.city || 'Ciudad de México';
   document.getElementById('accAvatar').textContent = (nombre.trim().charAt(0) || '👤').toUpperCase();
+  // Si ya es profesional, el enlace lleva a su panel en vez del alta
+  if (p.is_professional) {
+    var gp = document.getElementById('goProLink');
+    gp.href = 'pro-panel.html';
+    gp.querySelector('span').textContent = '💼 Ir a mi panel profesional';
+  }
   box.innerHTML =
     '<div class="acc-field"><label for="pfName">Nombre</label><input id="pfName" value="' + esc(p.full_name||'') + '"></div>' +
     '<div class="acc-field"><label for="pfPhone">Teléfono</label><input id="pfPhone" value="' + esc(p.phone||'') + '"></div>' +
@@ -173,6 +214,16 @@ async function defAddr(id) {
   if (res.error) { toast('No se pudo actualizar.', 'error'); return; }
   loadAddresses();
 }
+
+// Preferencia de avisos (local, sin backend). Solo controla recordatorios en el dispositivo.
+(function(){
+  var box = document.getElementById('prefNotif');
+  box.checked = localStorage.getItem('manita_notif') !== 'off';
+  box.onchange = function(){
+    localStorage.setItem('manita_notif', box.checked ? 'on' : 'off');
+    toast(box.checked ? 'Avisos activados.' : 'Avisos desactivados.', 'info');
+  };
+})();
 
 // Cerrar sesión
 document.getElementById('logoutBtn2').onclick = async function(){ await logout(); window.location.href = 'index.html'; };

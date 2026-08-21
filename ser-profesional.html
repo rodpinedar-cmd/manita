@@ -29,6 +29,23 @@
 .signup-form .booking-field { margin-bottom: 16px; }
 .signup-form label { display: block; font-size: 13px; font-weight: 600; margin-bottom: 6px; }
 .signup-form input, .signup-form select { width: 100%; padding: 12px; border: 1px solid var(--border); border-radius: 10px; font-family: inherit; font-size: 14px; }
+/* Selector visual "¿Cómo cobras?" */
+.charge-grid { display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+.charge-opt { position:relative; }
+.charge-opt input { position:absolute; opacity:0; width:0; height:0; }
+.charge-opt label { display:flex; flex-direction:column; gap:2px; align-items:flex-start; text-align:left; padding:12px 14px; min-height:44px; border:1.5px solid var(--border); border-radius:12px; cursor:pointer; transition:border-color var(--dur) var(--ease), background var(--dur) var(--ease); background:#fff; }
+.charge-opt label .co-title { font-size:14px; font-weight:600; color:var(--dark); }
+.charge-opt label .co-desc { font-size:12px; color:var(--gray); font-weight:400; }
+.charge-opt input:checked + label { border-color:var(--primary); background:var(--mint); }
+.charge-opt input:focus-visible + label { outline:2px solid var(--primary-text); outline-offset:2px; }
+.charge-hint { font-size:12px; color:var(--gray); margin-top:6px; }
+.recur-box { margin-top:6px; padding:12px; border:1px dashed var(--border); border-radius:12px; background:var(--bg-alt); }
+.recur-box .rb-top { display:flex; align-items:flex-start; gap:10px; }
+.recur-box input[type=checkbox] { width:20px; height:20px; margin-top:2px; accent-color:var(--primary); flex-shrink:0; }
+.recur-box .rb-label { font-size:13px; font-weight:600; }
+.recur-box .rb-sub { font-size:12px; color:var(--gray); font-weight:400; }
+.recur-detail { margin-top:10px; display:none; }
+.recur-detail.show { display:block; }
 </style>
 </head>
 <body>
@@ -50,8 +67,44 @@
       <div class="booking-field"><label for="spName">Nombre completo</label><input id="spName" type="text" required placeholder="Tu nombre"></div>
       <div class="booking-field"><label for="proCat">Categoría de servicio</label><select id="proCat"></select></div>
       <div class="booking-field"><label for="spService">¿Qué servicio ofreces?</label><input id="spService" type="text" required placeholder="Ej. Limpieza profunda de hogar"></div>
-      <div class="booking-field"><label for="spPrice">Precio (MXN)</label><input id="spPrice" type="number" min="50" step="10" required placeholder="Ej. 350"></div>
-      <div class="booking-field"><label for="spUnit">Se cobra por</label><select id="spUnit"><option value="servicio">Servicio</option><option value="hora">Hora</option><option value="sesión">Sesión</option><option value="visita">Visita</option></select></div>
+
+      <div class="booking-field">
+        <label>¿Cómo cobras?</label>
+        <div class="charge-grid" role="radiogroup" aria-label="Cómo cobras tu servicio">
+          <div class="charge-opt">
+            <input type="radio" name="spUnit" id="unit-servicio" value="servicio" checked>
+            <label for="unit-servicio"><span class="co-title">📦 Por trabajo</span><span class="co-desc">Precio fijo por el servicio completo</span></label>
+          </div>
+          <div class="charge-opt">
+            <input type="radio" name="spUnit" id="unit-hora" value="hora">
+            <label for="unit-hora"><span class="co-title">⏱️ Por hora</span><span class="co-desc">Cobras según el tiempo trabajado</span></label>
+          </div>
+          <div class="charge-opt">
+            <input type="radio" name="spUnit" id="unit-sesion" value="sesión">
+            <label for="unit-sesion"><span class="co-title">🎯 Por sesión</span><span class="co-desc">Ideal para clases o terapias</span></label>
+          </div>
+          <div class="charge-opt">
+            <input type="radio" name="spUnit" id="unit-visita" value="visita">
+            <label for="unit-visita"><span class="co-title">🚪 Por visita</span><span class="co-desc">Un monto por cada visita a domicilio</span></label>
+          </div>
+        </div>
+        <p class="charge-hint" id="chargeHint">Precio fijo por el servicio completo. Ejemplo: limpieza de departamento por $350.</p>
+      </div>
+
+      <div class="booking-field"><label for="spPrice">Precio (MXN) <span id="priceUnitHint" style="color:var(--gray);font-weight:400;">por trabajo</span></label><input id="spPrice" type="number" min="50" step="10" required placeholder="Ej. 350"></div>
+
+      <div class="booking-field">
+        <div class="recur-box">
+          <div class="rb-top">
+            <input type="checkbox" id="spRecur" aria-label="Ofrecer descuento por recurrencia">
+            <div><div class="rb-label">Descuento por recurrencia (opcional)</div><div class="rb-sub">Premia a los clientes que te contratan seguido.</div></div>
+          </div>
+          <div class="recur-detail" id="recurDetail">
+            <label for="spRecurPct" style="font-size:13px;">Descuento (%)</label>
+            <input id="spRecurPct" type="number" min="1" max="50" step="1" placeholder="Ej. 10" inputmode="numeric">
+          </div>
+        </div>
+      </div>
       <div class="booking-field"><label for="spZone">Zona donde trabajas</label><input id="spZone" type="text" required placeholder="Ej. Roma Norte, Condesa..."></div>
       <div class="booking-field"><label for="spEmail">Correo</label><input id="spEmail" type="email" required placeholder="tu@correo.com"></div>
       <div class="booking-field"><label for="spPass">Contraseña</label><input id="spPass" type="password" required placeholder="Mínimo 6 caracteres"></div>
@@ -89,6 +142,28 @@
 mountHeader({ search: false }); mountBottomNav('perfil');
 document.getElementById('proCat').innerHTML = CATEGORIES.map(function(c){ return '<option value="'+c.id+'">'+c.icon+' '+c.name+'</option>'; }).join('');
 
+// Ayuda contextual del selector "¿Cómo cobras?"
+var CHARGE_HELP = {
+  'servicio': { hint: 'Precio fijo por el servicio completo. Ejemplo: limpieza de departamento por $350.', label: 'por trabajo' },
+  'hora':     { hint: 'Cobras por cada hora trabajada. El cliente ve el precio por hora.', label: 'por hora' },
+  'sesión':   { hint: 'Un monto por cada sesión. Ideal para clases de piano, patinaje, terapias.', label: 'por sesión' },
+  'visita':   { hint: 'Un monto por cada visita a domicilio. Útil para revisiones o mantenimiento.', label: 'por visita' }
+};
+function unidadElegida(){ var r = document.querySelector('input[name="spUnit"]:checked'); return r ? r.value : 'servicio'; }
+function actualizarAyudaCobro(){
+  var u = unidadElegida();
+  var help = CHARGE_HELP[u] || CHARGE_HELP.servicio;
+  document.getElementById('chargeHint').textContent = help.hint;
+  document.getElementById('priceUnitHint').textContent = help.label;
+}
+Array.prototype.forEach.call(document.querySelectorAll('input[name="spUnit"]'), function(r){ r.addEventListener('change', actualizarAyudaCobro); });
+actualizarAyudaCobro();
+
+// Toggle del detalle de descuento por recurrencia
+document.getElementById('spRecur').addEventListener('change', function(){
+  document.getElementById('recurDetail').classList.toggle('show', this.checked);
+});
+
 function spShow(msg, isErr){ var el=document.getElementById('spMsg'); el.textContent=msg; el.style.display='block'; el.style.background=isErr?'#FDECEC':'#E6F7F1'; el.style.color=isErr?'#E5484D':'#16A97F'; }
 
 async function signup(e){
@@ -97,7 +172,9 @@ async function signup(e){
   var name = document.getElementById('spName').value.trim();
   var service = document.getElementById('spService').value.trim();
   var price = parseFloat(document.getElementById('spPrice').value);
-  var unit = document.getElementById('spUnit').value;
+  var unit = unidadElegida();
+  var recurOn = document.getElementById('spRecur').checked;
+  var recurPct = parseInt(document.getElementById('spRecurPct').value, 10);
   var zone = document.getElementById('spZone').value.trim();
   var email = document.getElementById('spEmail').value.trim();
   var pass = document.getElementById('spPass').value;
@@ -105,6 +182,7 @@ async function signup(e){
   var catId = document.getElementById('proCat').value;
 
   if (!(price >= 50)) { spShow('El precio debe ser al menos $50 MXN.', true); return; }
+  if (recurOn && !(recurPct >= 1 && recurPct <= 50)) { spShow('El descuento por recurrencia debe estar entre 1% y 50%.', true); return; }
   if (pass.length < 6) { spShow('La contraseña debe tener al menos 6 caracteres.', true); return; }
   if (!document.getElementById('spTerms').checked) { spShow('Debes aceptar los Términos y el Aviso de Privacidad.', true); return; }
 
@@ -126,10 +204,13 @@ async function signup(e){
   await supa.from('profiles').update({ phone: phone, is_professional: true }).eq('id', user.id);
 
   // El profesional se crea como pending_review (verificación antes de activarse — M038)
+  var bio = 'Profesional de ' + service + ' en ' + zone + '.';
+  if (recurOn) { bio += ' Ofrece ' + recurPct + '% de descuento a clientes recurrentes.'; }
+
   var res = await crearProfesional({
     category_id: catId,
     service_name: service,
-    bio: 'Profesional de ' + service + ' en ' + zone + '.',
+    bio: bio,
     price: price,
     price_unit: unit,
     zone: zone,
