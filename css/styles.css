@@ -655,3 +655,39 @@ body.ob-open { overflow: hidden; }
   background: transparent; border: none; color: #fff; font-size: 20px; cursor: pointer; flex-shrink: 0;
 }
 @media (prefers-reduced-motion: reduce) { .ios-hint { animation: none; } }
+
+/* ===== Actividad / Notificaciones (mensajes.html) ===== */
+.notif-item {
+  display: flex; align-items: flex-start; gap: var(--sp-3);
+  background: #fff; border: 1px solid var(--border); border-radius: var(--radius);
+  padding: var(--sp-4); margin-bottom: var(--sp-3);
+  box-shadow: var(--shadow-xs); text-decoration: none; color: var(--dark);
+  transition: transform var(--dur) var(--ease), box-shadow var(--dur) var(--ease);
+  min-height: 44px;
+}
+.notif-item:active { transform: scale(0.99); }
+.notif-item:hover { box-shadow: var(--shadow-md); }
+.notif-item.is-new { border-color: var(--primary-light); background: var(--mint); }
+.notif-icon {
+  flex-shrink: 0; width: 44px; height: 44px; display: flex; align-items: center; justify-content: center;
+  font-size: 22px; background: var(--bg-alt); border-radius: var(--radius-sm);
+}
+.notif-item.is-new .notif-icon { background: #fff; }
+.notif-body { flex: 1; display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.notif-body strong { font-size: var(--fs-base); color: var(--navy); }
+.notif-svc { font-size: var(--fs-xs); color: var(--primary-text); font-weight: 600; }
+.notif-text { font-size: var(--fs-sm); color: var(--gray); line-height: 1.4; }
+.notif-cta { flex-shrink: 0; align-self: center; font-size: var(--fs-sm); font-weight: 700; color: var(--primary-text); white-space: nowrap; }
+.notif-dot { display: inline-block; width: 8px; height: 8px; border-radius: var(--radius-pill); background: var(--primary-text); vertical-align: middle; margin-left: 4px; }
+
+/* Badge de novedades sobre la pestaña de la barra inferior */
+.bn-badge {
+  position: absolute; top: -4px; right: -10px;
+  min-width: 18px; height: 18px; padding: 0 4px;
+  display: flex; align-items: center; justify-content: center;
+  background: var(--danger); color: #fff; font-size: 11px; font-weight: 700;
+  border-radius: var(--radius-pill); line-height: 1;
+}
+@media (max-width: 520px) {
+  .notif-cta { display: none; } /* en pantallas chicas, toda la tarjeta es tappable */
+}

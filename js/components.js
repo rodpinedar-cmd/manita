@@ -227,7 +227,7 @@ async function mountBottomNav(active) {
     { id: 'buscar',    label: 'Buscar',    icon: '🔍', href: 'index.html' },
     { id: 'favoritos', label: 'Favoritos', icon: '🤍', href: 'favoritos.html' },
     { id: 'servicios', label: 'Servicios', icon: '📅', href: 'mis-reservas.html' },
-    { id: 'mensajes',  label: 'Mensajes',  icon: '💬', href: 'mensajes.html' },
+    { id: 'mensajes',  label: 'Actividad',  icon: '🔔', href: 'mensajes.html' },
     { id: 'perfil',    label: 'Perfil',    icon: '👤', href: cuentaHref }
   ];
 

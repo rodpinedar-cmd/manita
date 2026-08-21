@@ -15,15 +15,88 @@
 <body>
 <header class="header" id="appHeader"></header>
 <div style="max-width:720px;margin:24px auto;padding:0 20px;">
-  <h1 style="font-size:24px;margin-bottom:16px;">Mensajes</h1>
-  <div id="msgBox"></div>
+  <h1 style="font-size:24px;margin-bottom:4px;">Actividad</h1>
+  <p style="color:var(--gray);margin-bottom:16px;font-size:var(--fs-sm);">Novedades de tus servicios</p>
+  <div id="notifBox"><div class="skeleton skeleton-card"></div><div class="skeleton skeleton-card"></div></div>
 </div>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="js/supabase-client.js"></script>
 <script src="js/components.js"></script>
 <script>
 mountHeader({ search: false }); mountBottomNav('mensajes');
-document.getElementById('msgBox').innerHTML = emptyState({ icon:'💬', title:'Chat próximamente', text:'El chat con profesionales llegará muy pronto. Por ahora coordina tu servicio al reservar.', ctaText:'Ver mis reservas', ctaHref:'mis-reservas.html' });
+function esc(s){return String(s==null?'':s).replace(/[&<>"']/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];});}
+
+// Mapea el estado de una reserva a una notificación con marca (icono, texto, acción).
+// Deriva la "actividad" del ciclo de vida real de las reservas del cliente (sin backend nuevo).
+var NOTIF = {
+  pending:      { icon:'⏳', title:'Reserva enviada', text:'Estamos esperando que el profesional la confirme.', cta:'Ver reserva', href:'mis-reservas.html' },
+  confirmed:    { icon:'✅', title:'¡Reserva confirmada!', text:'El profesional confirmó tu servicio.', cta:'Ver detalles', href:'mis-reservas.html' },
+  in_progress:  { icon:'🔧', title:'Servicio en progreso', text:'Tu profesional está trabajando en tu servicio.', cta:'Ver reserva', href:'mis-reservas.html' },
+  completed:    { icon:'🎉', title:'Servicio completado', text:'¿Qué tal estuvo? Deja tu reseña y ayuda a otros.', cta:'Dejar reseña', href:'mis-reservas.html' },
+  reviewed:     { icon:'⭐', title:'¡Gracias por tu reseña!', text:'Tu opinión ayuda a la comunidad de Manita.', cta:'Reservar de nuevo', href:'mis-reservas.html' },
+  cancelled_by_client:       { icon:'🚫', title:'Reserva cancelada', text:'Cancelaste este servicio.', cta:'Buscar otro', href:'categorias.html' },
+  cancelled_by_professional: { icon:'😔', title:'El profesional canceló', text:'Tu reserva fue cancelada por el profesional. Busca otra opción.', cta:'Buscar otro', href:'categorias.html' },
+  no_show_professional:      { icon:'⚠️', title:'El profesional no asistió', text:'Lo sentimos. Puedes reportarlo o reservar de nuevo.', cta:'Ver reserva', href:'mis-reservas.html' }
+};
+
+function fecha(iso){ try{ return new Date(iso).toLocaleDateString('es-MX',{day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'}); }catch(e){ return ''; } }
+
+async function loadActividad(){
+  var box = document.getElementById('notifBox');
+  var user = await usuarioActual();
+  if (!user){ window.location.href = 'login.html?next=' + encodeURIComponent('mensajes.html'); return; }
+
+  var res = await misReservas();
+  if (res.error){ box.innerHTML = '<div class="state-error" role="alert">⚠️ No pudimos cargar tu actividad. <button class="btn btn-ghost" onclick="loadActividad()">Reintentar</button></div>'; return; }
+
+  var items = (res.data || []).filter(function(b){ return NOTIF[b.status]; });
+  // Ordena por lo más reciente (updated_at o created_at)
+  items.sort(function(a,b){ return new Date(b.updated_at||b.created_at) - new Date(a.updated_at||a.created_at); });
+
+  if (!items.length){
+    box.innerHTML = emptyState({ icon:'🔔', title:'Sin novedades por ahora', text:'Cuando reserves un servicio, aquí verás cada actualización: confirmación, avance y cuándo puedes reseñar.', ctaText:'Buscar un servicio', ctaHref:'categorias.html' });
+    updateBadge(0); return;
+  }
+
+  // Marca como "nuevas" las que cambiaron desde la última visita
+  var lastSeen = 0; try { lastSeen = parseInt(localStorage.getItem('manita_notif_seen')||'0'); } catch(e){}
+  var nuevas = 0;
+
+  box.innerHTML = items.map(function(b){
+    var n = NOTIF[b.status];
+    var svc = b.professionals ? b.professionals.service_name : 'Servicio';
+    var ts = new Date(b.updated_at||b.created_at).getTime();
+    var isNew = ts > lastSeen;
+    if (isNew) nuevas++;
+    return '<a class="notif-item' + (isNew?' is-new':'') + '" href="' + n.href + '">' +
+      '<span class="notif-icon" aria-hidden="true">' + n.icon + '</span>' +
+      '<span class="notif-body">' +
+        '<strong>' + esc(n.title) + (isNew?' <span class="notif-dot" aria-label="Nuevo"></span>':'') + '</strong>' +
+        '<span class="notif-svc">' + esc(svc) + ' · ' + esc(b.service_date) + ' ' + esc(b.service_time) + '</span>' +
+        '<span class="notif-text">' + esc(n.text) + '</span>' +
+      '</span>' +
+      '<span class="notif-cta">' + esc(n.cta) + ' ›</span>' +
+    '</a>';
+  }).join('');
+
+  // Al ver la lista, marca todo como visto (quita el badge la próxima vez)
+  var maxTs = Math.max.apply(null, items.map(function(b){ return new Date(b.updated_at||b.created_at).getTime(); }));
+  try { localStorage.setItem('manita_notif_seen', String(maxTs)); } catch(e){}
+  updateBadge(nuevas);
+}
+
+// Pinta un badge con el número de novedades sobre la pestaña "Mensajes" de la barra inferior
+function updateBadge(n){
+  var tab = document.querySelector('.bn-item[href="mensajes.html"]');
+  if (!tab) return;
+  var old = tab.querySelector('.bn-badge'); if (old) old.remove();
+  if (n > 0){
+    var b = document.createElement('span'); b.className='bn-badge'; b.textContent = n>9?'9+':String(n);
+    var icon = tab.querySelector('.bn-icon') || tab; icon.style.position='relative'; icon.appendChild(b);
+  }
+}
+
+loadActividad();
 </script>
 </body>
 </html>

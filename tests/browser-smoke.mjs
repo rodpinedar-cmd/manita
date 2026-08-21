@@ -67,6 +67,9 @@ for (const page of PAGES) {
   const bodyAppMode = await pg.evaluate(() => document.body.classList.contains('app-mode'));
   rec('Modo app: barra inferior visible con 5 pestañas', navVisible && tabs === 5, `nav=${navVisible} tabs=${tabs}`);
   rec('Modo app: pestaña Buscar activa + body.app-mode', activeTab === 'Buscar' && bodyAppMode, `active=${activeTab} appMode=${bodyAppMode}`);
+  // La 4a pestaña ahora es "Actividad" (antes "Mensajes")
+  const labels = await pg.$$eval('.bn-item .bn-label', els => els.map(e => e.textContent));
+  rec('Modo app: pestaña de Actividad presente', labels.includes('Actividad'), labels.join(','));
   // Home tipo app: appHome visible, hero de landing oculto, círculos de categorías presentes
   const appHomeVisible = await pg.evaluate(() => { const h = document.getElementById('appHome'); return h && h.style.display !== 'none'; });
   const heroHidden = await pg.evaluate(() => { const h = document.querySelector('section.hero'); return h && h.style.display === 'none'; });
