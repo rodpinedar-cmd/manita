@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="es-MX">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Manita — Presentación ejecutiva</title>
+<style>
+  :root{
+    --coral:#FF6B4A; --coral-txt:#C43D26; --navy:#2D3E75; --dark:#22232B;
+    --bg:#FBF7F4; --mint:#FFF0EC; --border:#ECE7E3; --gray:#565D6B; --ok:#0C6B4F;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  body{font-family:-apple-system,'Segoe UI',system-ui,sans-serif;color:var(--dark);background:var(--bg);line-height:1.55;}
+  .deck{max-width:960px;margin:0 auto;padding:24px 16px 80px;}
+  .slide{background:#fff;border:1px solid var(--border);border-radius:20px;padding:40px;margin-bottom:24px;box-shadow:0 6px 24px rgba(31,37,68,.07);scroll-margin-top:16px;}
+  .slide h1{font-size:38px;color:var(--navy);line-height:1.1;margin-bottom:10px;}
+  .slide h2{font-size:26px;color:var(--navy);margin-bottom:14px;}
+  .slide h3{font-size:17px;color:var(--coral-txt);margin:16px 0 6px;text-transform:uppercase;letter-spacing:.5px;}
+  .slide p{color:var(--gray);margin-bottom:10px;font-size:16px;}
+  .slide ul{padding-left:22px;margin-bottom:10px;}
+  .slide li{color:var(--gray);margin-bottom:6px;}
+  .tag{display:inline-block;background:var(--mint);color:var(--coral-txt);font-weight:700;font-size:13px;padding:5px 14px;border-radius:999px;margin-bottom:16px;}
+  .cover{background:linear-gradient(150deg,var(--coral),#E8563A);color:#fff;text-align:center;padding:70px 40px;}
+  .cover h1{color:#fff;font-size:52px;}
+  .cover p{color:rgba(255,255,255,.92);font-size:20px;}
+  .cover .logo{font-size:64px;margin-bottom:10px;}
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:20px;}
+  .grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;}
+  .card{background:var(--bg);border:1px solid var(--border);border-radius:14px;padding:18px;}
+  .card b{color:var(--navy);display:block;margin-bottom:4px;}
+  .shots{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:16px;margin-top:12px;}
+  .shot{border:1px solid var(--border);border-radius:14px;overflow:hidden;background:#f4f1ee;}
+  .shot img{width:100%;display:block;}
+  .shot span{display:block;padding:8px 12px;font-size:13px;color:var(--gray);}
+  .ok{color:var(--ok);font-weight:700;}
+  .todo{color:var(--coral-txt);font-weight:700;}
+  .note{background:var(--mint);border:1px solid var(--coral);border-radius:12px;padding:14px;font-size:14px;color:var(--navy);margin-top:12px;}
+  .steps{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;}
+  .step{background:var(--bg);border-radius:12px;padding:14px;text-align:center;}
+  .step .n{width:32px;height:32px;border-radius:50%;background:var(--coral);color:#fff;font-weight:800;display:flex;align-items:center;justify-content:center;margin:0 auto 8px;}
+  table{width:100%;border-collapse:collapse;margin-top:10px;font-size:14px;}
+  th,td{text-align:left;padding:8px 10px;border-bottom:1px solid var(--border);}
+  th{color:var(--navy);}
+  .navdots{position:fixed;right:14px;top:50%;transform:translateY(-50%);display:flex;flex-direction:column;gap:8px;z-index:10;}
+  .navdots a{width:10px;height:10px;border-radius:50%;background:#d8d0ca;display:block;}
+  .navdots a:hover{background:var(--coral);}
+  @media(max-width:700px){ .grid2,.grid3{grid-template-columns:1fr;} .cover h1{font-size:38px;} .slide{padding:26px;} .navdots{display:none;} }
+  @media print{ .navdots{display:none;} .slide{break-inside:avoid;box-shadow:none;} body{background:#fff;} }
+</style>
+</head>
+<body>
+<div class="deck">
+
+  <section class="slide cover" id="s1">
+    <div class="logo">🤝</div>
+    <h1>Manita</h1>
+    <p>El marketplace de servicios a domicilio para la Ciudad de México</p>
+    <p style="margin-top:18px;font-size:15px;opacity:.85;">Web + App instalable · Agosto 2026</p>
+  </section>
+
+  <section class="slide">
+    <span class="tag">El problema</span>
+    <h2>Contratar un servicio a domicilio en CDMX es incierto</h2>
+    <ul>
+      <li>Recomendaciones sueltas por WhatsApp o redes, sin garantía.</li>
+      <li>No sabes si el precio es justo ni si la persona es confiable.</li>
+      <li>Sin respaldo si algo sale mal.</li>
+    </ul>
+    <h3>La oportunidad</h3>
+    <p>Un solo lugar para encontrar, comparar y reservar profesionales verificados, con precio claro y respaldo.</p>
+    <div class="note">📌 Dato de mercado por validar: tamaño y demanda de servicios a domicilio en CDMX. No usamos cifras infladas.</div>
+  </section>
+
+  <section class="slide">
+    <span class="tag">La solución</span>
+    <h2>Manita: confianza en cada reserva</h2>
+    <div class="grid3">
+      <div class="card"><b>🔎 Encuentra</b>Profesionales por categoría, zona y precio.</div>
+      <div class="card"><b>📅 Reserva</b>Fecha, hora y dirección. Precio calculado en el servidor.</div>
+      <div class="card"><b>🛡️ Con respaldo</b>Reseñas reales y (próximamente) pago protegido.</div>
+    </div>
+    <p style="margin-top:14px;">Disponible como <b>web</b> y como <b>app instalable</b> (Android e iPhone), sin tiendas de por medio.</p>
+  </section>
+
+  <section class="slide">
+    <span class="tag">La web</span>
+    <h2>Versión web (navegador)</h2>
+    <div class="shots">
+      <div class="shot"><img src="capturas/01-inicio-web-desktop.png" alt="Inicio web"><span>Landing: hero, cómo funciona, garantía</span></div>
+      <div class="shot"><img src="capturas/05-servicios-desktop.png" alt="Servicios web"><span>Servicios: filtros por categoría, precio y zona</span></div>
+      <div class="shot"><img src="capturas/12-legal-desktop.png" alt="Legal"><span>Términos, privacidad y políticas</span></div>
+    </div>
+  </section>
+
+  <section class="slide">
+    <span class="tag">La app</span>
+    <h2>Versión app (instalada)</h2>
+    <div class="shots">
+      <div class="shot"><img src="capturas/02-inicio-app-iphone.png" alt="Home app"><span>Home tipo app + barra inferior de 5 pestañas</span></div>
+      <div class="shot"><img src="capturas/04-servicios-iphone.png" alt="Servicios app"><span>Listado de profesionales (móvil)</span></div>
+      <div class="shot"><img src="capturas/06-perfil-pro-iphone.png" alt="Perfil pro"><span>Perfil: rating, reseñas y reserva</span></div>
+      <div class="shot"><img src="capturas/11-onboarding-iphone.png" alt="Onboarding"><span>Onboarding de bienvenida</span></div>
+      <div class="shot"><img src="capturas/10-descarga-modal-iphone.png" alt="Descarga"><span>Instalación (QR + Android/iPhone)</span></div>
+      <div class="shot"><img src="capturas/03-categorias-iphone.png" alt="Categorías"><span>Explorar por categoría</span></div>
+    </div>
+  </section>
+
+  <section class="slide">
+    <span class="tag">Cómo funciona</span>
+    <h2>Dos flujos que encajan</h2>
+    <h3>Cliente</h3>
+    <div class="steps">
+      <div class="step"><div class="n">1</div>Busca y filtra</div>
+      <div class="step"><div class="n">2</div>Reserva (precio claro)</div>
+      <div class="step"><div class="n">3</div>Recibe el servicio</div>
+      <div class="step"><div class="n">4</div>Confirma y reseña</div>
+    </div>
+    <h3>Profesional</h3>
+    <div class="steps">
+      <div class="step"><div class="n">1</div>Crea perfil</div>
+      <div class="step"><div class="n">2</div>Define horario</div>
+      <div class="step"><div class="n">3</div>Confirma reservas</div>
+      <div class="step"><div class="n">4</div>Completa y cobra</div>
+    </div>
+  </section>
+
+  <section class="slide">
+    <span class="tag">Estado del producto</span>
+    <h2>Lo que YA funciona <span class="ok">(verificado con tests)</span></h2>
+    <div class="grid2">
+      <div class="card"><b>Cuentas</b>Registro/login reales, consentimiento de términos.</div>
+      <div class="card"><b>Buscar</b>Filtros por categoría, precio y zona + ordenar.</div>
+      <div class="card"><b>Reservar</b>Precio server-side, ciclo completo verificado 8/8.</div>
+      <div class="card"><b>Profesional</b>Panel con estados y edición de disponibilidad.</div>
+      <div class="card"><b>Actividad</b>Notificaciones in-app del ciclo de la reserva.</div>
+      <div class="card"><b>PWA</b>Instalable en Android e iPhone, onboarding, offline.</div>
+    </div>
+    <div class="note">Calidad: 70/70 smoke · 47/47 navegador · 0 violaciones de accesibilidad · 20 usuarios simulados sin fallos.</div>
+  </section>
+
+  <section class="slide">
+    <span class="tag">Recorrido</span>
+    <h2>Mejoras aplicadas hasta hoy</h2>
+    <ul>
+      <li>Backend seguro: precio, estados y rating calculados en el servidor (no manipulables).</li>
+      <li>Rediseño "modo app" tipo nativo + PWA/APK instalable.</li>
+      <li>Accesibilidad AA, SEO, rendimiento y estados vacíos con marca.</li>
+      <li>Ciclo transaccional completo (reservar → gestionar → reseñar → rating real).</li>
+      <li>Filtros de precio/zona, orden, centro de Actividad, disponibilidad del pro.</li>
+      <li>Base legal completa (T&C, privacidad ARCO, reembolsos) y plan de pagos.</li>
+      <li>Congruencia web ↔ app revisada y corregida.</li>
+    </ul>
+  </section>
+
+  <section class="slide">
+    <span class="tag">Seguridad y legal</span>
+    <h2>Construido para ser confiable y legal</h2>
+    <ul>
+      <li>Manita es <b>intermediario</b>, no presta el servicio ni es empleador (T&C).</li>
+      <li>Aviso de Privacidad conforme <b>LFPDPPP</b> con derechos <b>ARCO</b>.</li>
+      <li>Pagos con <b>split</b> (Mercado Pago/Stripe): el dinero no se retiene en Manita → evita el problema regulatorio de la Ley Fintech.</li>
+      <li>Copy honesto, sin datos falsos (cumple <b>PROFECO</b>).</li>
+    </ul>
+    <div class="note">⚠️ Requiere revisión de un abogado fintech mexicano antes de cobrar dinero real.</div>
+  </section>
+
+  <section class="slide">
+    <span class="tag">Modelo de pago</span>
+    <h2>Dinero protegido de punta a punta</h2>
+    <div class="steps">
+      <div class="step"><div class="n">1</div>Cliente paga → se autoriza (aparta)</div>
+      <div class="step"><div class="n">2</div>Pro realiza el servicio</div>
+      <div class="step"><div class="n">3</div>Cliente confirma</div>
+      <div class="step"><div class="n">4</div>Se cobra: comisión a Manita, resto al pro</div>
+    </div>
+    <p style="margin-top:12px;">El reparto lo hace la pasarela automáticamente (split). Comisión de plataforma transparente antes de reservar.</p>
+  </section>
+
+  <section class="slide">
+    <span class="tag">Mercado</span>
+    <h2>Competencia y posicionamiento</h2>
+    <table>
+      <tr><th>Referente</th><th>Qué hace</th><th>Manita se diferencia en</th></tr>
+      <tr><td>Webel (España)</td><td>Servicios a domicilio, app</td><td>Enfoque 100% CDMX, identidad propia</td></tr>
+      <tr><td>TaskRabbit (EEUU)</td><td>Tareas y handyman</td><td>Español mexicano, categorías locales</td></tr>
+      <tr><td>Recomendación informal</td><td>WhatsApp / redes</td><td>Verificación, reseñas y respaldo</td></tr>
+    </table>
+    <div class="note">📌 Tamaño de mercado, precios promedio y demanda: <b>por validar</b> con investigación de campo antes de invertir.</div>
+  </section>
+
+  <section class="slide">
+    <span class="tag">Growth</span>
+    <h2>Social media y lanzamiento</h2>
+    <div class="grid2">
+      <div class="card"><b>Canales</b>Instagram y TikTok (antes/después de servicios), Facebook grupos de colonia, WhatsApp.</div>
+      <div class="card"><b>Contenido</b>Tips del hogar, historias de profesionales, "cómo instalar la app", testimonios reales.</div>
+      <div class="card"><b>Fase 1 — Semilla</b>Reclutar 20-30 profesionales reales por colonia (Roma, Condesa, Del Valle).</div>
+      <div class="card"><b>Fase 2 — Demanda</b>Campañas locales geolocalizadas + referidos (invita y gana).</div>
+    </div>
+    <div class="note">Estrategia gratuita primero (orgánico + boca a boca). Pauta pagada solo cuando haya oferta suficiente.</div>
+  </section>
+
+  <section class="slide">
+    <span class="tag">Costos</span>
+    <h2>Qué es gratis hoy y qué cuesta a futuro</h2>
+    <table>
+      <tr><th>Concepto</th><th>Costo</th><th>Cuándo</th></tr>
+      <tr><td>Hosting (Netlify) + Backend (Supabase)</td><td class="ok">Gratis (plan free)</td><td>Ahora</td></tr>
+      <tr><td>PWA / APK (instalable)</td><td class="ok">Gratis</td><td>Ahora</td></tr>
+      <tr><td>Pasarela de pago (Mercado Pago)</td><td>~3-4% + IVA por venta</td><td>Al cobrar</td></tr>
+      <tr><td>Correo propio (SMTP)</td><td class="ok">Plan free (Resend/Brevo)</td><td>Al escalar</td></tr>
+      <tr><td>Google Play (opcional)</td><td>$25 USD único</td><td>Si se publica</td></tr>
+      <tr><td>App Store (opcional)</td><td>$99 USD/año</td><td>Si se publica</td></tr>
+      <tr><td>Revisión legal</td><td>Variable</td><td>Antes de cobrar</td></tr>
+    </table>
+    <div class="note">Hoy no se gasta nada. Los costos aparecen solo cuando hay ventas o se decide publicar en tiendas.</div>
+  </section>
+
+  <section class="slide">
+    <span class="tag">Roadmap</span>
+    <h2>Hacia el lanzamiento</h2>
+    <div class="grid2">
+      <div class="card"><b>Esta semana</b>Aplicar config Supabase pendiente, reclutar primeros profesionales reales.</div>
+      <div class="card"><b>Este mes</b>Definir modelo económico, reforzar contenido social, primeras reservas reales.</div>
+      <div class="card"><b>3 meses</b>Integrar pagos con split, revisión legal, verificación de profesionales.</div>
+      <div class="card"><b>6 meses</b>Escalar colonias, notificaciones push/email, evaluar tiendas.</div>
+    </div>
+  </section>
+
+  <section class="slide">
+    <span class="tag">Pendientes</span>
+    <h2>Lo que falta para lanzar</h2>
+    <ul>
+      <li><span class="todo">Negocio:</span> definir comisión y las 10 decisiones del modelo económico.</li>
+      <li><span class="todo">Legal:</span> revisión con abogado + datos fiscales/razón social.</li>
+      <li><span class="todo">Pagos:</span> integrar Mercado Pago con split (Edge Functions).</li>
+      <li><span class="todo">Correo:</span> SMTP propio para reactivar confirmación.</li>
+      <li><span class="todo">Oferta:</span> reclutar profesionales reales por colonia.</li>
+      <li><span class="todo">Mercado:</span> validar demanda y precios con campo.</li>
+    </ul>
+  </section>
+
+  <section class="slide cover" style="background:linear-gradient(150deg,var(--navy),#1F2544);">
+    <div class="logo">🤝</div>
+    <h1 style="font-size:40px;">Manita está listo para probarse</h1>
+    <p>MVP funcional, instalable y con base legal. El siguiente paso: primeros profesionales y clientes reales en CDMX.</p>
+    <p style="margin-top:16px;font-size:15px;opacity:.85;">manita-cdmx.netlify.app</p>
+  </section>
+
+</div>
+<nav class="navdots" aria-label="Ir a sección"></nav>
+<script>
+  // Genera puntos de navegación por slide
+  var slides = document.querySelectorAll('.slide');
+  var nav = document.querySelector('.navdots');
+  slides.forEach(function(s, i){ if(!s.id) s.id='s'+(i+1); var a=document.createElement('a'); a.href='#'+s.id; a.title='Sección '+(i+1); nav.appendChild(a); });
+  // Navegación con flechas
+  document.addEventListener('keydown', function(e){
+    var ids = Array.prototype.map.call(slides, function(s){return s.id;});
+    var y = window.scrollY; var cur = 0;
+    slides.forEach(function(s,i){ if(s.offsetTop <= y+80) cur=i; });
+    if(e.key==='ArrowDown'||e.key==='ArrowRight'){ if(slides[cur+1]) slides[cur+1].scrollIntoView({behavior:'smooth'}); }
+    if(e.key==='ArrowUp'||e.key==='ArrowLeft'){ if(slides[cur-1]) slides[cur-1].scrollIntoView({behavior:'smooth'}); }
+  });
+</script>
+</body>
+</html>
