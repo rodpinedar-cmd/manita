@@ -53,9 +53,9 @@ if (catBar) {
 
 // Render category filters
 var catFilters = document.getElementById('catFilters');
-catFilters.innerHTML = '<label><input type="radio" name="cat" value="all" ' + (currentCat==='all'?'checked':'') + '> Todas</label>' +
+catFilters.innerHTML = '<label><input type="radio" name="cat" value="all" aria-label="Todas las categorías" ' + (currentCat==='all'?'checked':'') + '> Todas</label>' +
   CATEGORIES.map(function(c) {
-    return '<label><input type="radio" name="cat" value="' + c.id + '" ' + (currentCat===c.id?'checked':'') + '> ' + c.icon + ' ' + c.name + '</label>';
+    return '<label><input type="radio" name="cat" value="' + c.id + '" aria-label="Categoría ' + c.name + '" ' + (currentCat===c.id?'checked':'') + '> ' + c.icon + ' ' + c.name + '</label>';
   }).join('');
 
 catFilters.addEventListener('change', function(e) {
