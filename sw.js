@@ -5,7 +5,7 @@
 //       Esto evita que los usuarios se queden con una versión vieja tras un deploy.
 //   - Supabase y APIs externas: NUNCA se cachean (datos frescos y sensibles).
 // IMPORTANTE: sube el número de versión del caché en cada release para forzar limpieza.
-const CACHE = 'manita-v3';
+const CACHE = 'manita-v4-azul';
 const SHELL = [
   './',
   './index.html',
@@ -21,7 +21,7 @@ const SHELL = [
   './login.html',
   './legal.html',
   './manifest.json',
-  './css/styles.css',
+  './css/styles.css?v=3',
   './js/supabase-client.js',
   './js/components.js',
   './js/data.js',
