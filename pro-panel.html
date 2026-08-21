@@ -96,6 +96,21 @@
     </details>
   </div>
 
+  <!-- Verificación de identidad -->
+  <div id="verifSection" style="display:none;margin-bottom:var(--sp-5);">
+    <details class="avail-box">
+      <summary>🪪 Verifica tu identidad <span id="verifSummary" style="color:var(--gray);font-weight:400;font-size:var(--fs-sm);"></span></summary>
+      <div class="avail-body">
+        <p style="color:var(--gray);font-size:var(--fs-sm);margin-bottom:var(--sp-3);">Sube tu identificación oficial (INE o pasaporte). Es privada: solo el equipo de Manita la revisa para darte la insignia de <strong>verificado ✔️</strong>. Genera más confianza y reservas.</p>
+        <div id="verifState" style="margin-bottom:var(--sp-3);"></div>
+        <label class="btn btn-ghost" id="verifUploadLabel" style="min-height:44px;cursor:pointer;">Subir mi identificación
+          <input type="file" id="verifInput" accept="image/jpeg,image/png,image/webp,application/pdf" style="display:none;">
+        </label>
+        <div style="font-size:var(--fs-xs);color:var(--gray);margin-top:6px;">JPG, PNG, WEBP o PDF · máx 5 MB · documento privado y cifrado en tránsito</div>
+      </div>
+    </details>
+  </div>
+
   <div class="pp-filters" id="ppFilters" style="display:none;" role="tablist">
     <button type="button" class="pp-fbtn active" data-f="all" role="tab" aria-selected="true">Todas</button>
     <button type="button" class="pp-fbtn" data-f="pending" role="tab" aria-selected="false">Pendientes</button>
@@ -311,6 +326,50 @@ async function cargarFotos(){
   };
 }
 cargarFotos();
+
+// ===== Verificación de identidad =====
+async function cargarVerificacion(){
+  var mp = await misProfesionales();
+  if (mp.error || !mp.data.length){ return; }
+  var proId = mp.data[0].id;
+  var sec = document.getElementById('verifSection');
+  sec.style.display = 'block';
+  var stateEl = document.getElementById('verifState');
+  var label = document.getElementById('verifUploadLabel');
+
+  var v = await miVerificacion(proId);
+  var st = v.data && v.data.status;
+  function pinta(estado, note){
+    if (estado === 'pending'){
+      document.getElementById('verifSummary').textContent = '· en revisión';
+      stateEl.innerHTML = '<div class="badge-status st-pending" style="display:inline-block;padding:6px 12px;border-radius:10px;">⏳ En revisión — te avisaremos pronto</div>';
+      label.style.display = 'none';
+    } else if (estado === 'approved'){
+      document.getElementById('verifSummary').textContent = '· verificado ✔️';
+      stateEl.innerHTML = '<div class="badge-status st-confirmed" style="display:inline-block;padding:6px 12px;border-radius:10px;">✔️ Identidad verificada</div>';
+      label.style.display = 'none';
+    } else if (estado === 'rejected'){
+      document.getElementById('verifSummary').textContent = '· rechazada';
+      stateEl.innerHTML = '<div class="badge-status st-cancelled" style="display:inline-block;padding:6px 12px;border-radius:10px;">No aprobada' + (note?': '+esc2(note):'') + '. Puedes volver a intentarlo.</div>';
+      label.style.display = 'inline-flex';
+    } else {
+      stateEl.innerHTML = '<div style="color:var(--gray);font-size:var(--fs-sm);">Aún no has enviado tu identificación.</div>';
+      label.style.display = 'inline-flex';
+    }
+  }
+  pinta(st, v.data && v.data.note);
+
+  document.getElementById('verifInput').onchange = async function(){
+    var f = this.files && this.files[0]; if (!f) return;
+    this.value = '';
+    toast('Subiendo documento...', 'info');
+    var r = await subirVerificacion(proId, f);
+    if (r.error){ toast(r.error.message || 'No se pudo subir. ¿Activaste la verificación?', 'error'); return; }
+    pinta('pending');
+    toast('¡Recibido! Revisaremos tu identidad pronto.', 'success');
+  };
+}
+cargarVerificacion();
 
 // Filtros por estado
 document.querySelectorAll('.pp-fbtn').forEach(function(btn){

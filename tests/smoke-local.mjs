@@ -97,6 +97,21 @@ for (const p of PAGES) {
   rec('SQL crea columnas avatar_url y portfolio', /avatar_url/.test(sql) && /portfolio\s+text\[\]/.test(sql));
 }
 
+// 8. Pipeline de verificación de identidad bien cableado
+{
+  const client = await readFile(join(ROOT, 'js/supabase-client.js'), 'utf8');
+  const proPanel = await readFile(join(ROOT, 'pro-panel.html'), 'utf8');
+  let sql = '';
+  try { sql = await readFile(join(ROOT, 'supabase/ACTIVAR_VERIFICACION.sql'), 'utf8'); } catch {}
+
+  rec('client define subirVerificacion/miVerificacion', /function subirVerificacion\b/.test(client) && /function miVerificacion\b/.test(client));
+  rec('verificación usa bucket privado verification', /from\('verification'\)/.test(client));
+  rec('pro-panel tiene sección de verificación', proPanel.includes('verifInput') && proPanel.includes('verifSection'));
+  rec('SQL verificación: bucket privado (public false)', /'verification'.*false/.test(sql));
+  rec('SQL verificación: tabla verification_requests', /verification_requests/.test(sql));
+  rec('SQL verificación: RPC aprobar solo admin', /aprobar_verificacion/.test(sql) && /is_admin\(\)/.test(sql));
+}
+
 const fail = results.filter(r=>!r.ok).length;
 console.log(`\n===== SMOKE LOCAL: ${results.length-fail} PASS · ${fail} FAIL =====`);
 process.exit(fail>0?1:0);

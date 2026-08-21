@@ -192,6 +192,31 @@ async function subirTrabajo(professionalId, file) {
   return { data: data, url: url, error: error };
 }
 
+// ===== VERIFICACIÓN DE IDENTIDAD (requiere ACTIVAR_VERIFICACION.sql) =====
+// Sube el documento a un bucket PRIVADO y registra una solicitud. El admin la revisa.
+async function subirVerificacion(professionalId, file) {
+  const user = await usuarioActual();
+  if (!user) return { error: { message: 'Debes iniciar sesión' } };
+  if (!file || file.size > 5 * 1024 * 1024) return { error: { message: 'El documento debe pesar menos de 5 MB.' } };
+  var ext = _extImagen(file); if ((file.type || '').indexOf('pdf') > -1) ext = 'pdf';
+  const path = user.id + '/ine-' + Date.now() + '.' + ext;
+  const up = await supa.storage.from('verification').upload(path, file, { contentType: file.type });
+  if (up.error) return { error: up.error };
+  const { data, error } = await supa.from('verification_requests')
+    .insert({ professional_id: professionalId, user_id: user.id, doc_path: path }).select();
+  return { data: data, error: error };
+}
+
+// Estado de la última solicitud de verificación del pro (pending/approved/rejected o null).
+async function miVerificacion(professionalId) {
+  const user = await usuarioActual();
+  if (!user) return { data: null, error: null };
+  const { data, error } = await supa.from('verification_requests')
+    .select('id, status, note, created_at').eq('professional_id', professionalId)
+    .order('created_at', { ascending: false }).limit(1).maybeSingle();
+  return { data, error };
+}
+
 // Quita una URL del portafolio del profesional.
 async function borrarTrabajo(professionalId, url) {
   const user = await usuarioActual();

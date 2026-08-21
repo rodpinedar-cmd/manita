@@ -77,7 +77,12 @@ Origen: capturas reales de Webel (referencia de diseño/UX) + peticiones del usu
       varios horarios por día (ej. 08-12 y 16-20), con validación de solapes. El backend ya lo
       soportaba; se probó end-to-end en PGlite (T4b: reserva mañana OK, tarde OK, hueco 13:00
       rechazado con OUTSIDE_AVAILABILITY). Suite run-tests 24/24.
-- [ ] Verificación de identidad del pro (documento) — bucket privado `verification`.
+- [x] **Verificación de identidad del pro**: sube INE/pasaporte a bucket PRIVADO `verification`
+      (solo dueño/admin lo ven vía URL firmada). Tabla `verification_requests` + RPC
+      `aprobar_verificacion` (solo admin). El pro NO puede auto-verificarse (trigger + RPC).
+      UI de estado en pro-panel (sin enviar / en revisión / verificado / rechazado). Validado en
+      PGlite (flujo completo: pro solicita → no puede auto-aprobar → admin aprueba → verified+active).
+      > REQUIERE que corras `supabase/ACTIVAR_VERIFICACION.sql` para activarlo.
 - [ ] Notificaciones al pro por email cuando recibe reserva (necesita SMTP).
 
 ### Fase 4 — Growth / negocio (con decisiones tuyas)
@@ -89,6 +94,8 @@ Origen: capturas reales de Webel (referencia de diseño/UX) + peticiones del usu
 ## D. Pendientes que dependen de TI (no puedo hacerlos yo)
 - [x] **Correr `supabase/ACTIVAR_FOTOS.sql`** → HECHO (21 ago 2026). Buckets avatars/portfolio
       verificados públicos (2MB/5MB). Fotos y galería ya operativas.
+- [ ] **Correr `supabase/ACTIVAR_VERIFICACION.sql`** → habilita la verificación de identidad
+      (bucket privado + tabla + RPC). El código ya está listo y probado.
 - [ ] Config Auth → URL (Site URL + Redirect) para quitar el localhost:3000.
 - [ ] Correr ADD_EDITAR_DISPONIBILIDAD.sql (editar horario del pro).
 - [ ] Decidir modelo económico (comisión) y revisión legal antes de cobrar.
