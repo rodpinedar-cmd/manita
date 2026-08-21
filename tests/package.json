@@ -9,6 +9,7 @@
   },
   "dependencies": {
     "@electric-sql/pglite": "^0.2.17",
-    "playwright": "^1.62.1"
+    "playwright": "^1.62.1",
+    "pptxgenjs": "^4.0.1"
   }
 }
