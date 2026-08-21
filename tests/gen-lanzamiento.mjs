@@ -47,20 +47,35 @@ function fotoFull(s, file, overlay){
   s.addText('Manita conecta a los vecinos de CDMX con profesionales verificados.',{x:1.5,y:5.2,w:W-3,h:0.7,fontSize:18,align:'center',color:'FFE4DC'});
 }
 
-// ===== 3. Todo lo que puedes pedir (mosaico de fotos) =====
+// ===== 3. Todo lo que puedes pedir (mosaico de fotos, 12 categorías) =====
 {
   const s=S(WHITE);
   s.addShape(p.ShapeType.rect,{x:0,y:0,w:W,h:0.18,fill:{color:CORAL}});
-  s.addText('TODO EN UN SOLO LUGAR',{x:0.7,y:0.5,w:8,h:0.4,fontSize:13,bold:true,color:CORAL_T,charSpacing:2});
-  s.addText('Casi cualquier servicio, a domicilio',{x:0.7,y:0.95,w:11.9,h:0.9,fontSize:30,bold:true,color:NAVY});
+  s.addText('TODO EN UN SOLO LUGAR',{x:0.7,y:0.45,w:8,h:0.4,fontSize:13,bold:true,color:CORAL_T,charSpacing:2});
+  s.addText('Casi cualquier servicio, a domicilio',{x:0.7,y:0.9,w:11.9,h:0.8,fontSize:28,bold:true,color:NAVY});
   const cats=[
     ['limpieza.jpg','Limpieza'],['plomeria.jpg','Plomería'],['electricista.jpg','Electricidad'],['handyman.jpg','Manitas / Hogar'],
-    ['piano.jpg','Clases de piano'],['patinaje.jpg','Clases de patinaje'],['belleza.jpg','Belleza y estética'],['mascotas.jpg','Paseo de mascotas'],
+    ['piano.jpg','Clases de piano'],['rollers.jpg','Patinaje / Rollers'],['guitarra.jpg','Clases de guitarra'],['belleza.jpg','Belleza'],
+    ['mascotas.jpg','Paseo de mascotas'],['ninos.jpg','Cuidado de niños'],['fisioterapia.jpg','Fisioterapia'],['jardineria.jpg','Jardinería'],
   ];
-  cats.forEach((c,i)=>{ const col=i%4,row=Math.floor(i/4); const x=0.6+col*3.08,y=2.1+row*2.35;
-    if(hasFoto(c[0])) s.addImage({ path:foto(c[0]), x, y, w:2.9, h:1.7, sizing:{type:'cover',w:2.9,h:1.7}, rounding:true });
-    s.addText(c[1],{x,y:y+1.72,w:2.9,h:0.4,fontSize:13,bold:true,align:'center',color:NAVY});
+  cats.forEach((c,i)=>{ const col=i%4,row=Math.floor(i/4); const x=0.6+col*3.08,y=1.85+row*1.75;
+    if(hasFoto(c[0])) s.addImage({ path:foto(c[0]), x, y, w:2.9, h:1.25, sizing:{type:'cover',w:2.9,h:1.25}, rounding:true });
+    s.addText(c[1],{x,y:y+1.27,w:2.9,h:0.35,fontSize:12,bold:true,align:'center',color:NAVY});
   });
+}
+
+// ===== 3b. Spotlight: clases de patinaje / rollers =====
+{
+  const s=S();
+  fotoFull(s, 'rollers.jpg', NAVY_D);
+  s.addText('CATEGORÍA ESTRELLA',{x:0.7,y:0.95,w:8,h:0.4,fontSize:14,bold:true,color:'FFB4A2',charSpacing:3});
+  s.addText('Clases de patinaje\ny rollers',{x:0.7,y:1.45,w:8,h:1.8,fontSize:44,bold:true,color:WHITE,lineSpacingMultiple:0.95});
+  s.addText([
+    {text:'Para niños y adultos, desde cero.',options:{bullet:true,color:'FFFFFF'}},
+    {text:'A domicilio o en tu parque favorito de CDMX.',options:{bullet:true,color:'FFFFFF'}},
+    {text:'Instructores verificados, con reseñas reales.',options:{bullet:true,color:'FFFFFF'}},
+  ],{x:0.9,y:3.6,w:7,h:2,fontSize:19,lineSpacingMultiple:1.4});
+  if(hasFoto('rollers2.jpg')) s.addImage({ path:foto('rollers2.jpg'), x:8.7, y:1.6, w:3.9, h:4.2, sizing:{type:'cover',w:3.9,h:4.2}, rounding:true });
 }
 
 // ===== 4. El problema (foto + tarjetas) =====
@@ -146,7 +161,7 @@ function fotoFull(s, file, overlay){
   const s=S(NAVY);
   s.addText('EL PRODUCTO',{x:0.7,y:0.55,w:8,h:0.4,fontSize:13,bold:true,color:'FFB4A2',charSpacing:2});
   s.addText('Se ve y se siente como una app real',{x:0.7,y:1.0,w:11.9,h:0.9,fontSize:30,bold:true,color:WHITE});
-  const shots=['02-inicio-app-iphone.png','04-servicios-iphone.png','06-perfil-pro-iphone.png','11-onboarding-iphone.png'];
+  const shots=['02-inicio-app-iphone.png','03-categorias-iphone.png','04-servicios-iphone.png','11-onboarding-iphone.png'];
   shots.forEach((f,i)=>{ const x=0.7+i*3.1;
     if(hasCap(f)) s.addImage({path:cap(f),x:x+0.35,y:2.2,w:2.4,h:4.7,sizing:{type:'contain',w:2.4,h:4.7}});
   });
@@ -185,6 +200,30 @@ function fotoFull(s, file, overlay){
   s.addText('Todo funcionando y verificado: registro, búsqueda, reserva, gestión y reseñas.',{x:0.7,y:5.2,w:11.9,h:0.5,fontSize:14,bold:true,color:OK});
 }
 
+// ===== 11b. Instálala en segundos (foto app en mano) =====
+{
+  const s=S();
+  fotoFull(s, 'app-mano.jpg', NAVY_D);
+  s.addText('SIN TIENDAS, SIN ESPERA',{x:0.7,y:1.0,w:8,h:0.4,fontSize:14,bold:true,color:'FFB4A2',charSpacing:2});
+  s.addText('Instálala en 30 segundos',{x:0.7,y:1.5,w:11.9,h:1,fontSize:38,bold:true,color:WHITE});
+  const pasos=[['📲','Abre','manita-cdmx.netlify.app'],['⬆️','Comparte','Toca el botón compartir'],['🏠','Agrega','"A pantalla de inicio"'],['🎉','Listo','Ya tienes la app']];
+  pasos.forEach((c,i)=>{ const x=0.7+i*3.05;
+    s.addShape(p.ShapeType.roundRect,{x,y:3.1,w:2.85,h:2.4,rectRadius:0.15,fill:{color:WHITE,transparency:8}});
+    s.addText(c[0],{x,y:3.35,w:2.85,h:0.9,fontSize:36,align:'center'});
+    s.addText(c[1],{x:x+0.15,y:4.35,w:2.55,h:0.5,fontSize:17,bold:true,color:NAVY,align:'center'});
+    s.addText(c[2],{x:x+0.15,y:4.85,w:2.55,h:0.6,fontSize:12,color:GRAY,align:'center'});
+  });
+  s.addText('Funciona en Android y iPhone, gratis y sin App Store.',{x:0.7,y:5.9,w:11.9,h:0.5,fontSize:16,bold:true,align:'center',color:WHITE});
+}
+
+// ===== 11c. Visión =====
+{
+  const s=S(NAVY);
+  s.addText('“',{x:0.7,y:1.2,w:2,h:1.5,fontSize:100,bold:true,color:CORAL});
+  s.addText('Que en CDMX contratar ayuda de confianza\nsea tan simple como pedir un taxi.',{x:1.5,y:2.6,w:10.5,h:1.8,fontSize:30,bold:true,italic:true,color:WHITE,lineSpacingMultiple:1.1});
+  s.addText('— La visión de Manita',{x:1.5,y:4.6,w:10,h:0.5,fontSize:16,color:'FFB4A2'});
+}
+
 // ===== 12. Cierre / CTA (foto) =====
 {
   const s=S();
@@ -196,7 +235,8 @@ function fotoFull(s, file, overlay){
   s.addText('manita-cdmx.netlify.app',{x:W/2-2.5,y:4.9,w:5,h:0.8,fontSize:18,bold:true,align:'center',valign:'middle',color:CORAL_T});
 }
 
-const OUT = join(process.cwd(), 'Manita_Lanzamiento.pptx');
-await p.writeFile({ fileName: OUT });
+let OUT = join(process.cwd(), 'Manita_Lanzamiento.pptx');
+try { await p.writeFile({ fileName: OUT }); }
+catch (e) { OUT = join(process.cwd(), 'Manita_Lanzamiento_v2.pptx'); await p.writeFile({ fileName: OUT }); }
 console.log('OK LANZAMIENTO · ' + n + ' slides → ' + OUT);
 
