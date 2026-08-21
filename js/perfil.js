@@ -30,7 +30,11 @@ async function loadProfile() {
   if (res.error) { showError('No pudimos cargar el perfil. Revisa tu conexión.'); return; }
   pro = res.data;
   if (!pro) {
-    layout().innerHTML = '<div class="state-empty">Profesional no encontrado. <a href="categorias.html">Ver categorías</a></div>';
+    layout().innerHTML = '<div class="state-empty" style="text-align:center;padding:48px 20px;">' +
+      '<div style="font-size:52px;margin-bottom:12px;">🔍</div>' +
+      '<h2 style="color:var(--navy);margin-bottom:8px;">Este profesional no está disponible</h2>' +
+      '<p style="color:var(--gray);margin-bottom:20px;">Puede que ya no ofrezca este servicio. Explora otros profesionales de confianza.</p>' +
+      '<a class="btn btn-primary btn-lg" href="categorias.html">Ver categorías</a></div>';
     return;
   }
 

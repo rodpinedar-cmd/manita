@@ -80,6 +80,19 @@ for (const page of PAGES) {
   await ctx.close();
 }
 
+// ===== Verificación perfil con id inválido (no muestra error crudo) =====
+{
+  const ctx = await browser.newContext();
+  const pg = await ctx.newPage();
+  await pg.goto(`http://localhost:${PORT}/perfil.html?id=demo`, { waitUntil: 'networkidle', timeout: 15000 });
+  await pg.waitForTimeout(500);
+  const txt = await pg.evaluate(() => document.body.innerText || '');
+  const amable = /no está disponible/i.test(txt);
+  const sinErrorRed = !/No pudimos cargar el perfil/i.test(txt);
+  rec('Perfil: id inválido muestra estado amable (no error de red)', amable && sinErrorRed, `amable=${amable} sinError=${sinErrorRed}`);
+  await ctx.close();
+}
+
 // ===== Verificación filtros de servicios (precio + zona) =====
 {
   const ctx = await browser.newContext({ viewport: { width: 1280, height: 800 } });

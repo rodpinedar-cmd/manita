@@ -41,7 +41,11 @@ async function obtenerProfesionales(categoryId) {
 }
 
 async function obtenerProfesional(id) {
-  const { data, error } = await supa.from('professionals').select('*').eq('id', id).single();
+  // Un id que no es UUID válido = "no encontrado" (no un error de red). Evita el error crudo de Postgres.
+  var esUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(id || '');
+  if (!esUuid) return { data: null, error: null };
+  // maybeSingle: si no hay fila devuelve data:null sin error (a diferencia de single()).
+  const { data, error } = await supa.from('professionals').select('*').eq('id', id).maybeSingle();
   return { data, error };
 }
 
