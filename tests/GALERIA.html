@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Manita — Galería de simulación (20 usuarios)</title>
+<style>
+  :root{ --coral:#FF6B4A; --navy:#2D3E75; --bg:#FBF7F4; --border:#ECE7E3; --gray:#565D6B; }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{font-family:-apple-system,'Segoe UI',system-ui,sans-serif;background:var(--bg);color:#22232B;line-height:1.5;padding:24px;}
+  header{max-width:1100px;margin:0 auto 24px;}
+  h1{font-size:28px;color:var(--navy);}
+  .sub{color:var(--gray);margin-top:6px;}
+  .badge{display:inline-block;background:#0C6B4F;color:#fff;font-size:13px;font-weight:700;padding:4px 12px;border-radius:999px;margin-top:12px;}
+  .grid{max-width:1100px;margin:0 auto;display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:20px;}
+  .card{background:#fff;border:1px solid var(--border);border-radius:16px;overflow:hidden;box-shadow:0 4px 20px rgba(31,37,68,.06);}
+  .card img{width:100%;display:block;background:#f4f1ee;border-bottom:1px solid var(--border);}
+  .card .cap{padding:12px 14px;}
+  .card .cap b{color:var(--navy);font-size:15px;}
+  .card .cap p{color:var(--gray);font-size:13px;margin-top:2px;}
+  footer{max-width:1100px;margin:28px auto 0;color:var(--gray);font-size:13px;}
+</style>
+</head>
+<body>
+<header>
+  <h1>🤝 Manita — Galería de simulación</h1>
+  <p class="sub">Capturas reales tomadas durante la prueba automatizada de 20 usuarios (Playwright) navegando web y app en distintos dispositivos.</p>
+  <span class="badge">240 páginas visitadas · 0 errores JS · 0 fallos</span>
+</header>
+<div class="grid">
+  <div class="card"><img src="capturas/02-inicio-app-iphone.png" alt="Inicio modo app iPhone"><div class="cap"><b>Inicio — modo app (iPhone)</b><p>Home tipo app con barra inferior de 5 pestañas (Buscar/Favoritos/Servicios/Actividad/Perfil).</p></div></div>
+  <div class="card"><img src="capturas/01-inicio-web-desktop.png" alt="Inicio web desktop"><div class="cap"><b>Inicio — web (escritorio)</b><p>Landing con hero, cómo funciona y sección de descarga.</p></div></div>
+  <div class="card"><img src="capturas/04-servicios-iphone.png" alt="Servicios iPhone"><div class="cap"><b>Servicios (iPhone)</b><p>Listado de profesionales con chips de filtro (ahora con targets ≥44px, accesibles).</p></div></div>
+  <div class="card"><img src="capturas/05-servicios-desktop.png" alt="Servicios desktop"><div class="cap"><b>Servicios (escritorio)</b><p>Sidebar de filtros con categorías y disponibilidad (aria-labels añadidos).</p></div></div>
+  <div class="card"><img src="capturas/06-perfil-pro-iphone.png" alt="Perfil profesional iPhone"><div class="cap"><b>Perfil del profesional (iPhone)</b><p>Rating real, reseñas, desglose de precio y tarjeta de reserva fija.</p></div></div>
+  <div class="card"><img src="capturas/03-categorias-iphone.png" alt="Categorías iPhone"><div class="cap"><b>Categorías (iPhone)</b><p>Exploración de servicios por categoría.</p></div></div>
+  <div class="card"><img src="capturas/11-onboarding-iphone.png" alt="Onboarding iPhone"><div class="cap"><b>Onboarding de bienvenida</b><p>3 slides que se muestran la primera vez en modo app.</p></div></div>
+  <div class="card"><img src="capturas/10-descarga-modal-iphone.png" alt="Modal de descarga iPhone"><div class="cap"><b>Modal "Lleva Manita en tu celular"</b><p>QR + pestañas Android/iPhone con instrucciones y aviso de Safari.</p></div></div>
+  <div class="card"><img src="capturas/09-login-iphone.png" alt="Login iPhone"><div class="cap"><b>Acceso / Login (iPhone)</b><p>Pantalla de inicio de sesión.</p></div></div>
+  <div class="card"><img src="capturas/07-como-funciona-iphone.png" alt="Cómo funciona iPhone"><div class="cap"><b>Cómo funciona (iPhone)</b><p>Explicación del flujo de contratación.</p></div></div>
+  <div class="card"><img src="capturas/08-ser-profesional-iphone.png" alt="Ser profesional iPhone"><div class="cap"><b>Ser profesional (iPhone)</b><p>Alta de proveedores de servicio.</p></div></div>
+  <div class="card"><img src="capturas/12-legal-desktop.png" alt="Legal desktop"><div class="cap"><b>Aviso de privacidad (escritorio)</b><p>Página legal.</p></div></div>
+</div>
+<footer>Generado automáticamente por tests/user-sim.mjs · Manita — CDMX</footer>
+</body>
+</html>

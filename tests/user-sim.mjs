@@ -65,6 +65,41 @@ function add(sev, page, persona, msg){ findings.push({sev, page, persona, msg});
 const browser = await chromium.launch();
 let pagesVisited = 0, jsErrors = 0;
 
+// ===== Capturas visuales: una muestra representativa (no 20x12 = 240 imágenes) =====
+import { mkdir } from 'node:fs/promises';
+const SHOTDIR = join(process.cwd(), 'capturas');
+await mkdir(SHOTDIR, { recursive: true });
+const SHOTS = [
+  { file:'01-inicio-web-desktop.png',      url:'index.html',            dev:'desktop', full:true },
+  { file:'02-inicio-app-iphone.png',       url:'index.html?app=1',      dev:'iphone' },
+  { file:'03-categorias-iphone.png',       url:'categorias.html?app=1', dev:'iphone', full:true },
+  { file:'04-servicios-iphone.png',        url:'servicios.html?app=1',  dev:'iphone', full:true },
+  { file:'05-servicios-desktop.png',       url:'servicios.html',        dev:'desktop', full:true },
+  { file:'06-perfil-pro-iphone.png',       url:'perfil.html?id=demo&app=1', dev:'iphone', full:true },
+  { file:'07-como-funciona-iphone.png',    url:'como-funciona.html?app=1', dev:'iphone', full:true },
+  { file:'08-ser-profesional-iphone.png',  url:'ser-profesional.html?app=1', dev:'iphone', full:true },
+  { file:'09-login-iphone.png',            url:'login.html?app=1',      dev:'iphone' },
+  { file:'10-descarga-modal-iphone.png',   url:'index.html?app=1',      dev:'iphone', clickQR:true },
+  { file:'11-onboarding-iphone.png',       url:'index.html?onboarding=1', dev:'iphone' },
+  { file:'12-legal-desktop.png',           url:'legal.html',            dev:'desktop', full:true }
+];
+async function shoot(){
+  for (const s of SHOTS){
+    const d = DEVICES[s.dev];
+    const ctx = await browser.newContext({ viewport:d.viewport, userAgent:d.ua });
+    const pg = await ctx.newPage();
+    try {
+      await pg.goto(`${BASE}/${s.url}`, { waitUntil:'networkidle', timeout:20000 });
+      await pg.waitForTimeout(700);
+      if (s.clickQR){ await pg.evaluate(()=>{ try{ openQR(); }catch(e){} }); await pg.waitForTimeout(700); }
+      await pg.screenshot({ path: join(SHOTDIR, s.file), fullPage: !!s.full });
+    } catch(e){ console.log('   (captura falló '+s.file+': '+e.message.slice(0,60)+')'); }
+    await ctx.close();
+  }
+  console.log(`\nCapturas guardadas en tests/capturas/ (${SHOTS.length} imágenes)`);
+}
+await shoot();
+
 for (const per of PERSONAS) {
   const d = DEVICES[per.dev];
   const ctx = await browser.newContext({ viewport:d.viewport, userAgent:d.ua });
