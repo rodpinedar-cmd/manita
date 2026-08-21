@@ -318,6 +318,20 @@ async function obtenerReseñas(professionalId) {
   return { data: data || [], error };
 }
 
+// Testimonios REALES para la home: reseñas con comentario y buen rating.
+// No inventa nada — si no hay reseñas, devuelve []. La sección se oculta sola.
+async function obtenerTestimonios(limite) {
+  const { data, error } = await supa.from('reviews')
+    .select('rating, comment, created_at, professionals(service_name)')
+    .gte('rating', 4)
+    .not('comment', 'is', null)
+    .order('created_at', { ascending: false })
+    .limit(limite || 6);
+  // Filtra comentarios vacíos por si acaso
+  const list = (data || []).filter(function(r){ return r.comment && r.comment.trim().length > 3; });
+  return { data: list, error };
+}
+
 // Crear reseña vía RPC (valida booking completado y propiedad en servidor)
 async function crearReseña(bookingId, rating, comment) {
   const { data, error } = await supa.rpc('crear_resena', {

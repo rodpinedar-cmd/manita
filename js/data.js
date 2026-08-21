@@ -92,15 +92,9 @@ const POPULAR = [
   { id: 'clases', name: 'Personal Trainer', img: 'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=500&q=80' }
 ];
 
-// Testimonios con retratos de Unsplash (libres)
-const TESTIMONIALS = [
-  { text: 'Super puntual, muy educada, limpió todos los rincones y detalles. Encantados, repetiremos.', name: 'Luis', service: 'Limpieza', img: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=100&q=80' },
-  { text: 'Nunca me habían hecho las uñas tan bien. Muy profesional y simpática. ¡Para repetir!', name: 'Bea', service: 'Manicura', img: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100&q=80' },
-  { text: 'Contraté para montar un mueble y colgar una TV, lo hizo rápido y bien. Recomendado.', name: 'Miguel', service: 'Manitas', img: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&q=80' },
-  { text: 'Gran profesional, sabe mucho de entrenamiento. Además una crack en lo personal.', name: 'Rodrigo', service: 'Personal trainer', img: 'https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?w=100&q=80' },
-  { text: 'El mejor día de mi vida, me vi espectacular. ¡El maquillaje quedó increíble!', name: 'Mariana', service: 'Maquillaje', img: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&q=80' },
-  { text: 'Mi hijo quedó contento con sus clases. Supo conectar y hacer la clase dinámica.', name: 'Lía', service: 'Clases de Francés', img: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=100&q=80' }
-];
+// NOTA: Los testimonios ahora se cargan REALES desde Supabase (obtenerTestimonios en app.js).
+// Se eliminó el arreglo TESTIMONIALS con datos de ejemplo para cumplir la regla de "sin datos
+// falsos" (riesgo PROFECO). La sección de testimonios solo aparece si hay reseñas reales.
 
 // Profesionales de ejemplo por categoría
 const PROS = [

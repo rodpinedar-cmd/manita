@@ -70,19 +70,29 @@ if (popGrid) {
   }).join('');
 }
 
-// Render testimonials (Unsplash portraits, free license)
-var testEl = document.getElementById('testimonials');
-if (testEl) {
-  testEl.innerHTML = TESTIMONIALS.map(function(t) {
-    return '<div class="testimonial">' +
-      '<div class="testimonial-stars">★★★★★</div>' +
-      '<p class="testimonial-text">"' + t.text + '"</p>' +
-      '<div class="testimonial-author">' +
-      '<img class="t-avatar" src="' + t.img + '" alt="' + t.name + '" loading="lazy">' +
-      '<div><strong>' + t.name + '</strong><span>' + t.service + '</span></div>' +
-      '</div></div>';
-  }).join('');
-}
+// Testimonios REALES desde Supabase (sin datos inventados — PROFECO).
+// La sección solo aparece si hay reseñas reales de clientes.
+(function cargarTestimonios(){
+  var grid = document.getElementById('testimonialsGrid');
+  var sec = document.getElementById('testimonialsSection');
+  if (!grid || typeof obtenerTestimonios !== 'function') return;
+  function esc(s){ return String(s==null?'':s).replace(/[&<>"']/g, function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]; }); }
+  obtenerTestimonios(6).then(function(res){
+    var list = (res && res.data) || [];
+    if (!list.length) return; // se queda oculta
+    grid.innerHTML = list.map(function(t){
+      var servicio = (t.professionals && t.professionals.service_name) || 'Servicio';
+      var estrellas = '★'.repeat(Math.max(1, Math.min(5, t.rating || 5)));
+      return '<div class="testimonial">' +
+        '<div class="testimonial-stars" aria-label="' + (t.rating||5) + ' de 5 estrellas">' + estrellas + '</div>' +
+        '<p class="testimonial-text">"' + esc(t.comment) + '"</p>' +
+        '<div class="testimonial-author"><span class="t-badge">✔️</span>' +
+        '<div><strong>Cliente verificado</strong><span>' + esc(servicio) + '</span></div>' +
+        '</div></div>';
+    }).join('');
+    sec.style.display = '';
+  }).catch(function(){ /* sin conexión: la sección queda oculta */ });
+})();
 
 // Hero search → go to services
 var heroSearch = document.getElementById('heroSearch');
