@@ -23,13 +23,30 @@
 <script src="js/components.js"></script>
 <script>
 mountHeader({ search: false }); mountBottomNav('favoritos');
-(async function(){
+function esc(s){return String(s==null?'':s).replace(/[&<>"']/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];});}
+
+function render(){
   var list = document.getElementById('favList');
-  var user = await usuarioActual();
-  if (!user) { list.innerHTML = emptyState({ icon:'🔒', title:'Inicia sesión', text:'Entra para guardar tus profesionales favoritos.', ctaText:'Entrar', ctaHref:'login.html?next=favoritos.html' }); return; }
-  // Favoritos aún no implementados como tabla: estado vacío honesto
-  list.innerHTML = emptyState({ icon:'🤍', title:'Aún no tienes favoritos', text:'Guarda profesionales que te gusten con el corazón desde su perfil.', ctaText:'Explorar servicios', ctaHref:'categorias.html' });
-})();
+  var map = favGetAll();
+  var items = Object.keys(map).map(function(k){ return map[k]; });
+  if (!items.length){
+    list.innerHTML = emptyState({ icon:'🤍', title:'Aún no tienes favoritos', text:'Toca el corazón en cualquier profesional para guardarlo aquí y encontrarlo rápido.', ctaText:'Explorar servicios', ctaHref:'categorias.html' });
+    return;
+  }
+  list.innerHTML = items.map(function(p){
+    return '<div class="fav-card">' +
+      '<a class="fav-main" href="perfil.html?id=' + esc(p.id) + '">' +
+        '<div class="fav-info"><strong>' + esc(p.service_name || 'Profesional') + (p.verified?' ✔️':'') + '</strong>' +
+        '<span>📍 ' + esc(p.zone || 'CDMX') + (p.price?(' · $' + esc(p.price) + ' / ' + esc(p.price_unit||'servicio')):'') + '</span></div>' +
+      '</a>' +
+      '<button type="button" class="fav-remove" data-rm="' + esc(p.id) + '" aria-label="Quitar de favoritos">❤️</button>' +
+    '</div>';
+  }).join('');
+  list.querySelectorAll('[data-rm]').forEach(function(btn){
+    btn.onclick = function(){ toggleFavorito(btn.getAttribute('data-rm')); render(); };
+  });
+}
+render();
 </script>
 </body>
 </html>

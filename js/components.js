@@ -76,6 +76,27 @@ async function mountHeader(opts) {
   }
 }
 
+// ===== FAVORITOS (localStorage) — funciona con o sin sesión, sin backend nuevo =====
+// Guarda un mapa id -> { id, service_name, price, price_unit, zone, category_id, verified }
+var MANITA_FAV_KEY = 'manita_favoritos';
+function favGetAll() {
+  try { return JSON.parse(localStorage.getItem(MANITA_FAV_KEY) || '{}'); } catch (e) { return {}; }
+}
+function favIds() { return Object.keys(favGetAll()); }
+function esFavorito(id) { return !!favGetAll()[id]; }
+function favSave(map) { try { localStorage.setItem(MANITA_FAV_KEY, JSON.stringify(map)); } catch (e) {} }
+// Alterna favorito. `pro` es opcional (objeto con datos para mostrar en la página de favoritos).
+function toggleFavorito(id, pro) {
+  var map = favGetAll();
+  if (map[id]) { delete map[id]; favSave(map); return false; }
+  map[id] = pro ? {
+    id: id, service_name: pro.service_name, price: pro.price, price_unit: pro.price_unit,
+    zone: pro.zone, category_id: pro.category_id, verified: !!pro.verified
+  } : { id: id };
+  favSave(map);
+  return true;
+}
+
 // Genera el HTML de un estado vacío con marca (reutilizable en cualquier pantalla)
 // opts: { icon, title, text, ctaText, ctaHref }
 function emptyState(opts) {

@@ -80,6 +80,31 @@ for (const page of PAGES) {
   await ctx.close();
 }
 
+// ===== Verificación FAVORITOS (localStorage → página favoritos) =====
+{
+  const ctx = await browser.newContext();
+  const pg = await ctx.newPage();
+  // Sembramos un favorito antes de cargar favoritos.html
+  await pg.goto(`http://localhost:${PORT}/index.html`, { waitUntil: 'domcontentloaded', timeout: 15000 });
+  await pg.evaluate(() => {
+    var map = { 'abc': { id:'abc', service_name:'Limpieza de prueba', price:350, price_unit:'servicio', zone:'Roma Norte', verified:true } };
+    localStorage.setItem('manita_favoritos', JSON.stringify(map));
+  });
+  await pg.goto(`http://localhost:${PORT}/favoritos.html`, { waitUntil: 'networkidle', timeout: 15000 });
+  await pg.waitForTimeout(400);
+  const tieneFav = await pg.$$eval('.fav-card', els => els.length);
+  const texto = await pg.evaluate(() => document.body.innerText || '');
+  rec('Favoritos: muestra el profesional guardado', tieneFav === 1 && /Limpieza de prueba/.test(texto), `cards=${tieneFav}`);
+  // Quitar favorito lo vacía
+  if (tieneFav) {
+    await pg.click('[data-rm]');
+    await pg.waitForTimeout(300);
+    const vacio = await pg.evaluate(() => /Aún no tienes favoritos/.test(document.body.innerText||''));
+    rec('Favoritos: al quitar el corazón queda vacío', vacio);
+  }
+  await ctx.close();
+}
+
 // ===== Verificación perfil con id inválido (no muestra error crudo) =====
 {
   const ctx = await browser.newContext();

@@ -179,7 +179,9 @@ async function render() {
       ? ('★ ' + p.rating + ' · ' + p.reviews_count + ' reseña' + (p.reviews_count !== 1 ? 's' : ''))
       : 'Sin reseñas todavía';
 
+    var favOn = (typeof esFavorito === 'function') && esFavorito(p.id);
     return '<a href="perfil.html?id=' + p.id + '" class="pro-card" aria-label="Ver ' + escapeHtml(p.service_name) + '">' +
+      '<button type="button" class="pro-fav' + (favOn?' on':'') + '" data-fav="' + p.id + '" aria-label="' + (favOn?'Quitar de favoritos':'Agregar a favoritos') + '" aria-pressed="' + (favOn?'true':'false') + '">' + (favOn?'❤️':'🤍') + '</button>' +
       '<div class="pro-avatar">' + avatarFor(p) + '</div>' +
       '<div class="pro-main">' +
         '<div class="pro-name">' + escapeHtml(p.service_name) + (p.verified ? ' <span class="verified" title="Verificado" aria-label="Verificado">✔️</span>' : '') + '</div>' +
@@ -193,6 +195,20 @@ async function render() {
       '</div>' +
     '</a>';
   }).join('');
+
+  // Conecta los corazones (sin navegar al perfil)
+  list.querySelectorAll('[data-fav]').forEach(function(btn){
+    btn.addEventListener('click', function(e){
+      e.preventDefault(); e.stopPropagation();
+      var id = btn.getAttribute('data-fav');
+      var proObj = pros.filter(function(x){ return String(x.id) === String(id); })[0];
+      var ahora = toggleFavorito(id, proObj);
+      btn.classList.toggle('on', ahora);
+      btn.textContent = ahora ? '❤️' : '🤍';
+      btn.setAttribute('aria-pressed', ahora ? 'true' : 'false');
+      btn.setAttribute('aria-label', ahora ? 'Quitar de favoritos' : 'Agregar a favoritos');
+    });
+  });
 }
 
 // Normaliza texto para búsqueda: minúsculas y sin acentos (coincidencias flexibles)
