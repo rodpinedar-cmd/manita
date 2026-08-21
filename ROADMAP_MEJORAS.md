@@ -73,7 +73,10 @@ Origen: capturas reales de Webel (referencia de diseño/UX) + peticiones del usu
       (reusa bucket avatars, guarda en profiles.avatar_url). Incluido en ACTIVAR_FOTOS.sql.
 
 ### Fase 3 — Backend / operación
-- [ ] Editar disponibilidad avanzada (varios rangos por día, tipo "añadir horas").
+- [x] **Disponibilidad avanzada (varios rangos por día)**: pro-panel ahora permite añadir/quitar
+      varios horarios por día (ej. 08-12 y 16-20), con validación de solapes. El backend ya lo
+      soportaba; se probó end-to-end en PGlite (T4b: reserva mañana OK, tarde OK, hueco 13:00
+      rechazado con OUTSIDE_AVAILABILITY). Suite run-tests 24/24.
 - [ ] Verificación de identidad del pro (documento) — bucket privado `verification`.
 - [ ] Notificaciones al pro por email cuando recibe reserva (necesita SMTP).
 

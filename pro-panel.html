@@ -37,11 +37,17 @@
 .avail-box { background:#fff; border:1px solid var(--border); border-radius:var(--radius); box-shadow:var(--shadow-xs); overflow:hidden; }
 .avail-box summary { padding:var(--sp-4); font-weight:700; color:var(--navy); cursor:pointer; min-height:44px; display:flex; align-items:center; gap:var(--sp-2); }
 .avail-body { padding:0 var(--sp-4) var(--sp-4); }
-.avail-day { display:flex; align-items:center; gap:var(--sp-3); padding:var(--sp-2) 0; flex-wrap:wrap; min-height:44px; }
-.avail-day label.dchk { display:flex; align-items:center; gap:var(--sp-2); min-width:120px; font-size:var(--fs-sm); font-weight:600; color:var(--navy); cursor:pointer; }
+.avail-day { display:flex; flex-direction:column; gap:var(--sp-2); padding:var(--sp-3) 0; border-bottom:1px solid var(--border); }
+.avail-day:last-child { border-bottom:none; }
+.avail-day label.dchk { display:flex; align-items:center; gap:var(--sp-2); font-size:var(--fs-sm); font-weight:600; color:var(--navy); cursor:pointer; min-height:44px; }
 .avail-day input[type=checkbox] { width:22px; height:22px; accent-color:var(--primary); }
-.avail-day select { min-height:44px; padding:var(--sp-2) var(--sp-3); border:1px solid var(--border); border-radius:var(--radius-sm); font-family:inherit; }
-.avail-day .to { color:var(--gray); font-size:var(--fs-sm); }
+.avail-ranges { display:flex; flex-direction:column; gap:var(--sp-2); padding-left:30px; }
+.avail-range { display:flex; align-items:center; gap:var(--sp-2); }
+.avail-range select { min-height:44px; padding:var(--sp-2) var(--sp-3); border:1px solid var(--border); border-radius:var(--radius-sm); font-family:inherit; }
+.avail-range .to { color:var(--gray); font-size:var(--fs-sm); }
+.avail-range .r-del { width:44px; min-height:44px; border:1px solid var(--border); background:#fff; border-radius:var(--radius-sm); color:var(--danger); cursor:pointer; font-size:14px; }
+.r-add { align-self:flex-start; margin-left:30px; background:none; border:none; color:var(--primary-text); font-weight:600; font-family:inherit; font-size:var(--fs-sm); cursor:pointer; min-height:44px; padding:0 4px; }
+.r-add:hover { text-decoration:underline; }
 </style>
 </head>
 <body>
@@ -140,24 +146,68 @@ var MI_PRO_ID = null;
 
 function opcionesHora(sel){ return HORAS.map(function(hh){ return '<option value="'+hh+'"'+(hh===sel?' selected':'')+'>'+hh+'</option>'; }).join(''); }
 
+// Devuelve el HTML de un rango (inicio–fin) con botón para quitarlo.
+function filaRango(d, start, end){
+  return '<div class="avail-range" data-range="'+d+'">' +
+    '<select class="r-start" aria-label="Hora inicio '+DIAS[d]+'">'+opcionesHora(start)+'</select>' +
+    '<span class="to">a</span>' +
+    '<select class="r-end" aria-label="Hora fin '+DIAS[d]+'">'+opcionesHora(end)+'</select>' +
+    '<button type="button" class="r-del" aria-label="Quitar este horario">✕</button>' +
+  '</div>';
+}
+
 function construirDias(actual){
-  // actual: array {weekday, start_time, end_time}. Marca lo que ya existe.
-  var byDay = {}; (actual||[]).forEach(function(s){ byDay[s.weekday] = s; });
+  // actual: array {weekday, start_time, end_time}. Agrupa TODOS los rangos por día.
+  var byDay = {};
+  (actual||[]).forEach(function(s){ (byDay[s.weekday] = byDay[s.weekday] || []).push(s); });
   var box = document.getElementById('availDays');
-  // Orden lun-sáb-dom para que sea natural
-  var orden = [1,2,3,4,5,6,0];
+  var orden = [1,2,3,4,5,6,0]; // lun-sáb-dom, más natural
   box.innerHTML = orden.map(function(d){
-    var s = byDay[d];
-    var on = !!s;
-    var start = s ? String(s.start_time).slice(0,5) : '08:00';
-    var end = s ? String(s.end_time).slice(0,5) : '20:00';
-    return '<div class="avail-day">' +
-      '<label class="dchk"><input type="checkbox" data-day="'+d+'"'+(on?' checked':'')+' aria-label="Atiendo '+DIAS[d]+'"> '+DIAS[d]+'</label>' +
-      '<select data-start="'+d+'" aria-label="Hora inicio '+DIAS[d]+'">'+opcionesHora(start)+'</select>' +
-      '<span class="to">a</span>' +
-      '<select data-end="'+d+'" aria-label="Hora fin '+DIAS[d]+'">'+opcionesHora(end)+'</select>' +
+    var rangos = byDay[d] || [];
+    var on = rangos.length > 0;
+    var filas = on
+      ? rangos.map(function(s){ return filaRango(d, String(s.start_time).slice(0,5), String(s.end_time).slice(0,5)); }).join('')
+      : filaRango(d, '08:00', '20:00');
+    return '<div class="avail-day" data-day="'+d+'">' +
+      '<label class="dchk"><input type="checkbox" class="d-on"'+(on?' checked':'')+' aria-label="Atiendo '+DIAS[d]+'"> '+DIAS[d]+'</label>' +
+      '<div class="avail-ranges"'+(on?'':' hidden')+'>'+filas+'</div>' +
+      '<button type="button" class="r-add"'+(on?'':' hidden')+' aria-label="Añadir otro horario el '+DIAS[d]+'">+ Añadir horario</button>' +
     '</div>';
   }).join('');
+  cablearDias();
+}
+
+// Enlaza los eventos (mostrar/ocultar rangos, añadir, quitar) tras (re)construir el DOM.
+function cablearDias(){
+  document.querySelectorAll('#availDays .avail-day').forEach(function(row){
+    var d = parseInt(row.getAttribute('data-day'));
+    var chk = row.querySelector('.d-on');
+    var ranges = row.querySelector('.avail-ranges');
+    var addBtn = row.querySelector('.r-add');
+    chk.onchange = function(){
+      ranges.hidden = !chk.checked; addBtn.hidden = !chk.checked;
+    };
+    addBtn.onclick = function(){
+      ranges.insertAdjacentHTML('beforeend', filaRango(d, '08:00', '20:00'));
+      cablearBorrar(ranges);
+    };
+    cablearBorrar(ranges);
+  });
+}
+function cablearBorrar(ranges){
+  ranges.querySelectorAll('.r-del').forEach(function(b){
+    b.onclick = function(){
+      // No dejar el día activo con cero rangos: si es el último, mejor desmarcar el día
+      var filas = ranges.querySelectorAll('.avail-range');
+      if (filas.length <= 1){
+        var row = ranges.closest('.avail-day');
+        row.querySelector('.d-on').checked = false;
+        ranges.hidden = true; row.querySelector('.r-add').hidden = true;
+        return;
+      }
+      b.closest('.avail-range').remove();
+    };
+  });
 }
 
 async function cargarDisponibilidad(){
@@ -167,28 +217,42 @@ async function cargarDisponibilidad(){
   var disp = await disponibilidadProfesional(MI_PRO_ID);
   var slots = disp.data || [];
   construirDias(slots);
-  document.getElementById('availSummary').textContent = slots.length ? '· ' + slots.length + ' día(s) activos' : '· sin horario';
+  var diasAct = {}; slots.forEach(function(s){ diasAct[s.weekday]=1; });
+  var ndAct = Object.keys(diasAct).length;
+  document.getElementById('availSummary').textContent = ndAct ? '· ' + ndAct + ' día(s), ' + slots.length + ' horario(s)' : '· sin horario';
   document.getElementById('availSection').style.display = 'block';
 
   document.getElementById('availSave').onclick = async function(){
     var btn = this; btn.disabled = true; btn.textContent = 'Guardando...';
     var slots = [];
-    var ok = true;
+    var problema = null;
     document.querySelectorAll('#availDays .avail-day').forEach(function(row){
-      var chk = row.querySelector('input[type=checkbox]');
+      if (problema) return;
+      var chk = row.querySelector('.d-on');
       if (!chk.checked) return;
-      var d = parseInt(chk.getAttribute('data-day'));
-      var st = row.querySelector('[data-start="'+d+'"]').value;
-      var en = row.querySelector('[data-end="'+d+'"]').value;
-      if (en <= st) ok = false;
-      slots.push({ weekday:d, start_time:st, end_time:en });
+      var d = parseInt(row.getAttribute('data-day'));
+      var delDia = [];
+      row.querySelectorAll('.avail-range').forEach(function(r){
+        var st = r.querySelector('.r-start').value;
+        var en = r.querySelector('.r-end').value;
+        if (en <= st){ problema = 'En ' + DIAS[d] + ', la hora de fin debe ser mayor que la de inicio.'; return; }
+        delDia.push({ start_time:st, end_time:en });
+      });
+      // Detecta solapes entre rangos del mismo día
+      delDia.sort(function(a,b){ return a.start_time < b.start_time ? -1 : 1; });
+      for (var i=1; i<delDia.length; i++){
+        if (delDia[i].start_time < delDia[i-1].end_time){ problema = 'En ' + DIAS[d] + ' tienes horarios que se enciman. Ajústalos.'; break; }
+      }
+      delDia.forEach(function(x){ slots.push({ weekday:d, start_time:x.start_time, end_time:x.end_time }); });
     });
-    if (!ok){ toast('La hora de fin debe ser mayor que la de inicio.', 'error'); btn.disabled=false; btn.textContent='Guardar disponibilidad'; return; }
+    if (problema){ toast(problema, 'error'); btn.disabled=false; btn.textContent='Guardar disponibilidad'; return; }
     var res = await guardarDisponibilidad(MI_PRO_ID, slots);
     btn.disabled = false; btn.textContent = 'Guardar disponibilidad';
     if (res.error){ toast('No pudimos guardar. Intenta de nuevo.', 'error'); return; }
     toast('Disponibilidad actualizada.', 'success');
-    document.getElementById('availSummary').textContent = slots.length ? '· ' + slots.length + ' día(s) activos' : '· sin horario';
+    var dias = {}; slots.forEach(function(s){ dias[s.weekday]=1; });
+    var nd = Object.keys(dias).length;
+    document.getElementById('availSummary').textContent = nd ? '· ' + nd + ' día(s), ' + slots.length + ' horario(s)' : '· sin horario';
   };
 }
 cargarDisponibilidad();

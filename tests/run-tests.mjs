@@ -143,6 +143,37 @@ async function main() {
     record('T4 fuera de horario => OUTSIDE_AVAILABILITY', res.ok ? 'PASS' : 'FAIL', res.msg);
   }
 
+  // T4b: DISPONIBILIDAD CON VARIOS RANGOS POR DÍA (horario partido: mañana 08-12 y tarde 16-20)
+  // Verifica que el backend acepta reservas en cualquiera de los rangos y rechaza el hueco.
+  {
+    const PRO2 = 'bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb';
+    // Alta de un pro con horario partido TODOS los días de la semana
+    await db.exec(`
+      INSERT INTO professionals (id, user_id, category_id, service_name, price, status, available, duration_min, buffer_min)
+      VALUES ('${PRO2}','${uidProUser}','limpieza','Limpieza partida', 300, 'active', true, 60, 0)
+      ON CONFLICT (id) DO NOTHING;
+      DELETE FROM professional_availability WHERE professional_id='${PRO2}';
+      INSERT INTO professional_availability(professional_id, weekday, start_time, end_time)
+      SELECT '${PRO2}', d, '08:00','12:00' FROM generate_series(0,6) d;
+      INSERT INTO professional_availability(professional_id, weekday, start_time, end_time)
+      SELECT '${PRO2}', d, '16:00','20:00' FROM generate_series(0,6) d;
+    `);
+    await auth(db, uidAlice);
+    const manana = `(date_trunc('day', now()) + interval '4 day' + interval '9 hour')`;
+    const tarde  = `(date_trunc('day', now()) + interval '4 day' + interval '17 hour')`;
+    const hueco  = `(date_trunc('day', now()) + interval '4 day' + interval '13 hour')`;
+    try {
+      await db.query(`SELECT crear_reserva('${PRO2}', ${manana}, 'Dir mañana, CDMX', 'idem-split-am')`);
+      record('T4b reserva en rango mañana (08-12) OK', 'PASS');
+    } catch (e) { record('T4b reserva en rango mañana', 'FAIL', e.message); }
+    try {
+      await db.query(`SELECT crear_reserva('${PRO2}', ${tarde}, 'Dir tarde, CDMX', 'idem-split-pm')`);
+      record('T4b reserva en rango tarde (16-20) OK', 'PASS');
+    } catch (e) { record('T4b reserva en rango tarde', 'FAIL', e.message); }
+    const res = await expectError(db, `SELECT crear_reserva('${PRO2}', ${hueco}, 'Dir hueco, CDMX', 'idem-split-gap')`, 'OUTSIDE_AVAILABILITY');
+    record('T4b hueco de comida (13:00) => OUTSIDE_AVAILABILITY', res.ok ? 'PASS' : 'FAIL', res.msg);
+  }
+
   // T5: no autenticado no puede reservar
   await auth(db, null);
   {
