@@ -45,7 +45,7 @@
   box-shadow: var(--shadow-xs); transition: transform var(--dur) var(--ease), box-shadow var(--dur) var(--ease);
   cursor: pointer; display: flex; gap: var(--sp-4); text-decoration: none; color: inherit; align-items: flex-start;
 }
-.pro-card:hover { transform: translateY(-2px); box-shadow: var(--shadow-md); }
+.pro-card:hover { transform: translateY(-2px); box-shadow: var(--shadow-md); border-color: var(--primary); }
 .pro-card:active { transform: scale(0.99); }
 .pro-avatar { font-size: 28px; font-weight: 800; color: var(--primary-text); background: var(--mint); border-radius: 50%; width: 60px; height: 60px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; overflow: hidden; }
 .pro-main { flex: 1; min-width: 0; }
@@ -60,7 +60,8 @@
 .pro-right { text-align: right; flex-shrink: 0; display: flex; flex-direction: column; align-items: flex-end; gap: var(--sp-1); }
 .pro-price { font-size: var(--fs-lg); font-weight: 800; color: var(--primary-text); line-height: 1; }
 .pro-price small { font-size: var(--fs-xs); color: var(--gray); font-weight: 500; display: block; margin-top: 2px; }
-.pro-cta { font-size: var(--fs-xs); font-weight: 700; color: var(--navy); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 4px var(--sp-3); }
+.pro-cta { font-size: var(--fs-xs); font-weight: 700; color: var(--primary-text); background: var(--mint); border: 1px solid var(--primary-light); border-radius: var(--radius-sm); padding: 6px var(--sp-3); }
+.pro-card:hover .pro-cta { background: var(--primary-text); color: #fff; border-color: var(--primary-text); }
 .empty { text-align: center; padding: var(--sp-12) var(--sp-5); color: var(--gray); }
 
 @media (max-width: 900px) {

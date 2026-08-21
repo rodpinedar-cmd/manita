@@ -33,6 +33,17 @@ async function usuarioActual() {
 }
 
 // ===== PROFESIONALES =====
+// Cuenta profesionales activos por categoría (para el grid tipo Preply).
+// Devuelve un objeto { categoryId: n }. Si falla, devuelve {} y el grid no muestra contador.
+async function contarPorCategoria() {
+  const { data, error } = await supa.from('professionals')
+    .select('category_id').eq('status', 'active').eq('available', true);
+  if (error || !data) return {};
+  const conteo = {};
+  data.forEach(function(p){ conteo[p.category_id] = (conteo[p.category_id] || 0) + 1; });
+  return conteo;
+}
+
 async function obtenerProfesionales(categoryId) {
   let query = supa.from('professionals').select('*').eq('available', true);
   if (categoryId && categoryId !== 'all') query = query.eq('category_id', categoryId);

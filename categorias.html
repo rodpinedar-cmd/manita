@@ -41,10 +41,25 @@
 <script src="js/data.js"></script>
 <script>
 mountHeader(); mountFooter(); mountBottomNav('buscar');
-document.getElementById('categoriesGrid').innerHTML = CATEGORIES.map(function(c) {
-  return '<a href="servicios.html?cat=' + c.id + '" class="category-card">' +
-    '<div class="category-icon">' + c.icon + '</div><h3>' + c.name + '</h3><p>' + c.desc + '</p></a>';
-}).join('');
+
+// Render inicial (sin contador todavía)
+function pintarCategorias(conteo){
+  document.getElementById('categoriesGrid').innerHTML = CATEGORIES.map(function(c) {
+    var n = conteo && conteo[c.id];
+    var meta = (n > 0)
+      ? '<span class="cat-count">' + n + ' profesional' + (n !== 1 ? 'es' : '') + '</span>'
+      : '<span class="cat-count cat-count-soon">Próximamente</span>';
+    return '<a href="servicios.html?cat=' + c.id + '" class="category-card">' +
+      '<div class="category-icon">' + c.icon + '</div>' +
+      '<h3>' + c.name + '</h3><p>' + c.desc + '</p>' + meta + '</a>';
+  }).join('');
+}
+pintarCategorias(null);
+
+// Cargar el contador real de profesionales por categoría (estilo Preply)
+if (typeof contarPorCategoria === 'function') {
+  contarPorCategoria().then(function(conteo){ pintarCategorias(conteo); }).catch(function(){});
+}
 </script>
 </body>
 </html>

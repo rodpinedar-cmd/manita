@@ -204,10 +204,12 @@ a { text-decoration: none; color: inherit; }
   background: #fff; border-radius: var(--radius); padding: 28px 20px; text-align: center;
   box-shadow: var(--shadow); transition: all 0.2s; cursor: pointer; border: 1px solid var(--border);
 }
-.category-card:hover { transform: translateY(-4px); box-shadow: var(--shadow-lg); border-color: var(--primary-light); }
-.category-icon { font-size: 42px; margin-bottom: 12px; }
-.category-card h3 { font-size: 16px; margin-bottom: 4px; }
-.category-card p { font-size: 13px; color: var(--gray); }
+.category-card:hover { transform: translateY(-4px); box-shadow: var(--shadow-lg); border-color: var(--primary); }
+.category-icon { font-size: 42px; margin-bottom: 12px; display: inline-flex; align-items: center; justify-content: center; width: 72px; height: 72px; border-radius: 20px; background: var(--mint); }
+.category-card h3 { font-size: 16px; margin-bottom: 4px; color: var(--navy); }
+.category-card p { font-size: 13px; color: var(--gray); margin-bottom: 10px; }
+.cat-count { display: inline-block; font-size: 12px; font-weight: 700; color: var(--primary-text); background: var(--mint); padding: 4px 10px; border-radius: var(--radius-pill); }
+.cat-count-soon { color: var(--gray); background: var(--bg-alt); }
 
 /* ===== POPULAR ===== */
 .popular-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; }
