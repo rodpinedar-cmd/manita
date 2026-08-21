@@ -12,31 +12,47 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
-.pp-wrap { max-width: 860px; margin: 32px auto; padding: 0 20px; }
-.pp-card { background:#fff; border:1px solid var(--border); border-radius:var(--radius); padding:18px; margin-bottom:14px; box-shadow:var(--shadow); display:flex; justify-content:space-between; align-items:center; gap:12px; flex-wrap:wrap; }
-.pp-info h3 { font-size:16px; color:var(--navy); }
-.pp-info p { font-size:13px; color:var(--gray); margin-top:4px; }
-.pp-actions { display:flex; gap:8px; align-items:center; flex-wrap:wrap; }
-.pp-status { font-size:12px; padding:4px 12px; border-radius:12px; font-weight:600; }
-.st-pending { background:#FFF3E0; color:#E8850C; }
-.st-confirmed { background:#E6F7F1; color:var(--success); }
+.pp-wrap { max-width: 860px; margin: 24px auto; padding: 0 20px; }
+/* Resumen de reservas del pro */
+.pp-summary { display:grid; grid-template-columns:repeat(3,1fr); gap:var(--sp-3); margin-bottom:var(--sp-5); }
+.pp-stat { background:#fff; border:1px solid var(--border); border-radius:var(--radius); padding:var(--sp-4); text-align:center; box-shadow:var(--shadow-xs); }
+.pp-stat b { display:block; font-size:var(--fs-2xl); color:var(--navy); line-height:1; }
+.pp-stat span { font-size:var(--fs-xs); color:var(--gray); font-weight:600; }
+.pp-stat.hot b { color:var(--primary-text); }
+/* Filtro por estado */
+.pp-filters { display:flex; gap:var(--sp-2); overflow-x:auto; padding-bottom:var(--sp-2); margin-bottom:var(--sp-4); scrollbar-width:none; }
+.pp-filters::-webkit-scrollbar{ display:none; }
+.pp-fbtn { flex-shrink:0; min-height:44px; display:inline-flex; align-items:center; padding:var(--sp-2) var(--sp-4); border-radius:var(--radius-pill); border:1px solid var(--border); background:#fff; font-size:var(--fs-sm); font-weight:600; color:var(--navy); cursor:pointer; white-space:nowrap; }
+.pp-fbtn.active { background:var(--primary-text); color:#fff; border-color:var(--primary-text); }
+.pp-card { background:#fff; border:1px solid var(--border); border-radius:var(--radius); padding:var(--sp-4); margin-bottom:var(--sp-3); box-shadow:var(--shadow); display:flex; justify-content:space-between; align-items:center; gap:var(--sp-3); flex-wrap:wrap; }
+.pp-info h3 { font-size:var(--fs-md); color:var(--navy); }
+.pp-info p { font-size:var(--fs-sm); color:var(--gray); margin-top:4px; }
+.pp-actions { display:flex; gap:var(--sp-2); align-items:center; flex-wrap:wrap; }
+.pp-actions .btn { min-height:44px; }
+.pp-status { font-size:var(--fs-xs); padding:4px 12px; border-radius:var(--radius-pill); font-weight:700; }
+.st-pending { background:#FFF3E0; color:var(--warning-text); }
+.st-confirmed { background:#E6F7F1; color:var(--success-text); }
 .st-cancelled { background:#FDECEC; color:var(--danger); }
 </style>
 </head>
 <body>
-<header class="header">
-  <div class="container header-inner">
-    <a href="index.html" class="logo"><span class="logo-icon">🤝</span><span class="logo-text">Manita</span></a>
-    <div class="header-actions">
-      <a href="servicios.html" class="nav-link">Ver marketplace</a>
-      <button type="button" class="btn btn-account" onclick="doLogout(event)">Cerrar sesión</button>
-    </div>
-  </div>
-</header>
+<header class="header" id="appHeader"></header>
 
 <div class="pp-wrap">
-  <h1 style="font-size:26px;margin-bottom:6px;">Panel del profesional</h1>
-  <p style="color:var(--gray);margin-bottom:20px;">Reservas que has recibido</p>
+  <h1 style="font-size:var(--fs-xl);margin-bottom:4px;">Panel del profesional</h1>
+  <p style="color:var(--gray);margin-bottom:var(--sp-5);font-size:var(--fs-sm);">Gestiona las reservas que recibes</p>
+  <div class="pp-summary" id="ppSummary" style="display:none;">
+    <div class="pp-stat hot"><b id="stPending">0</b><span>Pendientes</span></div>
+    <div class="pp-stat"><b id="stConfirmed">0</b><span>Confirmadas</span></div>
+    <div class="pp-stat"><b id="stDone">0</b><span>Completadas</span></div>
+  </div>
+  <div class="pp-filters" id="ppFilters" style="display:none;" role="tablist">
+    <button type="button" class="pp-fbtn active" data-f="all" role="tab" aria-selected="true">Todas</button>
+    <button type="button" class="pp-fbtn" data-f="pending" role="tab" aria-selected="false">Pendientes</button>
+    <button type="button" class="pp-fbtn" data-f="confirmed" role="tab" aria-selected="false">Confirmadas</button>
+    <button type="button" class="pp-fbtn" data-f="in_progress" role="tab" aria-selected="false">En progreso</button>
+    <button type="button" class="pp-fbtn" data-f="done" role="tab" aria-selected="false">Historial</button>
+  </div>
   <div id="ppList"><div class="skeleton skeleton-card"></div></div>
 </div>
 
@@ -59,6 +75,69 @@ var STATUS_MAP = {
 };
 // Siguiente acción posible del profesional según estado
 var NEXT = { pending:['confirmed','Confirmar'], confirmed:['in_progress','Iniciar'], in_progress:['completed','Completar'] };
+var DONE = ['completed','reviewed','cancelled_by_client','cancelled_by_professional','no_show_client','no_show_professional','disputed'];
+
+var ALL = [], FILTER = 'all';
+
+// Clasifica una reserva para el filtro seleccionado
+function pasaFiltro(status){
+  if (FILTER === 'all') return true;
+  if (FILTER === 'done') return DONE.indexOf(status) !== -1;
+  return status === FILTER;
+}
+
+mountHeader({ search: false });
+mountBottomNav('perfil');
+
+// Filtros por estado
+document.querySelectorAll('.pp-fbtn').forEach(function(btn){
+  btn.onclick = function(){
+    document.querySelectorAll('.pp-fbtn').forEach(function(x){ x.classList.remove('active'); x.setAttribute('aria-selected','false'); });
+    btn.classList.add('active'); btn.setAttribute('aria-selected','true');
+    FILTER = btn.getAttribute('data-f');
+    render();
+  };
+});
+
+function resumen(){
+  var p=0,c=0,d=0;
+  ALL.forEach(function(b){
+    if (b.status==='pending') p++;
+    else if (b.status==='confirmed') c++;
+    else if (b.status==='completed'||b.status==='reviewed') d++;
+  });
+  document.getElementById('stPending').textContent = p;
+  document.getElementById('stConfirmed').textContent = c;
+  document.getElementById('stDone').textContent = d;
+}
+
+function render(){
+  var list = document.getElementById('ppList');
+  var data = ALL.filter(function(b){ return pasaFiltro(b.status); });
+  if (!data.length){
+    list.innerHTML = emptyState({ icon:'📭', title:'Nada en esta vista', text:'No hay reservas con ese estado.', ctaText:'Ver todas', ctaHref:'#' });
+    var cta = list.querySelector('a.btn'); if (cta) cta.onclick = function(e){ e.preventDefault(); document.querySelector('.pp-fbtn[data-f="all"]').click(); };
+    return;
+  }
+  list.innerHTML = data.map(function(b){
+    var st = STATUS_MAP[b.status] || ['st-pending','Pendiente'];
+    var next = NEXT[b.status];
+    var actions = '';
+    if (next) actions += '<button class="btn btn-primary" data-next="' + b.id + '" data-to="' + next[0] + '">' + next[1] + '</button>';
+    if (b.status === 'pending' || b.status === 'confirmed') actions += '<button class="btn btn-ghost" data-cancel="' + b.id + '">Rechazar</button>';
+    var svc = b.professionals ? b.professionals.service_name : 'Servicio';
+    return '<div class="pp-card"><div class="pp-info">' +
+      '<h3>' + esc(svc) + '</h3>' +
+      '<p>📅 ' + esc(b.service_date) + ' a las ' + esc(b.service_time) + ' · 📍 ' + esc(b.address) + ' · $' + esc(b.price) + ' MXN</p>' +
+      '</div><div class="pp-actions">' + actions + '<span class="pp-status ' + st[0] + '">' + st[1] + '</span></div></div>';
+  }).join('');
+  list.querySelectorAll('[data-next]').forEach(function(btn){
+    btn.onclick = function(){ transicion(btn.getAttribute('data-next'), btn.getAttribute('data-to')); };
+  });
+  list.querySelectorAll('[data-cancel]').forEach(function(btn){
+    btn.onclick = function(){ transicion(btn.getAttribute('data-cancel'), 'cancelled_by_professional'); };
+  });
+}
 
 async function load() {
   var user = await usuarioActual();
@@ -72,29 +151,17 @@ async function load() {
     list.innerHTML = '<div class="state-error" role="alert">⚠️ No pudimos cargar las reservas. <button class="btn btn-ghost" onclick="load()">Reintentar</button></div>';
     return;
   }
-  if (!res.data.length) {
+  ALL = res.data || [];
+  if (!ALL.length) {
+    document.getElementById('ppSummary').style.display = 'none';
+    document.getElementById('ppFilters').style.display = 'none';
     list.innerHTML = emptyState({ icon:'📥', title:'Aún no tienes reservas', text:'Cuando un cliente te reserve, aparecerá aquí. Asegúrate de tener tu perfil activo.', ctaText:'Ofrecer servicios', ctaHref:'ser-profesional.html' });
     return;
   }
-  list.innerHTML = res.data.map(function(b){
-    var st = STATUS_MAP[b.status] || ['st-pending','Pendiente'];
-    var next = NEXT[b.status];
-    var actions = '';
-    if (next) actions += '<button class="btn btn-primary" data-next="' + b.id + '" data-to="' + next[0] + '">' + next[1] + '</button>';
-    if (b.status === 'pending' || b.status === 'confirmed') actions += '<button class="btn btn-ghost" data-cancel="' + b.id + '">Rechazar</button>';
-    var svc = b.professionals ? b.professionals.service_name : 'Servicio';
-    return '<div class="pp-card"><div class="pp-info">' +
-      '<h3>' + esc(svc) + '</h3>' +
-      '<p>📅 ' + esc(b.service_date) + ' a las ' + esc(b.service_time) + ' · 📍 ' + esc(b.address) + ' · $' + esc(b.price) + ' MXN</p>' +
-      '</div><div class="pp-actions">' + actions + '<span class="pp-status ' + st[0] + '">' + st[1] + '</span></div></div>';
-  }).join('');
-
-  list.querySelectorAll('[data-next]').forEach(function(btn){
-    btn.onclick = function(){ transicion(btn.getAttribute('data-next'), btn.getAttribute('data-to')); };
-  });
-  list.querySelectorAll('[data-cancel]').forEach(function(btn){
-    btn.onclick = function(){ transicion(btn.getAttribute('data-cancel'), 'cancelled_by_professional'); };
-  });
+  document.getElementById('ppSummary').style.display = 'grid';
+  document.getElementById('ppFilters').style.display = 'flex';
+  resumen();
+  render();
 }
 
 async function transicion(id, to) {
@@ -104,7 +171,6 @@ async function transicion(id, to) {
   load();
 }
 
-async function doLogout(e){ e.preventDefault(); await logout(); window.location.href='index.html'; }
 load();
 </script>
 </body>
