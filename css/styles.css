@@ -1,30 +1,30 @@
 /* ===== MANITA — Design System ===== */
 :root {
-  --primary: #FF6B4A;        /* coral cálido — identidad Manita (fondos/decorativo) */
-  --primary-dark: #E8563A;
-  --primary-light: #FFB4A2;
-  --primary-text: #C43D26;   /* coral accesible AA (5.19:1 s/ blanco) — para TEXTO y botones */
-  --accent: #2D3E75;         /* azul índigo profundo */
-  --navy: #1F2544;
-  --navy2: #2D3E75;
-  --dark: #22232B;
-  --gray: #565D6B;           /* gris accesible AA (6.2:1 s/ crema) */
-  --light-gray: #A9B0BD;
+  --primary: #2563EB;        /* azul confianza — identidad Manita (fondos/decorativo) */
+  --primary-dark: #1E40AF;
+  --primary-light: #93C5FD;
+  --primary-text: #1D4ED8;   /* azul accesible AA (~6:1 s/ blanco) — para TEXTO y botones */
+  --accent: #1E3A8A;         /* azul índigo profundo */
+  --navy: #10214A;           /* azul marino para títulos */
+  --navy2: #1E3A8A;
+  --dark: #1A2233;
+  --gray: #556070;           /* gris azulado accesible AA */
+  --light-gray: #9AA6B8;
   --bg: #ffffff;
-  --bg-alt: #FBF7F4;         /* crema cálido */
-  --mint: #FFF0EC;           /* coral muy claro */
-  --border: #ECE7E3;
+  --bg-alt: #F5F8FC;         /* gris azulado muy claro */
+  --mint: #EFF4FF;           /* azul muy claro (chips/fondos suaves) */
+  --border: #E4E9F2;
   --success: #16A97F;
   --success-text: #0C6B4F;   /* verde accesible AA para texto sobre fondos verdes claros */
   --warning: #F2A93B;        /* ámbar decorativo (estrellas de fondo) */
   --warning-text: #9A6200;   /* ámbar accesible AA (5.1:1 s/ blanco) — para texto de rating */
   --danger: #E5484D;
   /* Sombras en capas (elevación tipo Material) */
-  --shadow-xs: 0 1px 2px rgba(31,37,68,0.06);
-  --shadow: 0 4px 20px rgba(31,37,68,0.06);
-  --shadow-md: 0 6px 24px rgba(31,37,68,0.09);
-  --shadow-lg: 0 12px 40px rgba(31,37,68,0.12);
-  --shadow-primary: 0 8px 24px rgba(255,107,74,0.35); /* sombra coral para CTAs */
+  --shadow-xs: 0 1px 2px rgba(16,33,74,0.06);
+  --shadow: 0 4px 20px rgba(16,33,74,0.07);
+  --shadow-md: 0 6px 24px rgba(16,33,74,0.10);
+  --shadow-lg: 0 12px 40px rgba(16,33,74,0.13);
+  --shadow-primary: 0 8px 24px rgba(37,99,235,0.32); /* sombra azul para CTAs */
 
   /* Radios */
   --radius-sm: 10px;
@@ -64,7 +64,7 @@ a { text-decoration: none; color: inherit; }
   cursor: pointer; border: none; transition: all 0.2s; white-space: nowrap;
 }
 .btn-primary { background: var(--primary-text); color: #fff; }  /* fondo accesible AA con texto blanco */
-.btn-primary:hover { background: #A82F1C; transform: translateY(-2px); box-shadow: var(--shadow-lg); }
+.btn-primary:hover { background: var(--primary-dark); transform: translateY(-2px); box-shadow: var(--shadow-lg); }
 .btn-ghost { background: transparent; color: var(--dark); }
 .btn-ghost:hover { background: var(--bg-alt); }
 .btn-lg { padding: 16px 32px; font-size: 16px; }
@@ -134,7 +134,7 @@ a { text-decoration: none; color: inherit; }
 /* ===== HERO (Webel-style scene) ===== */
 .hero {
   position: relative; height: 460px;
-  background: linear-gradient(180deg, #1a6b7a 0%, #2a8a94 40%, #7fb89a 75%, #a8d5b5 100%);
+  background: linear-gradient(180deg, #1E3A8A 0%, #2563EB 45%, #60A5FA 80%, #BFDBFE 100%);
   overflow: hidden; text-align: center;
 }
 .hero-overlay { position: relative; z-index: 2; padding-top: 60px; color: #fff; }
@@ -456,7 +456,7 @@ body.app-mode .cat-bar { position: static; }
 
 /* Hero compacto con degradado y curva inferior */
 .ah-hero {
-  position: relative; background: linear-gradient(160deg, #FF7A5C 0%, #E8563A 100%);
+  position: relative; background: linear-gradient(160deg, #3B82F6 0%, #1E40AF 100%);
   padding: calc(env(safe-area-inset-top, 0) + var(--sp-4)) var(--sp-5) var(--sp-8);
   border-radius: 0 0 28px 28px; overflow: hidden;
 }
@@ -538,7 +538,7 @@ body.app-mode .cat-bar { position: static; }
 /* ===== SPLASH SCREEN (app instalada) ===== */
 .app-splash {
   position: fixed; inset: 0; z-index: 3000;
-  background: linear-gradient(160deg, #FF7A5C 0%, #E8563A 100%);
+  background: linear-gradient(160deg, #3B82F6 0%, #1E40AF 100%);
   display: flex; flex-direction: column; align-items: center; justify-content: center; gap: var(--sp-3);
   opacity: 1; transition: opacity 0.4s var(--ease);
 }

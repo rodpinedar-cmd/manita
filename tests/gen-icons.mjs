@@ -16,7 +16,7 @@ function svg(size, pad) {
   return `<!DOCTYPE html><html><head><style>*{margin:0;padding:0}</style></head><body>
   <svg xmlns="http://www.w3.org/2000/svg" width="${size}" height="${size}" viewBox="0 0 ${size} ${size}">
     <defs><linearGradient id="g" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#FF6B4A"/><stop offset="100%" stop-color="#E8563A"/>
+      <stop offset="0%" stop-color="#2563EB"/><stop offset="100%" stop-color="#1E40AF"/>
     </linearGradient></defs>
     <rect width="${size}" height="${size}" rx="${pad ? 0 : r}" fill="url(#g)"/>
     <text x="50%" y="${cy}" font-size="${fs}" text-anchor="middle" font-family="sans-serif">🤝</text>

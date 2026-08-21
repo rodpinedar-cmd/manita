@@ -184,7 +184,7 @@ for (const page of PAGES) {
 
   // theme-color meta presente
   const theme = await pg.getAttribute('meta[name="theme-color"]', 'content');
-  rec('PWA: theme-color presente', theme === '#FF6B4A', theme);
+  rec('PWA: theme-color presente', theme === '#2563EB', theme);
 
   await ctx.close();
 }
