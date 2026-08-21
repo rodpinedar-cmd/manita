@@ -50,7 +50,12 @@ function toast(msg,kind){var t=document.createElement('div');t.className='toast 
 var STATUS_MAP = {
   pending:['st-pending','Pendiente'], confirmed:['st-confirmed','Confirmada'],
   in_progress:['st-pending','En progreso'], completed:['st-confirmed','Completada'],
-  reviewed:['st-confirmed','Reseñada'], cancelled:['st-cancelled','Cancelada']
+  reviewed:['st-confirmed','Reseñada'],
+  cancelled_by_client:['st-cancelled','Cancelada por el cliente'],
+  cancelled_by_professional:['st-cancelled','Rechazada'],
+  no_show_client:['st-cancelled','Cliente no asistió'],
+  no_show_professional:['st-cancelled','No asististe'],
+  disputed:['st-pending','En disputa']
 };
 // Siguiente acción posible del profesional según estado
 var NEXT = { pending:['confirmed','Confirmar'], confirmed:['in_progress','Iniciar'], in_progress:['completed','Completar'] };
@@ -88,7 +93,7 @@ async function load() {
     btn.onclick = function(){ transicion(btn.getAttribute('data-next'), btn.getAttribute('data-to')); };
   });
   list.querySelectorAll('[data-cancel]').forEach(function(btn){
-    btn.onclick = function(){ transicion(btn.getAttribute('data-cancel'), 'cancelled'); };
+    btn.onclick = function(){ transicion(btn.getAttribute('data-cancel'), 'cancelled_by_professional'); };
   });
 }
 
