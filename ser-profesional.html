@@ -29,6 +29,11 @@
 .signup-form .booking-field { margin-bottom: 16px; }
 .signup-form label { display: block; font-size: 13px; font-weight: 600; margin-bottom: 6px; }
 .signup-form input, .signup-form select { width: 100%; padding: 12px; border: 1px solid var(--border); border-radius: 10px; font-family: inherit; font-size: 14px; }
+.signup-form input:focus, .signup-form select:focus { outline: 2px solid var(--primary-text); border-color: var(--primary-text); }
+/* Separadores de sección tipo pasos */
+.form-step { display: flex; align-items: center; gap: 10px; font-weight: 700; color: var(--navy); font-size: 15px; margin: 22px 0 12px; padding-bottom: 8px; border-bottom: 1px solid var(--border); }
+.form-step:first-child { margin-top: 0; }
+.fs-num { width: 26px; height: 26px; border-radius: 50%; background: var(--primary-text); color: #fff; display: inline-flex; align-items: center; justify-content: center; font-size: 13px; flex-shrink: 0; }
 /* Selector visual "¿Cómo cobras?" */
 .charge-grid { display:grid; grid-template-columns:1fr 1fr; gap:10px; }
 .charge-opt { position:relative; }
@@ -64,7 +69,10 @@
     <h2 class="section-title">Regístrate en 5 minutos</h2>
     <p class="section-sub">Miles de clientes te están esperando</p>
     <form class="signup-form" onsubmit="signup(event)">
+      <div class="form-step"><span class="fs-num">1</span> Sobre ti</div>
       <div class="booking-field"><label for="spName">Nombre completo</label><input id="spName" type="text" required placeholder="Tu nombre"></div>
+
+      <div class="form-step"><span class="fs-num">2</span> Tu servicio</div>
       <div class="booking-field"><label for="proCat">Categoría de servicio</label><select id="proCat"></select></div>
       <div class="booking-field"><label for="spService">¿Qué servicio ofreces?</label><input id="spService" type="text" required placeholder="Ej. Limpieza profunda de hogar"></div>
 
@@ -106,6 +114,8 @@
         </div>
       </div>
       <div class="booking-field"><label for="spZone">Zona donde trabajas</label><input id="spZone" type="text" required placeholder="Ej. Roma Norte, Condesa..."></div>
+
+      <div class="form-step"><span class="fs-num">3</span> Tu cuenta</div>
       <div class="booking-field"><label for="spEmail">Correo</label><input id="spEmail" type="email" required placeholder="tu@correo.com"></div>
       <div class="booking-field"><label for="spPass">Contraseña</label><input id="spPass" type="password" required placeholder="Mínimo 6 caracteres"></div>
       <div class="booking-field"><label for="spPhone">Teléfono</label><input id="spPhone" type="tel" required placeholder="55 1234 5678"></div>
@@ -216,7 +226,7 @@ async function signup(e){
   });
 
   if (res.error) { spShow('Error: ' + res.error.message, true); btn.disabled=false; btn.textContent='Crear mi perfil gratis'; return; }
-  spShow('✅ ¡Perfil creado! Está en revisión. Te avisaremos cuando esté activo y visible para clientes.', false);
+  spShow('✅ ¡Perfil creado! En tu panel podrás agregar tu foto, tus trabajos y verificar tu identidad para generar más confianza. Te llevamos allá...', false);
   setTimeout(function(){ window.location.href = 'pro-panel.html'; }, 1500);
 }
 </script>

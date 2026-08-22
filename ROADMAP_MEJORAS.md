@@ -107,7 +107,10 @@ listo para Cloudflare. → RETOMAR ESTO cuando el usuario quiera.
       UI de estado en pro-panel (sin enviar / en revisión / verificado / rechazado). Validado en
       PGlite (flujo completo: pro solicita → no puede auto-aprobar → admin aprueba → verified+active).
       > REQUIERE que corras `supabase/ACTIVAR_VERIFICACION.sql` para activarlo.
-- [ ] Notificaciones al pro por email cuando recibe reserva (necesita SMTP).
+- [x] **Panel de admin web** (`admin.html` + `js/admin.js`): el admin aprueba/rechaza
+      verificaciones desde la web (URL firmada para ver el INE, sin correr SQL a mano). Solo
+      accesible para role=admin; noindex. Validado en tests (94/94 smoke, 51/51 browser).
+- [ ] Notificaciones al pro por email cuando recibe reserva (necesita SMTP — depende de ti).
 
 ### Fase 4 — Growth / negocio (con decisiones tuyas)
 - [ ] Programa de referidos completo (código + recompensa) — definir la recompensa (¿cupón?).
