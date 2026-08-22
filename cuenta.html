@@ -55,10 +55,13 @@
     <div><div class="acc-uname" id="accName">Mi cuenta</div><div class="acc-usub" id="accSub">Gestiona tu perfil</div></div>
   </div>
 
-  <!-- Banner de referidos -->
+  <!-- Banner de referidos con código -->
   <div class="acc-referral">
-    <div><strong>🎁 Invita y gana</strong><p>Comparte Manita con tus amigos.</p></div>
-    <button type="button" class="btn" id="shareBtn">Invitar</button>
+    <div>
+      <strong>🎁 Invita a tus amigos</strong>
+      <p>Comparte Manita. Tu código: <b id="refCode" style="color:var(--primary-text);letter-spacing:1px;">—</b></p>
+    </div>
+    <button type="button" class="btn" id="shareBtn">Compartir</button>
   </div>
 
   <div class="acc-card">
@@ -157,14 +160,24 @@ async function loadProfile() {
   document.getElementById('saveProfileBtn').onclick = saveProfile;
 }
 
-// Compartir Manita (Web Share nativo, con fallback a copiar enlace)
+// Código de referido del usuario (estable, derivado de su id)
+var MI_REF_CODE = null;
+(async function initRef(){
+  var u = await usuarioActual();
+  if (!u) return;
+  MI_REF_CODE = refCodeFrom(u.id);
+  var el = document.getElementById('refCode');
+  if (el) el.textContent = MI_REF_CODE;
+})();
+
+// Compartir Manita con el enlace de referido (Web Share nativo, con fallback a copiar)
 document.getElementById('shareBtn').onclick = async function() {
-  var url = 'https://manita-cdmx.netlify.app';
+  var url = MI_REF_CODE ? refLink(MI_REF_CODE) : 'https://manita-cdmx.netlify.app';
   var texto = 'Encuentra profesionales de confianza para tu hogar en Manita 🤝';
   try {
     if (navigator.share) { await navigator.share({ title: 'Manita', text: texto, url: url }); return; }
     await navigator.clipboard.writeText(url);
-    toast('Enlace copiado. ¡Compártelo!', 'success');
+    toast('Enlace de invitación copiado. ¡Compártelo!', 'success');
   } catch (e) { /* usuario canceló */ }
 };
 

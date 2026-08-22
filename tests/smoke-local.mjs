@@ -125,6 +125,15 @@ for (const p of PAGES) {
   rec('admin sin prompt/confirm (usa modal propio)', !/(^|[^.\w])(alert|confirm|prompt)\s*\(/.test(adminJs));
 }
 
+// 10. Programa de referidos bien cableado
+{
+  const comp = await readFile(join(ROOT, 'js/components.js'), 'utf8');
+  const cuenta = await readFile(join(ROOT, 'cuenta.html'), 'utf8');
+  rec('components define refCodeFrom/refLink/refInvitadoPor', /function refCodeFrom\b/.test(comp) && /function refLink\b/.test(comp) && /function refInvitadoPor\b/.test(comp));
+  rec('referidos captura ?ref= en localStorage', /manita_ref/.test(comp) && /getItem\('manita_ref'\)/.test(comp) && /capturarRef/.test(comp));
+  rec('cuenta muestra el código de referido', cuenta.includes('refCode') && cuenta.includes('refCodeFrom'));
+}
+
 const fail = results.filter(r=>!r.ok).length;
 console.log(`\n===== SMOKE LOCAL: ${results.length-fail} PASS · ${fail} FAIL =====`);
 process.exit(fail>0?1:0);

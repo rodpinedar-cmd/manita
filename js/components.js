@@ -365,3 +365,41 @@ async function mountBottomNav(active) {
     if (b) b.remove();
   });
 })();
+
+// ===== REFERIDOS (código por usuario + captura de ?ref=) =====
+// Mecánica honesta sin cobrar todavía: cada usuario tiene un código estable derivado de su
+// sesión; puede compartir su enlace. Si alguien llega con ?ref=CODIGO, se guarda para atribuir
+// la invitación cuando se defina la recompensa. NO promete recompensas que aún no existen.
+
+// Genera un código corto y estable a partir de un id (uuid). Determinista.
+function refCodeFrom(id) {
+  var s = String(id || '');
+  var h = 0;
+  for (var i = 0; i < s.length; i++) { h = (h * 31 + s.charCodeAt(i)) >>> 0; }
+  // Base36 en mayúsculas, 6 caracteres
+  var code = h.toString(36).toUpperCase();
+  while (code.length < 6) code = '0' + code;
+  return 'MA' + code.slice(0, 6);
+}
+
+// Construye el enlace de invitación con el código del usuario.
+function refLink(code) {
+  return 'https://manita-cdmx.netlify.app/?ref=' + encodeURIComponent(code);
+}
+
+// Al cargar cualquier página: si viene ?ref=, guárdalo (atribución) una sola vez.
+(function capturarRef() {
+  try {
+    var ref = new URLSearchParams(location.search).get('ref');
+    if (ref && /^[A-Z0-9]{2,12}$/i.test(ref)) {
+      if (!localStorage.getItem('manita_ref')) {
+        localStorage.setItem('manita_ref', ref);
+      }
+    }
+  } catch (e) {}
+})();
+
+// Código de referido con el que ESTE usuario fue invitado (o null).
+function refInvitadoPor() {
+  try { return localStorage.getItem('manita_ref') || null; } catch (e) { return null; }
+}
