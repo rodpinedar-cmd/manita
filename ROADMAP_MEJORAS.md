@@ -23,7 +23,12 @@ listo para Cloudflare. → RETOMAR ESTO cuando el usuario quiera.
 - [x] Grid de categorías con contador REAL de profesionales por categoría (estilo Preply).
 - [x] Tarjetas de servicio con hover azul + CTA destacado (estilo GetNinjas).
 - [x] Cache-busting (CSS ?v=3 + SW manita-v4-azul).
-- [ ] (siguiente) Rediseñar el perfil del profesional con el look azul y layout más rico.
+- [x] Perfil del profesional: banda azul premium tras avatar + tarjeta reserva con borde azul +
+      barras de rating en azul.
+- [x] Login pulido (bienvenida con marca + foco azul).
+- [x] mis-reservas (hover azul + estados AA) y reserva-confirmada (borde éxito verde).
+- [x] Barrido final: 0 colores coral hardcodeados; solo queda ámbar para estrellas (intencional).
+      Rediseño AZUL COMPLETO en todas las páginas clave. a11y 0 violaciones en toda la suite.
 
 ---
 
