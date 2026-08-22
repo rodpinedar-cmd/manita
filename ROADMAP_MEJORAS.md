@@ -113,8 +113,13 @@ listo para Cloudflare. → RETOMAR ESTO cuando el usuario quiera.
 - [ ] Notificaciones al pro por email cuando recibe reserva (necesita SMTP — depende de ti).
 
 ### Fase 4 — Growth / negocio (con decisiones tuyas)
-- [ ] Programa de referidos completo (código + recompensa) — definir la recompensa (¿cupón?).
-- [ ] Pagos con Mercado Pago (split) — tras definir modelo económico.
+- [~] Programa de referidos: MECÁNICA lista (código único por usuario `refCodeFrom`, enlace
+      `?ref=`, captura de atribución en localStorage, código visible en cuenta). Falta SOLO que
+      DEFINAS la recompensa (¿cupón $X? ¿% descuento?) para conectar el premio real (backend).
+- [~] Pagos con Mercado Pago (split): ESQUELETO listo en `supabase/functions/` (crear-pago,
+      webhook-pago, reembolsar) con la lógica de split y comisión server-side + README de
+      despliegue. Falta SOLO: definir comisión (MANITA_FEE_RATE), abrir cuenta MP Marketplace
+      + credenciales, revisión legal, y conectar el botón Reservar al checkout. NO cobra nada aún.
 
 ---
 
