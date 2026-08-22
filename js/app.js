@@ -109,12 +109,19 @@ if (heroSearchBox) {
   });
 }
 
-// Chips de búsquedas populares (usa las categorías reales del proyecto)
+// Chips de búsquedas populares: SERVICIOS específicos (no repetir las categorías de arriba)
 var heroPop = document.getElementById('heroPopulares');
-if (heroPop && typeof CATEGORIES !== 'undefined') {
-  var topCats = CATEGORIES.slice(0, 5);
-  heroPop.insertAdjacentHTML('beforeend', topCats.map(function(c){
-    return '<a class="hp-chip" href="servicios.html?cat=' + c.id + '">' + c.name + '</a>';
+if (heroPop) {
+  var populares = [
+    { t: 'Limpieza de hogar', cat: 'limpieza', sub: 'limpieza' },
+    { t: 'Plomería',          cat: 'hogar',    sub: 'plomeria' },
+    { t: 'Manicura',          cat: 'belleza',  sub: 'manicura' },
+    { t: 'Clases de inglés',  cat: 'clases',   sub: 'clases-ingles' },
+    { t: 'Paseo de perros',   cat: 'mascotas', sub: 'paseo-perros' },
+    { t: 'Electricista',      cat: 'hogar',    sub: 'electricista' }
+  ];
+  heroPop.insertAdjacentHTML('beforeend', populares.map(function(p){
+    return '<a class="hp-chip" href="servicios.html?cat=' + p.cat + '&sub=' + p.sub + '">' + p.t + '</a>';
   }).join(''));
 }
 
@@ -267,4 +274,23 @@ function alertToast(msg) {
       el.style.display = 'block';
     }).catch(function () {});
   }
+})();
+
+
+// ===== Animación de aparición al hacer scroll (estilo Webel) =====
+// Respeta prefers-reduced-motion: si el usuario prefiere menos movimiento, no anima.
+(function initReveal() {
+  var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  // Marca las secciones de la landing como "reveal" (menos el hero, que ya anima al cargar)
+  var secciones = document.querySelectorAll('.section, .trust-bar');
+  if (!secciones.length) return;
+  if (reduce || !('IntersectionObserver' in window)) return; // sin animación: se ven normales
+
+  secciones.forEach(function(s){ s.classList.add('reveal'); });
+  var obs = new IntersectionObserver(function(entries){
+    entries.forEach(function(e){
+      if (e.isIntersecting) { e.target.classList.add('in'); obs.unobserve(e.target); }
+    });
+  }, { threshold: 0.12 });
+  secciones.forEach(function(s){ obs.observe(s); });
 })();
