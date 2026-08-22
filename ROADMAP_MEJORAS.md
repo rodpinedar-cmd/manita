@@ -3,8 +3,27 @@
 Fecha: 21 de agosto de 2026
 Origen: capturas reales de Webel (referencia de diseño/UX) + peticiones del usuario.
 
-> Regla: inspirarnos en los PATRONES de Webel, NO copiar su diseño. Identidad propia de
-> Manita (coral #FF6B4A, la "M" no la "W"). Español mexicano. Sin datos falsos (PROFECO).
+> Regla: inspirarnos en los PATRONES de Webel/Preply/GetNinjas, NO copiar su diseño. Identidad
+> propia de Manita (AZUL #2563EB, la "M"). Español mexicano. Sin datos falsos (PROFECO).
+
+---
+
+## ⚠️ PENDIENTE DE HOSTING (recordatorio)
+Netlify PAUSÓ los deploys por créditos agotados del ciclo (banner "operational credits").
+Todo el rediseño AZUL está en GitHub (rama main) pero NO se ve en vivo hasta resolver esto.
+Opciones: (a) drag-and-drop de la carpeta en Netlify, (b) esperar reinicio de créditos,
+(c) MIGRAR A CLOUDFLARE PAGES (recomendado, gratis, sin límite de build). Ya existe `_headers`
+listo para Cloudflare. → RETOMAR ESTO cuando el usuario quiera.
+
+## REDISEÑO VISUAL (combinando Webel + Preply + GetNinjas) — hecho
+- [x] Identidad AZUL confianza (#2563EB / texto #1D4ED8 AA). Tokens, hero, gradientes, splash,
+      theme-color (13 HTML), manifest, iconos PWA regenerados. a11y 0 violaciones.
+- [x] Hero con buscador central (servicio + zona) + chips de categorías populares.
+- [x] Barra de confianza bajo el hero (estilo Preply, mensajes honestos).
+- [x] Grid de categorías con contador REAL de profesionales por categoría (estilo Preply).
+- [x] Tarjetas de servicio con hover azul + CTA destacado (estilo GetNinjas).
+- [x] Cache-busting (CSS ?v=3 + SW manita-v4-azul).
+- [ ] (siguiente) Rediseñar el perfil del profesional con el look azul y layout más rico.
 
 ---
 
