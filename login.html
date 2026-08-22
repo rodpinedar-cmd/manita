@@ -19,6 +19,11 @@
 .auth-field { margin-bottom:14px; }
 .auth-field label { display:block; font-size:13px; font-weight:600; margin-bottom:6px; }
 .auth-field input { width:100%; padding:12px; border:1px solid var(--border); border-radius:10px; font-family:inherit; font-size:14px; box-sizing:border-box; }
+.auth-field input:focus { outline:2px solid var(--primary-text); border-color:var(--primary-text); }
+.auth-welcome { text-align:center; margin-bottom:20px; }
+.auth-welcome .aw-logo { font-size:40px; }
+.auth-welcome h1 { font-size:20px; color:var(--navy); margin-top:4px; }
+.auth-welcome p { font-size:13px; color:var(--gray); margin-top:2px; }
 .auth-msg { font-size:13px; margin-top:12px; padding:10px; border-radius:8px; display:none; }
 .auth-msg.err { background:#FDECEC; color:var(--danger); display:block; }
 .auth-msg.ok { background:#E6F7F1; color:var(--success); display:block; }
@@ -35,6 +40,11 @@
 
 <div class="auth-wrap">
   <div class="auth-card">
+    <div class="auth-welcome">
+      <div class="aw-logo" aria-hidden="true">🤝</div>
+      <h1>Bienvenido a Manita</h1>
+      <p>Entra o crea tu cuenta para reservar servicios de confianza.</p>
+    </div>
     <div class="auth-tabs">
       <div class="auth-tab active" id="tabLogin" onclick="switchTab('login')">Entrar</div>
       <div class="auth-tab" id="tabReg" onclick="switchTab('reg')">Crear cuenta</div>
