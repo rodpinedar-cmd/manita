@@ -1,8 +1,15 @@
-# Manita — Migración de hosting a Cloudflare Pages (PENDIENTE)
+# Manita — Migración de hosting a Cloudflare Pages ✅ COMPLETADA
 
-> ⚠️ RETOMAR ESTO MÁS TARDE. Motivo: Netlify pausó los deploys por créditos agotados del ciclo.
-> Todo el rediseño AZUL está en GitHub (rama main) pero NO se ve en vivo hasta migrar o
-> que Netlify reactive los créditos.
+> HECHO (22 ago 2026). El sitio ya vive en **https://manita.pages.dev** con auto-deploy desde
+> GitHub (rama main), sin límite de créditos de build. Netlify queda como respaldo inactivo.
+> URLs internas (canonical, og:url, QR, referidos, sitemap, robots) ya apuntan a pages.dev.
+
+## PENDIENTE TUYO en Supabase (para que el registro funcione en el nuevo dominio)
+- [ ] Authentication → URL Configuration → Site URL = `https://manita.pages.dev`
+      y Redirect URLs = `https://manita.pages.dev/**`.
+
+---
+## (Histórico) Por qué migramos
 
 ## Por qué migrar
 - Netlify (plan gratis) agotó los "operational credits" del mes → deploys en "Skipped".
