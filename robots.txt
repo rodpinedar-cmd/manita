@@ -9,4 +9,4 @@ Disallow: /favoritos.html
 Disallow: /mensajes.html
 Disallow: /setup-check.html
 
-Sitemap: https://manita-cdmx.netlify.app/sitemap.xml
+Sitemap: https://manita.pages.dev/sitemap.xml

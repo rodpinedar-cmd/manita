@@ -172,7 +172,7 @@ var MI_REF_CODE = null;
 
 // Compartir Manita con el enlace de referido (Web Share nativo, con fallback a copiar)
 document.getElementById('shareBtn').onclick = async function() {
-  var url = MI_REF_CODE ? refLink(MI_REF_CODE) : 'https://manita-cdmx.netlify.app';
+  var url = MI_REF_CODE ? refLink(MI_REF_CODE) : 'https://manita.pages.dev';
   var texto = 'Encuentra profesionales de confianza para tu hogar en Manita 🤝';
   try {
     if (navigator.share) { await navigator.share({ title: 'Manita', text: texto, url: url }); return; }

@@ -384,7 +384,7 @@ function refCodeFrom(id) {
 
 // Construye el enlace de invitación con el código del usuario.
 function refLink(code) {
-  return 'https://manita-cdmx.netlify.app/?ref=' + encodeURIComponent(code);
+  return 'https://manita.pages.dev/?ref=' + encodeURIComponent(code);
 }
 
 // Al cargar cualquier página: si viene ?ref=, guárdalo (atribución) una sola vez.
