@@ -12,12 +12,13 @@
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
 .res-wrap { max-width: 800px; margin: 32px auto; padding: 0 20px; }
-.res-card { background:#fff; border:1px solid var(--border); border-radius:var(--radius); padding:18px; margin-bottom:14px; box-shadow:var(--shadow); display:flex; justify-content:space-between; align-items:center; }
+.res-card { background:#fff; border:1px solid var(--border); border-radius:var(--radius); padding:18px; margin-bottom:14px; box-shadow:var(--shadow); display:flex; justify-content:space-between; align-items:center; transition:border-color var(--dur) var(--ease), box-shadow var(--dur) var(--ease); }
+.res-card:hover { border-color:var(--primary-light); box-shadow:var(--shadow-md); }
 .res-info h3 { font-size:16px; color:var(--navy); }
 .res-info p { font-size:13px; color:var(--gray); margin-top:4px; }
 .res-status { font-size:12px; padding:4px 12px; border-radius:12px; font-weight:600; }
-.st-pending { background:#FFF3E0; color:#E8850C; }
-.st-confirmed { background:#E6F7F1; color:var(--success); }
+.st-pending { background:#FFF3E0; color:var(--warning-text); }
+.st-confirmed { background:#E6F7F1; color:var(--success-text); }
 .st-cancelled { background:#FDECEC; color:var(--danger); }
 .empty-res { text-align:center; padding:60px; color:var(--gray); }
 </style>
