@@ -198,6 +198,16 @@ a { text-decoration: none; color: inherit; }
 .app-badge { background: var(--navy); color: #fff; padding: 12px 20px; border-radius: 12px; font-size: 13px; font-weight: 600; }
 .app-phone { font-size: 160px; text-align: center; }
 
+/* ===== TRUST BAR (bajo el hero) ===== */
+.trust-bar { background: #fff; border-bottom: 1px solid var(--border); }
+.trust-bar-inner { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; padding: 22px 20px; }
+.trust-item { display: flex; align-items: center; gap: 12px; }
+.trust-icon { font-size: 26px; width: 48px; height: 48px; border-radius: 14px; background: var(--mint); display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.trust-item strong { display: block; font-size: 14px; color: var(--navy); }
+.trust-item div span { font-size: 12px; color: var(--gray); }
+@media (max-width: 900px){ .trust-bar-inner { grid-template-columns: repeat(2, 1fr); gap: 14px; } }
+@media (max-width: 480px){ .trust-bar-inner { grid-template-columns: 1fr; } }
+
 /* ===== CATEGORIES ===== */
 .categories-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; }
 .category-card {
