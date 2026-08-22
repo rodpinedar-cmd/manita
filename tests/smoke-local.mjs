@@ -12,8 +12,8 @@ const results = [];
 function rec(name, ok, detail){ results.push({name,ok}); console.log(`[${ok?'PASS':'FAIL'}] ${name}${detail?' — '+detail:''}`); }
 
 const PAGES = ['index.html','servicios.html','perfil.html','categorias.html','como-funciona.html',
-  'ser-profesional.html','mis-reservas.html','pro-panel.html','reserva-confirmada.html','login.html','cuenta.html','legal.html','favoritos.html','mensajes.html'];
-const JS = ['supabase-client.js','components.js','data.js','app.js','servicios.js','perfil.js'];
+  'ser-profesional.html','mis-reservas.html','pro-panel.html','reserva-confirmada.html','login.html','cuenta.html','legal.html','favoritos.html','mensajes.html','admin.html'];
+const JS = ['supabase-client.js','components.js','data.js','app.js','servicios.js','perfil.js','admin.js'];
 
 // 1. Páginas existen y tienen estructura mínima
 for (const p of PAGES) {
@@ -110,6 +110,19 @@ for (const p of PAGES) {
   rec('SQL verificación: bucket privado (public false)', /'verification'.*false/.test(sql));
   rec('SQL verificación: tabla verification_requests', /verification_requests/.test(sql));
   rec('SQL verificación: RPC aprobar solo admin', /aprobar_verificacion/.test(sql) && /is_admin\(\)/.test(sql));
+}
+
+// 9. Panel de admin (aprobar verificaciones) bien cableado
+{
+  const client = await readFile(join(ROOT, 'js/supabase-client.js'), 'utf8');
+  const adminJs = await readFile(join(ROOT, 'js/admin.js'), 'utf8');
+  const adminHtml = await readFile(join(ROOT, 'admin.html'), 'utf8');
+
+  rec('client define esAdmin/listarVerificaciones/aprobar/rechazar', /function esAdmin\b/.test(client) && /function listarVerificaciones\b/.test(client) && /function aprobarVerificacion\b/.test(client) && /function rechazarVerificacion\b/.test(client));
+  rec('admin usa URL firmada para doc privado', /createSignedUrl/.test(client));
+  rec('admin.html es noindex (no lo indexa Google)', /name="robots" content="noindex"/.test(adminHtml));
+  rec('admin.js bloquea acceso a no-admin', /esAdmin\(\)/.test(adminJs) && /Acceso restringido/.test(adminJs));
+  rec('admin sin prompt/confirm (usa modal propio)', !/(^|[^.\w])(alert|confirm|prompt)\s*\(/.test(adminJs));
 }
 
 const fail = results.filter(r=>!r.ok).length;

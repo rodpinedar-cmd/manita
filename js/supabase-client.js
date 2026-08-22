@@ -218,6 +218,44 @@ async function subirVerificacion(professionalId, file) {
   return { data: data, error: error };
 }
 
+// ¿El usuario actual es admin? (lee su perfil; role está protegido server-side)
+async function esAdmin() {
+  const user = await usuarioActual();
+  if (!user) return false;
+  const { data } = await supa.from('profiles').select('role').eq('id', user.id).maybeSingle();
+  return !!(data && data.role === 'admin');
+}
+
+// ADMIN: lista solicitudes de verificación (por estado). Devuelve datos del pro.
+async function listarVerificaciones(estado) {
+  let q = supa.from('verification_requests')
+    .select('id, status, note, created_at, doc_path, professional_id, professionals(service_name, zone)')
+    .order('created_at', { ascending: false });
+  if (estado) q = q.eq('status', estado);
+  const { data, error } = await q;
+  return { data: data || [], error };
+}
+
+// ADMIN: URL firmada temporal para ver el documento privado (bucket verification).
+async function urlDocumentoVerificacion(docPath) {
+  const { data, error } = await supa.storage.from('verification').createSignedUrl(docPath, 300);
+  return { url: data && data.signedUrl, error };
+}
+
+// ADMIN: aprueba una solicitud (RPC server-side; marca al pro verified + active).
+async function aprobarVerificacion(requestId) {
+  const { data, error } = await supa.rpc('aprobar_verificacion', { p_request_id: requestId });
+  return { data, error };
+}
+
+// ADMIN: rechaza una solicitud con motivo (protegido por policy UPDATE solo admin).
+async function rechazarVerificacion(requestId, motivo) {
+  const { data, error } = await supa.from('verification_requests')
+    .update({ status: 'rejected', note: motivo || null, reviewed_at: new Date().toISOString() })
+    .eq('id', requestId).select();
+  return { data, error };
+}
+
 // Estado de la última solicitud de verificación del pro (pending/approved/rejected o null).
 async function miVerificacion(professionalId) {
   const user = await usuarioActual();

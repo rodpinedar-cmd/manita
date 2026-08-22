@@ -20,6 +20,7 @@ const SHELL = [
   './reserva-confirmada.html',
   './login.html',
   './legal.html',
+  './admin.html',
   './manifest.json',
   './css/styles.css?v=3',
   './js/supabase-client.js',
