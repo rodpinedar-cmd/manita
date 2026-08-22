@@ -12,9 +12,11 @@
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
 .profile-layout { display: grid; grid-template-columns: 1fr 360px; gap: var(--sp-8); padding: var(--sp-6) 0; }
-.profile-header { background: #fff; border: 1px solid var(--border); border-radius: var(--radius); padding: var(--sp-6); box-shadow: var(--shadow-xs); margin-bottom: var(--sp-5); }
-.profile-top { display: flex; flex-direction: column; align-items: center; text-align: center; gap: var(--sp-3); }
-.profile-avatar { font-size: 44px; font-weight: 800; color: var(--primary-text); background: var(--mint); border-radius: 50%; width: 104px; height: 104px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; overflow: hidden; box-shadow: var(--shadow); }
+.profile-header { background: #fff; border: 1px solid var(--border); border-radius: var(--radius); box-shadow: var(--shadow-xs); margin-bottom: var(--sp-5); overflow: hidden; }
+/* Banda azul decorativa detrás del avatar (look premium) */
+.profile-header::before { content: ""; display: block; height: 96px; background: linear-gradient(135deg, #2563EB 0%, #1E40AF 100%); }
+.profile-top { display: flex; flex-direction: column; align-items: center; text-align: center; gap: var(--sp-3); padding: 0 var(--sp-6) var(--sp-6); margin-top: -52px; }
+.profile-avatar { font-size: 44px; font-weight: 800; color: var(--primary-text); background: var(--mint); border-radius: 50%; width: 104px; height: 104px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; overflow: hidden; box-shadow: var(--shadow-lg); border: 4px solid #fff; }
 .profile-avatar img { width: 100%; height: 100%; object-fit: cover; }
 .profile-name { font-size: var(--fs-xl); font-weight: 800; display: flex; align-items: center; gap: var(--sp-2); justify-content: center; letter-spacing: -0.3px; }
 .profile-service { color: var(--gray); font-size: var(--fs-base); }
@@ -40,7 +42,7 @@
 .rb-row { display: grid; grid-template-columns: 130px 1fr 28px; align-items: center; gap: var(--sp-3); font-size: var(--fs-sm); }
 .rb-label { color: var(--gray); }
 .rb-bar { height: 8px; background: var(--bg-alt); border-radius: var(--radius-pill); overflow: hidden; }
-.rb-fill { height: 100%; background: var(--warning); border-radius: var(--radius-pill); transition: width 0.5s var(--ease-out); }
+.rb-fill { height: 100%; background: linear-gradient(90deg, var(--primary), var(--primary-light)); border-radius: var(--radius-pill); transition: width 0.5s var(--ease-out); }
 .rb-val { font-weight: 700; color: var(--navy); text-align: right; }
 
 .review { padding: var(--sp-4) 0; border-bottom: 1px solid var(--border); }
@@ -51,7 +53,7 @@
 .review-text { color: var(--gray); font-size: var(--fs-sm); }
 
 /* Tarjeta de reserva (escritorio: sticky lateral) */
-.booking-card { background: #fff; border: 1px solid var(--border); border-radius: var(--radius); padding: var(--sp-6); box-shadow: var(--shadow-lg); position: sticky; top: 90px; }
+.booking-card { background: #fff; border: 1px solid var(--border); border-top: 3px solid var(--primary); border-radius: var(--radius); padding: var(--sp-6); box-shadow: var(--shadow-lg); position: sticky; top: 90px; }
 .booking-price { font-size: var(--fs-2xl); font-weight: 800; color: var(--primary-text); margin-bottom: var(--sp-1); }
 .booking-price small { font-size: var(--fs-base); color: var(--gray); font-weight: 400; }
 .booking-field { margin-bottom: var(--sp-4); }
