@@ -109,20 +109,14 @@ if (heroSearchBox) {
   });
 }
 
-// Chips de búsquedas populares: SERVICIOS específicos (no repetir las categorías de arriba)
-var heroPop = document.getElementById('heroPopulares');
-if (heroPop) {
-  var populares = [
-    { t: 'Limpieza de hogar', cat: 'limpieza', sub: 'limpieza' },
-    { t: 'Plomería',          cat: 'hogar',    sub: 'plomeria' },
-    { t: 'Manicura',          cat: 'belleza',  sub: 'manicura' },
-    { t: 'Clases de inglés',  cat: 'clases',   sub: 'clases-ingles' },
-    { t: 'Paseo de perros',   cat: 'mascotas', sub: 'paseo-perros' },
-    { t: 'Electricista',      cat: 'hogar',    sub: 'electricista' }
-  ];
-  heroPop.insertAdjacentHTML('beforeend', populares.map(function(p){
-    return '<a class="hp-chip" href="servicios.html?cat=' + p.cat + '&sub=' + p.sub + '">' + p.t + '</a>';
-  }).join(''));
+// Accesos directos por categoría bajo el buscador (iconos, limpio tipo Webel)
+var heroCats = document.getElementById('heroCats');
+if (heroCats && typeof CATEGORIES !== 'undefined') {
+  heroCats.innerHTML = CATEGORIES.map(function(c){
+    return '<a class="hero-cat" href="servicios.html?cat=' + c.id + '" aria-label="' + c.name + '">' +
+      '<span class="hc-ic" aria-hidden="true">' + c.icon + '</span>' +
+      '<span class="hc-lb">' + c.name + '</span></a>';
+  }).join('');
 }
 
 // QR Modal

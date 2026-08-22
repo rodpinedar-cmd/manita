@@ -95,10 +95,10 @@
 <!-- HOME MODO APP (solo visible como app instalada; lo llena app.js) -->
 <section id="appHome" class="app-home" style="display:none;"></section>
 
-<!-- HERO (web / landing) — buscador central + populares -->
+<!-- HERO (web / landing) — buscador protagonista + accesos por categoría -->
 <section class="hero web-only">
   <div class="hero-overlay">
-    <h1>Encuentra el servicio que necesitas en CDMX</h1>
+    <h1>Encuentra el servicio que necesitas<br>en CDMX</h1>
     <p>Profesionales de confianza para tu hogar, belleza, clases y más. Sin salir de casa.</p>
     <form class="hero-search-box" id="heroSearchBox" role="search" aria-label="Buscar servicios">
       <div class="hsb-field">
@@ -111,15 +111,8 @@
       </div>
       <button type="submit" class="btn btn-primary hsb-btn">Buscar</button>
     </form>
-    <div class="hero-populares" id="heroPopulares" aria-label="Búsquedas populares">
-      <span class="hp-label">Populares:</span>
-    </div>
-  </div>
-  <div class="hero-scene" aria-hidden="true">
-    <div class="scene-house">🏡</div>
-    <div class="scene-items">
-      <span>🧹</span><span>💅</span><span>🔧</span><span>📚</span><span>🐕</span>
-    </div>
+    <!-- Accesos directos por categoría (iconos, no texto redundante) -->
+    <div class="hero-cats" id="heroCats" aria-label="Categorías"></div>
   </div>
 </section>
 
